@@ -1,0 +1,160 @@
+[gd_scene load_steps=9 format=3 uid="uid://bbmqpdu0l1bmf"]
+
+[ext_resource type="Texture2D" uid="uid://ee0rppecub20" path="res://images/pine_branches_02.png" id="1_8giiq"]
+[ext_resource type="Texture2D" uid="uid://v6a5a8kx31g" path="res://images/purple_holly_w_berry.png" id="1_77rrb"]
+[ext_resource type="Texture2D" uid="uid://y0v5yfoygjr3" path="res://images/pine_branches.png" id="2_7bjpb"]
+[ext_resource type="Script" uid="uid://8x4x120rj8ij" path="res://foreground/sway_control.gd" id="2_8r0ws"]
+[ext_resource type="Texture2D" uid="uid://cchitr4b8obeh" path="res://images/single_holly_leaf_w_berry.png" id="2_77rrb"]
+[ext_resource type="Texture2D" uid="uid://c3vvcsnny6g66" path="res://images/three_holly_leaves_w_two_berries.png" id="2_rtdkn"]
+[ext_resource type="Texture2D" uid="uid://csjavbauvhxn6" path="res://images/pine_branches_03.png" id="3_8r0ws"]
+[ext_resource type="Texture2D" uid="uid://dt1q5ancav84q" path="res://images/one_holly_leaves.png" id="3_53de8"]
+
+[node name="Foreground" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PineBranches03" type="TextureRect" parent="."]
+modulate = Color(0.695503, 0.695503, 0.695503, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = -563.36
+offset_top = -1530.84
+offset_right = 200.64
+offset_bottom = -806.84
+rotation = 9.44594
+pivot_offset = Vector2(720.553, 607.835)
+texture = ExtResource("1_8giiq")
+expand_mode = 1
+flip_v = true
+script = ExtResource("2_8r0ws")
+
+[node name="PineBranches02" type="TextureRect" parent="."]
+modulate = Color(0.674707, 0.503631, 0.446557, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = 364.64
+offset_top = 10.16
+offset_right = 1128.64
+offset_bottom = 734.16
+rotation = 8.28891
+pivot_offset = Vector2(544.268, 83.3011)
+texture = ExtResource("2_7bjpb")
+expand_mode = 1
+flip_v = true
+script = ExtResource("2_8r0ws")
+
+[node name="PineBranches01" type="TextureRect" parent="."]
+modulate = Color(0.633757, 0.633757, 0.633757, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = -473.989
+offset_top = -322.224
+offset_right = 207.011
+offset_bottom = 322.776
+rotation = 5.49616
+pivot_offset = Vector2(54.0584, 537.395)
+texture = ExtResource("3_8r0ws")
+expand_mode = 1
+script = ExtResource("2_8r0ws")
+
+[node name="SingleLeaf2" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = 704.64
+offset_top = 259.16
+offset_right = 1218.64
+offset_bottom = 663.16
+rotation = 4.32582
+pivot_offset = Vector2(28.2396, 205.756)
+texture = ExtResource("2_77rrb")
+expand_mode = 1
+flip_v = true
+script = ExtResource("2_8r0ws")
+
+[node name="ThreeLeavesTwoBerries" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = 227.64
+offset_top = 416.16
+offset_right = 900.64
+offset_bottom = 1025.16
+rotation = -0.0534048
+pivot_offset = Vector2(458.238, 585.324)
+texture = ExtResource("2_rtdkn")
+expand_mode = 1
+script = ExtResource("2_8r0ws")
+
+[node name="SingleLeaf" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = -463.586
+offset_top = 204.203
+offset_right = 50.4138
+offset_bottom = 691.203
+rotation = 5.49616
+pivot_offset = Vector2(41.5115, 273.558)
+texture = ExtResource("2_77rrb")
+expand_mode = 1
+script = ExtResource("2_8r0ws")
+
+[node name="ThreeLeaves" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = -844.616
+offset_top = 543.412
+offset_right = -286.616
+offset_bottom = 1071.41
+rotation = 1.11525
+pivot_offset = Vector2(446.12, 486.324)
+texture = ExtResource("1_77rrb")
+expand_mode = 1
+script = ExtResource("2_8r0ws")
+
+[node name="TanLeavesBunchofBerries" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.392
+anchor_top = 0.477
+anchor_right = 0.392
+anchor_bottom = 0.477
+offset_left = -160.36
+offset_top = 644.16
+offset_right = 421.64
+offset_bottom = 1195.16
+rotation = 2.46391
+pivot_offset = Vector2(322.734, 294.248)
+texture = ExtResource("3_53de8")
+expand_mode = 1
+script = ExtResource("2_8r0ws")
