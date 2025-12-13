@@ -15,3 +15,8 @@ export_credentials.cfg
 data_*/
 mono_crash.*.json
 .DS_Store
+
+# Exports directory (exclude iOS Xcode project)
+exports/
+!exports/ios2/
+!exports/ios2/sleighRide.xcodeproj/
