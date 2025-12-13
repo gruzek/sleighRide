@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://ufudf5buyn7t"]
+
+[ext_resource type="Texture2D" uid="uid://hd2v0t5xahlv" path="res://images/bell-01.png" id="1_m4uul"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mwwkq"]
+friction = 0.2
+bounce = 0.3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_80wlk"]
+radius = 62.71
+
+[node name="Bell-03" type="RigidBody2D" groups=["bells"]]
+mass = 0.2
+physics_material_override = SubResource("PhysicsMaterial_mwwkq")
+gravity_scale = 0.0
+linear_damp = 0.2
+angular_damp = 0.3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_80wlk")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1.88324, -0.749994)
+scale = Vector2(0.128678, 0.138535)
+texture = ExtResource("1_m4uul")
