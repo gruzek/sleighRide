@@ -66,3 +66,15 @@ position = Vector2(665, 778)
 
 [node name="Bell-08" parent="." instance=ExtResource("3_3tigu")]
 position = Vector2(681, 445)
+
+[node name="Bell-09" parent="." instance=ExtResource("4_vwo53")]
+position = Vector2(831, 911)
+
+[node name="Bell-10" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(452, 1119)
+
+[node name="Bell-11" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(527, 795)
+
+[node name="Bell-12" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(516, 1323)

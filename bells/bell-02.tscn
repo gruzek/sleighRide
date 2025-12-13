@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://inkds4ibqt36"]
+[gd_scene load_steps=6 format=3 uid="uid://inkds4ibqt36"]
 
+[ext_resource type="Script" uid="uid://clburownxxjfy" path="res://bells/bell_sounds.gd" id="1_0wep6"]
 [ext_resource type="Texture2D" uid="uid://cveeifpbmjotj" path="res://images/bell-03.png" id="1_gadbo"]
+[ext_resource type="AudioStream" uid="uid://cv5alxu117b6s" path="res://sounds/light_jingle_bells.mp3" id="2_3dfli"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mwwkq"]
 friction = 0.2
@@ -16,6 +18,8 @@ gravity_scale = 0.0
 continuous_cd = 1
 linear_damp = 0.2
 angular_damp = 0.3
+script = ExtResource("1_0wep6")
+hit_sounds = Array[AudioStream]([ExtResource("2_3dfli")])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_80wlk")
@@ -24,3 +28,5 @@ shape = SubResource("CircleShape2D_80wlk")
 position = Vector2(2, -8)
 scale = Vector2(0.128678, 0.138535)
 texture = ExtResource("1_gadbo")
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="."]
