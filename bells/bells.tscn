@@ -16,9 +16,20 @@
 
 [node name="Bells" type="Node2D"]
 script = ExtResource("1_vwo53")
+gravity_strength = 800.0
+shake_gain = 4000.0
+shake_deadzone = 0.0
+shake_max_impulse_per_kg = 400.0
+shake_smoothing = 0.5
 
 [node name="Bounds" type="StaticBody2D" parent="."]
+position = Vector2(0, -1)
 script = ExtResource("1_555jt")
+inset_top = 300.0
+inset_bottom = 196.0
+inset_left = 64.0
+inset_right = 64.0
+thickness = 64.0
 
 [node name="Ceiling" type="CollisionShape2D" parent="Bounds"]
 shape = SubResource("RectangleShape2D_xckbj")
@@ -36,22 +47,22 @@ shape = SubResource("RectangleShape2D_vwo53")
 position = Vector2(588, 986)
 
 [node name="Bell-02" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(362, 1200)
+position = Vector2(394, 992)
 
 [node name="Bell-01" parent="." instance=ExtResource("4_vwo53")]
 position = Vector2(456, 653)
 
 [node name="Bell-04" parent="." instance=ExtResource("4_vwo53")]
-position = Vector2(852, 671)
+position = Vector2(772, 616)
 
 [node name="Bell-05" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(828, 1304)
+position = Vector2(631, 1241)
 
 [node name="Bell-06" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(398, 260)
+position = Vector2(449, 442)
 
 [node name="Bell-07" parent="." instance=ExtResource("3_3tigu")]
 position = Vector2(665, 778)
 
 [node name="Bell-08" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(713, 137)
+position = Vector2(681, 445)

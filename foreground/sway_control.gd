@@ -1,6 +1,5 @@
 # SwayControl.gd (Godot 4.x)
 # Attach to each TextureRect (or any Control). Uses the node's current rotation as the default pose.
-@tool
 extends Control
 
 @export_range(0.0, 10.0, 0.01) var sway_speed: float = 0.2          # cycles per second-ish

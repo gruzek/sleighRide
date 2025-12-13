@@ -3,7 +3,10 @@
 extends StaticBody2D
 
 # Distance from each screen edge inward (pixels)
-@export_range(0.0, 500.0, 1.0) var inset: float = 48.0
+@export_range(0.0, 500.0, 1.0) var inset_top: float = 48.0
+@export_range(0.0, 500.0, 1.0) var inset_bottom: float = 48.0
+@export_range(0.0, 500.0, 1.0) var inset_left: float = 48.0
+@export_range(0.0, 500.0, 1.0) var inset_right: float = 48.0
 
 # Wall thickness (pixels)
 @export_range(1.0, 300.0, 1.0) var thickness: float = 24.0
@@ -22,32 +25,32 @@ func _update_bounds() -> void:
 	if vp_size.x <= 0.0 or vp_size.y <= 0.0:
 		return
 
-	# Ceiling
+	# Ceiling (inset from top)
 	_apply_wall(
 		ceiling,
-		Vector2(vp_size.x - inset * 2.0, thickness),
-		Vector2(vp_size.x * 0.5, inset + thickness * 0.5)
+		Vector2(vp_size.x - inset_left - inset_right, thickness),
+		Vector2(vp_size.x * 0.5, inset_top + thickness * 0.5)
 	)
 
-	# Floor
+	# Floor (inset from bottom)
 	_apply_wall(
 		floor,
-		Vector2(vp_size.x - inset * 2.0, thickness),
-		Vector2(vp_size.x * 0.5, vp_size.y - inset - thickness * 0.5)
+		Vector2(vp_size.x - inset_left - inset_right, thickness),
+		Vector2(vp_size.x * 0.5, vp_size.y - inset_bottom - thickness * 0.5)
 	)
 
-	# Left wall
+	# Left wall (inset from left)
 	_apply_wall(
 		left,
-		Vector2(thickness, vp_size.y - inset * 2.0),
-		Vector2(inset + thickness * 0.5, vp_size.y * 0.5)
+		Vector2(thickness, vp_size.y - inset_top - inset_bottom),
+		Vector2(inset_left + thickness * 0.5, vp_size.y * 0.5)
 	)
 
-	# Right wall
+	# Right wall (inset from right)
 	_apply_wall(
 		right,
-		Vector2(thickness, vp_size.y - inset * 2.0),
-		Vector2(vp_size.x - inset - thickness * 0.5, vp_size.y * 0.5)
+		Vector2(thickness, vp_size.y - inset_top - inset_bottom),
+		Vector2(vp_size.x - inset_right - thickness * 0.5, vp_size.y * 0.5)
 	)
 
 func _apply_wall(wall: CollisionShape2D, size: Vector2, center: Vector2) -> void:

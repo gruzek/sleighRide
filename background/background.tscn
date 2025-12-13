@@ -39,9 +39,9 @@ stretch_mode = 6
 [node name="TextureRect" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_qjy44")
 layout_mode = 0
-offset_left = 31.0
-offset_top = 197.0
-offset_right = 863.0
-offset_bottom = 429.0
+offset_left = 38.0
+offset_top = 104.0
+offset_right = 870.0
+offset_bottom = 336.0
 texture = ExtResource("2_eva80")
 expand_mode = 1
