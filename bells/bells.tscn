@@ -44,37 +44,22 @@ shape = SubResource("RectangleShape2D_3tigu")
 shape = SubResource("RectangleShape2D_vwo53")
 
 [node name="Bell-03" parent="." instance=ExtResource("2_xckbj")]
-position = Vector2(588, 986)
+position = Vector2(564, 461)
 
 [node name="Bell-02" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(394, 992)
+position = Vector2(396, 1329)
 
 [node name="Bell-01" parent="." instance=ExtResource("4_vwo53")]
-position = Vector2(456, 653)
-
-[node name="Bell-04" parent="." instance=ExtResource("4_vwo53")]
-position = Vector2(772, 616)
-
-[node name="Bell-05" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(631, 1241)
+position = Vector2(635, 701)
 
 [node name="Bell-06" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(449, 442)
-
-[node name="Bell-07" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(665, 778)
-
-[node name="Bell-08" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(681, 445)
+position = Vector2(689, 1174)
 
 [node name="Bell-09" parent="." instance=ExtResource("4_vwo53")]
-position = Vector2(831, 911)
+position = Vector2(395, 638)
 
-[node name="Bell-10" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(452, 1119)
+[node name="Bell-04" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(306, 1096)
 
-[node name="Bell-11" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(527, 795)
-
-[node name="Bell-12" parent="." instance=ExtResource("3_3tigu")]
-position = Vector2(516, 1323)
+[node name="Bell-05" parent="." instance=ExtResource("4_vwo53")]
+position = Vector2(571, 1516)

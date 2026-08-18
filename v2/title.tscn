@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://wnwp0gsybaa0"]
+
+[ext_resource type="Texture2D" uid="uid://yx6bem6ip0e4" path="res://images/v2/vignette_glow.png" id="1_jigjt"]
+[ext_resource type="Texture2D" uid="uid://bb44bqnvruh5n" path="res://images/v2/RS_MD_white 1.png" id="2_gb4n1"]
+
+[node name="Title" type="Node2D" unique_id=1909601028]
+
+[node name="VignetteGlow" type="Sprite2D" parent="." unique_id=1040351924]
+position = Vector2(532.5, 466.40155)
+scale = Vector2(1.1412373, 1.1412373)
+texture = ExtResource("1_jigjt")
+
+[node name="logo" type="Sprite2D" parent="." unique_id=536314937]
+position = Vector2(523, 163.00002)
+scale = Vector2(0.91501975, 0.91501975)
+texture = ExtResource("2_gb4n1")

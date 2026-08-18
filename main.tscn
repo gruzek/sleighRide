@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bjcssw1s4v6vc"]
+[gd_scene format=3 uid="uid://bjcssw1s4v6vc"]
 
 [ext_resource type="FontFile" uid="uid://bt0xs3dq8q4he" path="res://MountainsofChristmas.ttf" id="1_1bvp3"]
 [ext_resource type="Script" uid="uid://b2a2q14ageply" path="res://start_overlay.gd" id="1_7mycd"]
@@ -20,7 +20,7 @@ corner_radius_bottom_left = 20
 shadow_size = 20
 shadow_offset = Vector2(20, 20)
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" unique_id=6880550]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,9 +28,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=587637444]
 
-[node name="StartOverlay" type="Control" parent="CanvasLayer"]
+[node name="StartOverlay" type="Control" parent="CanvasLayer" unique_id=2077227000]
 process_mode = 2
 layout_mode = 3
 anchors_preset = 15
@@ -40,7 +40,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7mycd")
 
-[node name="StartButton" type="Button" parent="CanvasLayer/StartOverlay"]
+[node name="StartButton" type="Button" parent="CanvasLayer/StartOverlay" unique_id=228564988]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -57,16 +57,18 @@ theme_override_colors/font_color = Color(0.956701, 0.911073, 0.889396, 1)
 theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("1_1bvp3")
 theme_override_font_sizes/font_size = 120
-theme_override_styles/focus = ExtResource("2_lquwl")
-theme_override_styles/hover = ExtResource("2_lquwl")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_lquwl")
 theme_override_styles/normal = ExtResource("2_lquwl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_lquwl")
+theme_override_styles/hover = ExtResource("2_lquwl")
+theme_override_styles/focus = ExtResource("2_lquwl")
 text = "Tap to Start"
 
-[node name="Background" parent="." instance=ExtResource("1_ig7tw")]
+[node name="Background" parent="." unique_id=1654963436 instance=ExtResource("1_ig7tw")]
 layout_mode = 1
 
-[node name="Bells" parent="." instance=ExtResource("2_h2yge")]
+[node name="Bells" parent="." unique_id=574443139 instance=ExtResource("2_h2yge")]
+visible = false
 
-[node name="Foreground" parent="." instance=ExtResource("2_0xm2m")]
+[node name="Foreground" parent="." unique_id=823891185 instance=ExtResource("2_0xm2m")]
+visible = false
 layout_mode = 1

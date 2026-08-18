@@ -7,6 +7,8 @@ extends Node
 @export var shake_deadzone: float = 0.25
 @export var shake_max_impulse_per_kg: float = 120.0
 @export_range(0.0, 1.0, 0.01) var shake_smoothing: float = 0.35
+@export var max_linear_speed: float = 1800.0
+@export var max_angular_speed: float = 20.0
 
 var _lin_acc_smooth: Vector2 = Vector2.ZERO
 var _g: Vector2 = Vector2.DOWN
@@ -69,6 +71,14 @@ func _apply_forces(_dt: float) -> void:
 		if _shake != Vector2.ZERO:
 			body.apply_central_impulse(_shake * body.mass)
 			
+		var v: Vector2 = body.linear_velocity
+		var sp: float = v.length()
+		if sp > max_linear_speed:
+			body.linear_velocity = v * (max_linear_speed / sp)
+
+		if abs(body.angular_velocity) > max_angular_speed:
+			body.angular_velocity = clamp(body.angular_velocity, -max_angular_speed, max_angular_speed)
+	
 func _physics_process(_dt: float) -> void:
 	_gravity_process(_dt)
 	_shake_process(_dt)

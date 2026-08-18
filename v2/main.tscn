@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://bpebykdxeem4"]
+
+[ext_resource type="PackedScene" uid="uid://wnwp0gsybaa0" path="res://v2/title.tscn" id="2_l1fkl"]
+[ext_resource type="Texture2D" uid="uid://b3cs5ndlh45kf" path="res://images/v2/straight_red_tree.png" id="3_l1fkl"]
+[ext_resource type="Texture2D" uid="uid://lv4dnd3us6r2" path="res://images/v2/blue_snowflake.png" id="5_st7ue"]
+[ext_resource type="Texture2D" uid="uid://88xcv0dq6u5u" path="res://images/v2/holiday_sleigh_bells.png" id="6_ya5xv"]
+[ext_resource type="PackedScene" uid="uid://7tu1mu77ay1t" path="res://v2/winnie.tscn" id="7_l1fkl"]
+[ext_resource type="Texture2D" uid="uid://ds3hhms34p5ei" path="res://images/v2/play_along_at_let_it_snow.svg" id="7_lu68f"]
+[ext_resource type="Script" uid="uid://b2p05rtinh8hl" path="res://v2/main.gd" id="8_tapbt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbt"]
+bg_color = Color(0.98039216, 0.27058825, 0.21176471, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbp"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[node name="Main" type="Node2D" unique_id=250238355]
+script = ExtResource("8_tapbt")
+
+[node name="background" type="ColorRect" parent="." unique_id=441342107]
+offset_left = -8.0
+offset_top = 2.0
+offset_right = 1084.0
+offset_bottom = 1915.0
+color = Color(0.18039216, 0.56078434, 0.4392157, 1)
+
+[node name="Title" parent="." unique_id=1909601028 instance=ExtResource("2_l1fkl")]
+
+[node name="StraightRedTree" type="Sprite2D" parent="." unique_id=1591099664]
+position = Vector2(191.75, 1346.2244)
+scale = Vector2(1.1920822, 1.192082)
+texture = ExtResource("3_l1fkl")
+
+[node name="BlueSnowflake" type="Sprite2D" parent="." unique_id=1107443973]
+position = Vector2(837, 1113)
+texture = ExtResource("5_st7ue")
+
+[node name="HolidaySleighBells" type="Sprite2D" parent="." unique_id=137913608]
+position = Vector2(524, 568)
+scale = Vector2(1.0565326, 1.0565326)
+texture = ExtResource("6_ya5xv")
+
+[node name="PlayAlongAtLetItSnow" type="Sprite2D" parent="." unique_id=245476267]
+position = Vector2(511, 852.99994)
+scale = Vector2(2.749998, 2.749998)
+texture = ExtResource("7_lu68f")
+
+[node name="StartButton" type="Button" parent="." unique_id=613258741]
+offset_left = 220.0
+offset_top = 1713.0
+offset_right = 880.0
+offset_bottom = 1823.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_tapbt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tapbp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tapbt")
+theme_override_styles/focus = SubResource("StyleBoxFlat_tapbt")
+text = "Tap to start"
+
+[node name="Winnie" parent="." unique_id=1451393825 instance=ExtResource("7_l1fkl")]
+position = Vector2(520, 1240)
+scale = Vector2(2, 2)

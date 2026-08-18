@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bbmqpdu0l1bmf"]
+[gd_scene format=3 uid="uid://bbmqpdu0l1bmf"]
 
 [ext_resource type="Texture2D" uid="uid://ee0rppecub20" path="res://images/pine_branches_02.png" id="1_8giiq"]
 [ext_resource type="Texture2D" uid="uid://v6a5a8kx31g" path="res://images/purple_holly_w_berry.png" id="1_77rrb"]
@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://csjavbauvhxn6" path="res://images/pine_branches_03.png" id="3_8r0ws"]
 [ext_resource type="Texture2D" uid="uid://dt1q5ancav84q" path="res://images/one_holly_leaves.png" id="3_53de8"]
 
-[node name="Foreground" type="Control"]
+[node name="Foreground" type="Control" unique_id=1322334064]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,7 +17,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PineBranches03" type="TextureRect" parent="."]
+[node name="PineBranches03" type="TextureRect" parent="." unique_id=677164062]
 modulate = Color(0.695503, 0.695503, 0.695503, 1)
 layout_mode = 1
 anchors_preset = 5
@@ -35,7 +35,7 @@ expand_mode = 1
 flip_v = true
 script = ExtResource("2_8r0ws")
 
-[node name="PineBranches02" type="TextureRect" parent="."]
+[node name="PineBranches02" type="TextureRect" parent="." unique_id=506636160]
 modulate = Color(0.674707, 0.503631, 0.446557, 1)
 layout_mode = 1
 anchors_preset = 6
@@ -56,16 +56,16 @@ expand_mode = 1
 flip_v = true
 script = ExtResource("2_8r0ws")
 
-[node name="PineBranches01" type="TextureRect" parent="."]
+[node name="PineBranches01" type="TextureRect" parent="." unique_id=488072366]
 modulate = Color(0.633757, 0.633757, 0.633757, 1)
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = -58.0
-offset_top = -499.0
-offset_right = 623.0
-offset_bottom = 146.0
+offset_left = -48.99997
+offset_top = -525.00006
+offset_right = 632.0
+offset_bottom = 120.0
 grow_vertical = 2
 rotation = 5.53271
 pivot_offset = Vector2(54.0584, 537.395)
@@ -73,7 +73,7 @@ texture = ExtResource("3_8r0ws")
 expand_mode = 1
 script = ExtResource("2_8r0ws")
 
-[node name="SingleLeaf2" type="TextureRect" parent="."]
+[node name="SingleLeaf2" type="TextureRect" parent="." unique_id=2010316719]
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -93,7 +93,7 @@ expand_mode = 1
 flip_v = true
 script = ExtResource("2_8r0ws")
 
-[node name="ThreeLeavesTwoBerries" type="TextureRect" parent="."]
+[node name="ThreeLeavesTwoBerries" type="TextureRect" parent="." unique_id=888725847]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -112,7 +112,7 @@ texture = ExtResource("2_rtdkn")
 expand_mode = 1
 script = ExtResource("2_8r0ws")
 
-[node name="SingleLeaf" type="TextureRect" parent="."]
+[node name="SingleLeaf" type="TextureRect" parent="." unique_id=207907052]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
@@ -128,7 +128,7 @@ texture = ExtResource("2_77rrb")
 expand_mode = 1
 script = ExtResource("2_8r0ws")
 
-[node name="ThreeLeaves" type="TextureRect" parent="."]
+[node name="ThreeLeaves" type="TextureRect" parent="." unique_id=1945763155]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -144,7 +144,7 @@ texture = ExtResource("1_77rrb")
 expand_mode = 1
 script = ExtResource("2_8r0ws")
 
-[node name="TanLeavesBunchofBerries" type="TextureRect" parent="."]
+[node name="TanLeavesBunchofBerries" type="TextureRect" parent="." unique_id=2091675689]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5

@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://7tu1mu77ay1t"]
+
+[ext_resource type="Texture2D" uid="uid://dvkjmvsensdk2" path="res://images/v2/Whinnie (real cutout — move freely).png" id="1_hlvca"]
+
+[node name="Winnie" type="Node2D" unique_id=1451393825]
+
+[node name="Whinnie(realCutout—MoveFreely)" type="Sprite2D" parent="." unique_id=1202727820]
+position = Vector2(66, 30)
+texture = ExtResource("1_hlvca")

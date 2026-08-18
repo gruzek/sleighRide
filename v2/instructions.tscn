@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://dlq3r7vicldy8"]
+
+[ext_resource type="Script" uid="uid://d03pjgot03f83" path="res://v2/instructions.gd" id="1_gye4s"]
+[ext_resource type="PackedScene" uid="uid://wnwp0gsybaa0" path="res://v2/title.tscn" id="1_mu6n5"]
+[ext_resource type="PackedScene" uid="uid://7tu1mu77ay1t" path="res://v2/winnie.tscn" id="2_bomgk"]
+[ext_resource type="Texture2D" uid="uid://c2rc2s6qdydox" path="res://images/v2/turn_up_your_volume.svg" id="3_gpgg8"]
+[ext_resource type="Texture2D" uid="uid://d0f6diyymrmdc" path="res://images/v2/hold_your_phone_securely.svg" id="4_gye4s"]
+[ext_resource type="Texture2D" uid="uid://baxb4lfn1gcmw" path="res://images/v2/shake_gently_or_tap_to_play.svg" id="5_7iyxy"]
+[ext_resource type="Texture2D" uid="uid://d2e2ffxy4s71" path="res://images/v2/wait_for_the_conductors_cue.svg" id="6_fs3q8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bomgk"]
+bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aj2vd"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[node name="Instructions" type="Node2D" unique_id=2023791657]
+script = ExtResource("1_gye4s")
+
+[node name="background" type="ColorRect" parent="." unique_id=1659322268]
+offset_left = -8.0
+offset_top = 2.0
+offset_right = 1084.0
+offset_bottom = 1915.0
+color = Color(0.019607844, 0.02745098, 0.047058824, 1)
+
+[node name="Title" parent="." unique_id=1909601028 instance=ExtResource("1_mu6n5")]
+
+[node name="Winnie" parent="." unique_id=1451393825 instance=ExtResource("2_bomgk")]
+position = Vector2(575, 1313)
+scale = Vector2(2, 2)
+
+[node name="ContinueButton" type="Button" parent="." unique_id=144866683]
+offset_left = 220.0
+offset_top = 1713.0
+offset_right = 880.0
+offset_bottom = 1823.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_bomgk")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_aj2vd")
+theme_override_styles/hover = SubResource("StyleBoxFlat_bomgk")
+theme_override_styles/focus = SubResource("StyleBoxFlat_bomgk")
+text = "Continue"
+
+[node name="TurnUpYourVolume" type="Sprite2D" parent="." unique_id=116527937]
+position = Vector2(533, 409)
+scale = Vector2(2, 2)
+texture = ExtResource("3_gpgg8")
+
+[node name="HoldYourPhoneSecurely" type="Sprite2D" parent="." unique_id=1107667428]
+position = Vector2(561, 565)
+scale = Vector2(2, 2)
+texture = ExtResource("4_gye4s")
+
+[node name="ShakeGentlyOrTapToPlay" type="Sprite2D" parent="." unique_id=1739170617]
+position = Vector2(564, 746)
+scale = Vector2(2, 2)
+texture = ExtResource("5_7iyxy")
+
+[node name="WaitForTheConductorsCue" type="Sprite2D" parent="." unique_id=1150790436]
+position = Vector2(560, 922)
+scale = Vector2(2, 2)
+texture = ExtResource("6_fs3q8")

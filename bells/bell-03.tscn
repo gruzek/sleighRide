@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://clburownxxjfy" path="res://bells/bell_sounds.gd" id="1_4w4mo"]
 [ext_resource type="Texture2D" uid="uid://hd2v0t5xahlv" path="res://images/bell-01.png" id="1_m4uul"]
-[ext_resource type="AudioStream" uid="uid://cpgxgbt1prnc8" path="res://sounds/bright_jingle_bells.mp3" id="2_pdkj5"]
+[ext_resource type="AudioStream" uid="uid://c0vygtyr3lkq0" path="res://sounds/single_jingle.mp3" id="2_pdkj5"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mwwkq"]
 friction = 0.2
@@ -15,11 +15,13 @@ radius = 62.71
 mass = 0.2
 physics_material_override = SubResource("PhysicsMaterial_mwwkq")
 gravity_scale = 0.0
-continuous_cd = 1
+continuous_cd = 2
 linear_damp = 0.2
 angular_damp = 0.3
 script = ExtResource("1_4w4mo")
 hit_sounds = Array[AudioStream]([ExtResource("2_pdkj5")])
+upgrade_ratio = 0.75
+upgrade_min_db_delta = 2.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_80wlk")

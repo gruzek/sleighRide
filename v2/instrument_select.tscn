@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://djro85f5ehxn3"]
+
+[ext_resource type="PackedScene" uid="uid://wnwp0gsybaa0" path="res://v2/title.tscn" id="1_sgk2j"]
+[ext_resource type="PackedScene" uid="uid://7tu1mu77ay1t" path="res://v2/winnie.tscn" id="2_31ns7"]
+
+[node name="InstrumentSelect" type="Node2D" unique_id=908093036]
+
+[node name="background" type="ColorRect" parent="." unique_id=742528482]
+offset_left = -8.0
+offset_top = 2.0
+offset_right = 1084.0
+offset_bottom = 1915.0
+color = Color(0.019607844, 0.02745098, 0.047058824, 1)
+
+[node name="Title" parent="." unique_id=1909601028 instance=ExtResource("1_sgk2j")]
+
+[node name="Winnie" parent="." unique_id=1451393825 instance=ExtResource("2_31ns7")]
+position = Vector2(191, 1576)
