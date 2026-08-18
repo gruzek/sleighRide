@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dadoo1l1t70ls"]
+
+[ext_resource type="PackedScene" uid="uid://wnwp0gsybaa0" path="res://v2/title.tscn" id="1_e3efm"]
+[ext_resource type="PackedScene" uid="uid://b4u1ox1ng2246" path="res://v2/instrument_01.tscn" id="2_xo82g"]
+
+[node name="Instrument" type="Node2D" unique_id=592463600]
+
+[node name="background" type="ColorRect" parent="." unique_id=1280801483]
+offset_left = -8.0
+offset_top = 2.0
+offset_right = 1084.0
+offset_bottom = 1915.0
+color = Color(0.019607844, 0.02745098, 0.047058824, 1)
+
+[node name="Title" parent="." unique_id=1909601028 instance=ExtResource("1_e3efm")]
+
+[node name="Instrument01" parent="." unique_id=1385824937 instance=ExtResource("2_xo82g")]
+position = Vector2(559, 1219)
+scale = Vector2(2, 2)
