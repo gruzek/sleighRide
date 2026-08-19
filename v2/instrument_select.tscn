@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://djro85f5ehxn3"]
 
-[ext_resource type="Script" uid="uid://qmtwpjfif7yq" path="res://v2/instrument_select.gd" id="1_c8362"]
-[ext_resource type="PackedScene" uid="uid://wnwp0gsybaa0" path="res://v2/title.tscn" id="1_sgk2j"]
-[ext_resource type="PackedScene" uid="uid://7tu1mu77ay1t" path="res://v2/winnie.tscn" id="2_31ns7"]
-[ext_resource type="PackedScene" uid="uid://xyy4jvqqhs0e" path="res://v2/instrument_selector.tscn" id="3_7o605"]
-[ext_resource type="Texture2D" uid="uid://4173m20x84e3" path="res://images/v2/swipe_to_select_your_bells.svg" id="4_c8362"]
+[ext_resource type="Script" uid="uid://qmtwpjfif7yq" path="res://v2/instrument_select.gd" id="1_sel"]
+[ext_resource type="PackedScene" path="res://v2/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" path="res://v2/winnie.tscn" id="3_winnie"]
+[ext_resource type="PackedScene" uid="uid://bk3ygkfq4b307" path="res://v2/instrument_carousel.tscn" id="4_selector"]
+[ext_resource type="PackedScene" path="res://v2/swipe_to_select.tscn" id="5_swipe"]
+[ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://v2/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="PackedScene" path="res://v2/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_31ns7"]
 bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
@@ -22,26 +24,55 @@ corner_radius_bottom_right = 55
 corner_radius_bottom_left = 55
 corner_detail = 12
 
-[node name="InstrumentSelect" type="Node2D" unique_id=908093036]
-script = ExtResource("1_c8362")
+[node name="InstrumentSelect" type="Control" unique_id=1734298380]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sel")
 
-[node name="background" type="ColorRect" parent="." unique_id=742528482]
-offset_left = -8.0
-offset_top = 2.0
-offset_right = 1084.0
-offset_bottom = 1915.0
+[node name="background" type="ColorRect" parent="." unique_id=1792008761]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
-[node name="Title" parent="." unique_id=1909601028 instance=ExtResource("1_sgk2j")]
+[node name="Vignette" parent="." unique_id=1118231401 instance=ExtResource("99_vig")]
+design_position = Vector2(532.5, 466.40155)
 
-[node name="Winnie" parent="." unique_id=1451393825 instance=ExtResource("2_31ns7")]
-position = Vector2(191, 1576)
+[node name="Title" parent="." unique_id=892207387 instance=ExtResource("2_title")]
+design_position = Vector2(523, 163.00002)
+respect_safe_area = true
 
-[node name="ContinueButton" type="Button" parent="." unique_id=1028448345]
-offset_left = 220.0
-offset_top = 1713.0
-offset_right = 880.0
-offset_bottom = 1823.0
+[node name="Winnie" parent="." unique_id=2000750561 instance=ExtResource("3_winnie")]
+design_position = Vector2(323, 1636)
+vertical_anchor = 2
+
+[node name="InstrumentSelector" parent="." unique_id=999126304 instance=ExtResource("4_selector")]
+design_position = Vector2(532, 931)
+vertical_anchor = 1
+respect_safe_area = true
+
+[node name="SwipeToSelect" parent="." unique_id=1052910708 instance=ExtResource("5_swipe")]
+design_position = Vector2(518, 448)
+respect_safe_area = true
+
+[node name="ContinueButton" type="Button" parent="." unique_id=1778197391]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -207.0
+offset_right = 340.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
@@ -52,11 +83,4 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_3rpyo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_31ns7")
 theme_override_styles/focus = SubResource("StyleBoxFlat_31ns7")
 text = "Continue"
-
-[node name="InstrumentSelector" parent="." unique_id=2064089311 instance=ExtResource("3_7o605")]
-position = Vector2(532, 927)
-
-[node name="SwipeToSelectYourBells" type="Sprite2D" parent="." unique_id=26365481]
-position = Vector2(518, 448)
-scale = Vector2(2, 2)
-texture = ExtResource("4_c8362")
+script = ExtResource("91_safe")

@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dg65xe61sjtex"]
+
+[ext_resource type="Texture2D" uid="uid://bvlmpqaki3lvn" path="res://images/v2/sleighbells_01.png" id="1_2fo14"]
+
+[node name="Sleighbells01" type="Node2D" unique_id=1425379983]
+
+[node name="Sleighbells01" type="Sprite2D" parent="." unique_id=1338388521]
+position = Vector2(-143, 3)
+texture = ExtResource("1_2fo14")

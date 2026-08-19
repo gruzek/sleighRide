@@ -1,5 +1,5 @@
 # instructions.gd (v2 instructions screen)
-extends Node2D
+extends Control
 
 @onready var continue_button: Button = $ContinueButton
 

@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://v2/sprite_position.gd" id="1_pos"]
-[ext_resource type="Texture2D" uid="uid://dvkjmvsensdk2" path="res://images/v2/Whinnie (real cutout — move freely).png" id="2_tex"]
+[ext_resource type="Texture2D" uid="uid://yx6bem6ip0e4" path="res://images/v2/vignette_glow.png" id="2_tex"]
 
-[node name="Winnie" type="Node2D"]
+[node name="Vignette" type="Node2D"]
 script = ExtResource("1_pos")
 
 [node name="Sprite" type="Sprite2D" parent="."]
-scale = Vector2(2.0, 2.0)
+scale = Vector2(1.1412373, 1.1412373)
 texture = ExtResource("2_tex")

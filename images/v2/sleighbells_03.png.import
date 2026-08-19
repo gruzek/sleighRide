@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d4hn614gnm3m1"
-path="res://.godot/imported/sleighbells v4 2.png-d49febd39657b63c17077703293207fd.ctex"
+uid="uid://h16w7ta3gddu"
+path="res://.godot/imported/sleighbells_03.png-cb789e2e96c2a28ef14138315bb6deaa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/v2/sleighbells v4 2.png"
-dest_files=["res://.godot/imported/sleighbells v4 2.png-d49febd39657b63c17077703293207fd.ctex"]
+source_file="res://images/v2/sleighbells_03.png"
+dest_files=["res://.godot/imported/sleighbells_03.png-cb789e2e96c2a28ef14138315bb6deaa.ctex"]
 
 [params]
 

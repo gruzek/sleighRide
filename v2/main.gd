@@ -1,5 +1,5 @@
 # main.gd (v2 title screen)
-extends Node2D
+extends Control
 
 @onready var start_button: Button = $StartButton
 

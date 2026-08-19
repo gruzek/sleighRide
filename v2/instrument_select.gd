@@ -1,5 +1,5 @@
-# instrument_select.gd (v2 instructions screen)
-extends Node2D
+# instrument_select.gd (v2 bell selection screen)
+extends Control
 
 @onready var continue_button: Button = $ContinueButton
 
