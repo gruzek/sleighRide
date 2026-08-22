@@ -5,8 +5,9 @@
 # is an autoload, which is instanced once at startup and survives that call.
 #
 # Nothing is written to disk. The choice lasts for the session, which is all the
-# flow needs: the audience member moves forward through the four screens once and
-# there is no backward navigation.
+# flow needs. The play screen can return to the selection screen, so the choice is
+# read as well as written after the flow has moved past it: the carousel opens on
+# whatever is held here rather than resetting to the first bell.
 extends Node
 
 var chosen: InstrumentDefinition = null

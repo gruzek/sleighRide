@@ -89,7 +89,7 @@ The consequence is accepted and stated: in the worst case a burst of stops close
 
 11. Include in that document the hard rule governing assets, stated so it cannot be read as advisory: **a media file is never deleted.** Artwork, audio, fonts, and any other media determined to be unused are moved into `legacy/`, never removed, and this holds for automated work and hand edits alike regardless of how confident anyone is that a file is unused. The document carries the reasoning, that the two mistakes cost wildly different amounts and that an asset never committed to version control leaves no trace once removed, and cites the boot splash as the demonstration that a filename search can condemn a file that is genuinely in use.
 
-12. Update the Key documents list in the skill's project instructions so the system design path points at `docs/system_design.md` rather than at the `manta-rai` path that does not resolve. Record in the same place that the application coding standards and the implementation plan requirements are still absent, so a later audit knows it is substituting rather than reading the real thing.
+The system design document is this phase's only deliverable. An earlier draft of this plan also called for updating the Key documents list in the skill's project instructions, which name a system design path belonging to a different product. That step is removed: the file is not in this repository, six copies of it exist inside the Claude plugin's session directory, and each is rewritten at deploy time, so no change made here can reach it. Correcting it is the developer's to make in the plugin source.
 
 ## Test Cases
 
@@ -182,8 +182,7 @@ The intensity range and the event rate the voice count derives from are quoted f
 5. Returning to the selection screen shows the bell that was already chosen, and continuing forward again sounds that same bell.
 6. `capture/shake_capture.tscn` and the scripts it instances are unchanged, and the capture harness still records when the main scene is pointed at it.
 7. `docs/system_design.md` exists, covers each of the six areas requirement 7 lists, and states the rule that media files are never deleted.
-8. The skill's project instructions point at `docs/system_design.md`, and the absence of the other two governing documents is recorded.
-9. `run/main_scene` points at the title screen, and the title, instructions, and selection screens behave exactly as they did before this work.
+8. `run/main_scene` points at the title screen, and the title, instructions, and selection screens behave exactly as they did before this work.
 
 ## Token and Design Considerations
 

@@ -7,12 +7,15 @@ performance of "Sleigh Ride".
 
 | Directory | What it holds |
 |---|---|
-| `v2/` | The audience flow: title, instructions, bell selection, and play screens |
+| `app/` | The audience flow: title, instructions, bell selection, and play screens |
 | `shake/` | The shake instrument: motion detection and the effects that respond to it |
 | `capture/` | The motion capture harness used to calibrate the shake instrument |
 | `snow/` | The snow effect: one scene any screen adds to get snow that falls the way the phone is held |
+| `docs/` | The system design |
 | `features/` | Feature specifications, implementation plans, and the roadmap |
-| `sounds/`, `images/`, `background/`, `foreground/`, `bells/` | Assets and the version 1 build |
+| `shaders/` | Shared shaders |
+| `sounds/`, `images/` | Assets the application uses |
+| `legacy/` | The abandoned version 1 build and every asset belonging only to it. Not imported, never shipped |
 
 ## The shake instrument
 

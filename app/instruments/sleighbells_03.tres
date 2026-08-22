@@ -2,7 +2,9 @@
 
 [ext_resource type="PackedScene" path="res://app/sleighbells_03.tscn" id="1_onoqh"]
 [ext_resource type="Script" path="res://app/instrument_definition.gd" id="2_j1c5a"]
+[ext_resource type="AudioStream" path="res://sounds/deep_jingle_bells.mp3" id="3_snd03"]
 
 [resource]
 script = ExtResource("2_j1c5a")
 artwork = ExtResource("1_onoqh")
+sound = ExtResource("3_snd03")

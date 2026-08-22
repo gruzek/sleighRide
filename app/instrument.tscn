@@ -1,10 +1,29 @@
-[gd_scene format=3 uid="uid://dadoo1l1t70ls"]
+[gd_scene load_steps=11 format=3 uid="uid://dadoo1l1t70ls"]
 
 [ext_resource type="Script" uid="uid://hua26s5c0267" path="res://app/instrument.gd" id="1_play"]
 [ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="5_4330g"]
 [ext_resource type="Script" uid="uid://crm10bscv0hij" path="res://app/sprite_position.gd" id="90_pos"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
+[ext_resource type="PackedScene" path="res://shake/shake_detector.tscn" id="3_detector"]
+[ext_resource type="PackedScene" path="res://shake/responses/jingle_response.tscn" id="4_jingle"]
+[ext_resource type="Script" path="res://app/safe_area_margin.gd" id="91_safe"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backn"]
+bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backp"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
 
 [node name="Instrument" type="Control" unique_id=1551614637]
 layout_mode = 3
@@ -40,3 +59,32 @@ vertical_anchor = 1
 respect_safe_area = true
 
 [node name="Snow" parent="." unique_id=907876031 instance=ExtResource("5_4330g")]
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -207.0
+offset_right = 340.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_backn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_backp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_backn")
+theme_override_styles/focus = SubResource("StyleBoxFlat_backn")
+text = "Back"
+script = ExtResource("91_safe")
+
+[node name="ShakeDetector" parent="." instance=ExtResource("3_detector")]
+
+[node name="JingleResponse" parent="." instance=ExtResource("4_jingle")]
+use_chosen_bell = true

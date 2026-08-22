@@ -121,8 +121,22 @@ func _rebuild_slots() -> void:
 		_slots.append(slot)
 		_active.append(instrument)
 
+	_open_on_chosen()
 	_render()
 	_publish_selection()
+
+# The carousel opens on the bell already chosen, so returning from the play screen shows what the
+# audience member picked rather than resetting them to the first bell. This must run before
+# _publish_selection, or the carousel overwrites the choice in the instant between being built and
+# being positioned, which is the exact failure it exists to prevent. On the first entry to the
+# flow nothing has been chosen and the offset stays at zero.
+func _open_on_chosen() -> void:
+	if Engine.is_editor_hint():
+		return
+	var index := _active.find(InstrumentSelection.chosen)
+	if index < 0:
+		return
+	_offset = float(index)
 
 func _render() -> void:
 	var count := _slots.size()
