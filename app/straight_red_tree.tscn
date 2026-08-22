@@ -7,6 +7,7 @@
 script = ExtResource("1_pos")
 
 [node name="StraightRedTree" type="Sprite2D" parent="." unique_id=1569964630]
-position = Vector2(-190, 1)
+position = Vector2(-214, 498)
 scale = Vector2(1.1889226, 1.1889226)
 texture = ExtResource("2_g0gi2")
+offset = Vector2(20.18634, -418.0255)

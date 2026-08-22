@@ -29,7 +29,7 @@ Two capabilities are deliberately deferred from this feature and are detailed un
 - **The app looks composed on the sponsor's own phone.** The welcome screen fills a real device edge to edge instead of sitting in a corner or floating between black bands, which is the difference between a demonstration that reads as finished and one that reads as a work in progress.
 - **One layout system in place of nine hand-placed sprites.** Every piece of artwork declares where it belongs once, and the same rule governs every screen, so a new device shape is absorbed rather than being a round of manual repositioning.
 - **Artwork ready to be animated and rearranged.** Each piece of art becomes its own scene with a predictable origin, which is the precondition for animating the title block and for splitting the title artwork into three moving words later.
-- **A layout that survives the tablet and the browser.** The same mechanism that handles a taller phone handles a wider iPad and a resized browser window, which matters because the delivery target is still an open question between a native build and a single-page application.
+- **A layout that survives the tablet.** The same mechanism that handles a taller phone handles a wider iPad. *(Corrected 2026-08-22: the original text justified this by "the delivery target is still an open question between a native build and a single-page application." That question is closed — the delivery target is the native build. The mechanism is unaffected; phones vary in aspect ratio regardless.)*
 
 ## Terms
 

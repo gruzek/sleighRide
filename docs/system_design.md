@@ -147,6 +147,16 @@ The harness currently also carries a detector and both responders, added during 
 
 ## Platform notes
 
+**This is a native mobile application.** It is built and exported natively for iOS; the Xcode
+project is in `exports/ios2/`. It is not a web export, not a single-page app, and not a
+progressive web app. This is stated explicitly because it was not, and the omission cost
+something: a direction taken at the 2026-08-03 sponsor meeting to deliver a Godot SPA was
+later reversed, nothing recorded the reversal, and `features/mvp1_roadmap.md` went on
+asserting the SPA for three weeks while native features were built against it. The documents
+from that direction — `features/C1_T05_spa_mockup.md` and
+`features/iphone_spa_exploration.md` — are kept and carry superseded banners. Anything else
+in `features/` that frames the web as the target is stale by the same cause.
+
 **Sensors only exist on a real device.** The three motion calls return a zero vector in the editor, in the desktop build, and in the iOS simulator. This is documented engine behaviour rather than a fault, and it means nothing about the shake instrument or the capture harness can be meaningfully exercised anywhere but a handset.
 
 **The sample rate is the frame rate**, because the engine refreshes the motion values once per rendered frame. On an iPhone 13 Pro that is 120 samples per second, not the 60 that reading the engine source suggests.

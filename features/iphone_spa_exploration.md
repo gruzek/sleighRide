@@ -1,5 +1,18 @@
 # Installing the Holiday Sleigh Bells SPA as a Home-Screen Web App on iPhone
 
+> ## SUPERSEDED - 2026-08-22
+>
+> **Holiday Sleigh Bells is a native Godot mobile application.** The SPA direction this
+> document researched was reversed, and the question it answers - can a Godot web export
+> present as a real app on a phone - no longer arises. Nothing in it describes the build we
+> ship: there is no web export, no PWA manifest, no home-screen install step, and the
+> accelerometer is available and in use.
+>
+> Kept as a record of the research, and because its findings on iOS web-app behaviour are
+> accurate and would save the work if the question ever returns. Section 0's claim that this
+> project is "a **tap-only** experience" is the part that has most decisively inverted:
+> shake is built, measured, and integrated.
+
 **Status:** research notes for `C1_T06` (SPA native-presentation research).
 **Audience:** George + Claude. Working document, not a sponsor deliverable.
 **Last verified:** 2026-08-03 against Godot 4.6 and iOS 26.

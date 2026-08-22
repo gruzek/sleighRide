@@ -5,6 +5,15 @@ source for the roadmap changes applied the same day to `features/mvp1_roadmap.md
 
 **Next meeting: 2026-09-02, 10:00 AM.**
 
+> **Later note, added 2026-08-22.** The SPA direction decided at this meeting was subsequently
+> **reversed**; Holiday Sleigh Bells is a native Godot mobile application. This recap is left
+> exactly as written because it is the record of what was decided on 2026-08-03, and a record
+> is not improved by editing it to match what happened next. The reversal itself is not
+> recorded anywhere - no meeting recap covers it - which is how `features/mvp1_roadmap.md`
+> came to keep asserting the SPA for three weeks while native features were being built
+> against it. The open question below, "Do we need the accelerometer?", is answered: yes, and
+> it works.
+
 ## Decisions
 
 **Name is set: "Holiday Sleigh Bells."**

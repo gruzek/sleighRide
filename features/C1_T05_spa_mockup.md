@@ -10,6 +10,28 @@ LAST UPDATED: August, 3, 2026 15:51
 
 # Single-Page App Mockup of the Holiday Sleigh Bells Audience Experience
 
+> ## SUPERSEDED - 2026-08-22
+>
+> **Holiday Sleigh Bells is a native Godot mobile application. It is not a single-page app,
+> not a PWA, and not a web export.** The SPA direction taken at the 2026-08-03 sponsor meeting
+> was reversed, and this feature specification is a record of a direction that did not hold.
+> It is kept, not deleted, for two reasons:
+>
+> - **Its screen flow is the one that got built.** Requirements 1 through 6 and 9 - the
+>   welcome, instructions, bell-selection and play screens, the information overlay, the
+>   swipe carousel, the safe-area rule - were implemented natively in C1_07 through C1_14 and
+>   are still the best written description of the intended experience. Several later feature
+>   specs cite this document by requirement number.
+> - **Its Jingle Jam Cam analysis is still useful,** though its conclusion has inverted: the
+>   camera problems it catalogues are all web problems, and none of them apply to the native
+>   build. See `features/jingle_jam_cam_camera_exploration.md`.
+>
+> **What in this document is now wrong:** the summary and background framing, requirement 7
+> (which retires the shake physics - shake is built and live), requirement 8 (PWA / standalone
+> display mode), and the Future work section's treatment of shake and of the camera.
+>
+> Read it for the flow. Do not read it for the delivery vehicle.
+
 ## Summary
 
 This feature builds a five-screen mockup of the Holiday Sleigh Bells audience app as a single-page application (SPA) in Godot, exported for the web and installable to a phone's home screen. It realizes the flow Christopher drew in the RS 2026-27 Season Design System file: a welcome screen, an instructions screen, a bell-selection screen, and a play screen, plus an information overlay. Tap is the only wired interaction; tapping the play screen sounds a bell and animates the instrument. The motion-driven bell physics built for the native prototype are retired for this build, and the two camera screens in the design are removed from scope entirely.
