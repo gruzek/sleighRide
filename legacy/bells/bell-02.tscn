@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://inkds4ibqt36"]
+
+[ext_resource type="Script" uid="uid://clburownxxjfy" path="res://legacy/bells/bell_sounds.gd" id="1_0wep6"]
+[ext_resource type="Texture2D" uid="uid://cveeifpbmjotj" path="res://legacy/images/bell-03.png" id="1_gadbo"]
+[ext_resource type="AudioStream" uid="uid://c0vygtyr3lkq0" path="res://sounds/single_jingle.mp3" id="2_0wep6"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mwwkq"]
+friction = 0.2
+bounce = 0.5
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_80wlk"]
+radius = 45.14
+
+[node name="Bell-02" type="RigidBody2D" groups=["bells"]]
+mass = 0.1
+physics_material_override = SubResource("PhysicsMaterial_mwwkq")
+gravity_scale = 0.0
+continuous_cd = 2
+linear_damp = 0.2
+angular_damp = 0.3
+script = ExtResource("1_0wep6")
+hit_sounds = Array[AudioStream]([ExtResource("2_0wep6")])
+upgrade_ratio = 0.75
+upgrade_min_db_delta = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_80wlk")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2, -8)
+scale = Vector2(0.128678, 0.138535)
+texture = ExtResource("1_gadbo")
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="."]

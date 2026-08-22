@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://app/sprite_position.gd" id="1_pos"]
+[ext_resource type="Texture2D" uid="uid://c2rc2s6qdydox" path="res://images/v2/turn_up_your_volume.svg" id="2_tex"]
+[ext_resource type="Texture2D" uid="uid://d0f6diyymrmdc" path="res://images/v2/hold_your_phone_securely.svg" id="3_tex"]
+[ext_resource type="Texture2D" uid="uid://baxb4lfn1gcmw" path="res://images/v2/shake_gently_or_tap_to_play.svg" id="4_tex"]
+[ext_resource type="Texture2D" uid="uid://d2e2ffxy4s71" path="res://images/v2/wait_for_the_conductors_cue.svg" id="5_tex"]
+
+[node name="InstructionList" type="Node2D"]
+script = ExtResource("1_pos")
+
+[node name="TurnUpYourVolume" type="Sprite2D" parent="."]
+position = Vector2(-27.0, -252.4805)
+scale = Vector2(2.0, 2.0)
+texture = ExtResource("2_tex")
+
+[node name="HoldYourPhoneSecurely" type="Sprite2D" parent="."]
+position = Vector2(1.0, -96.4805)
+scale = Vector2(2.0, 2.0)
+texture = ExtResource("3_tex")
+
+[node name="ShakeGentlyOrTapToPlay" type="Sprite2D" parent="."]
+position = Vector2(4.0, 84.5195)
+scale = Vector2(2.0, 2.0)
+texture = ExtResource("4_tex")
+
+[node name="WaitForTheConductorsCue" type="Sprite2D" parent="."]
+position = Vector2(0.0, 260.5195)
+scale = Vector2(2.0, 2.0)
+texture = ExtResource("5_tex")

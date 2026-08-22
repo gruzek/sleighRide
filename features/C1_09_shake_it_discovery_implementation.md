@@ -4,7 +4,7 @@ DOCUMENT TITLE: Implementation Plan for Measuring a Real Shake So the Bells Soun
 CONFIDENTIALITY: Vertex11 Confidential
 VERSION: 0.1
 AUTHOR: George Ruzek
-VALUE STATEMENT: A five-phase route from a guessed shake threshold to a measured one, taking a phone from a silent capture screen to sixteen recorded runs to a written answer the next feature can build from.
+VALUE STATEMENT: A four-phase route from a guessed shake threshold to a measured one, taking a phone from a silent capture screen to sixteen recorded runs to a written answer the next feature can build from.
 LAST UPDATED: August, 19, 2026 08:31
 ---
 
@@ -26,7 +26,7 @@ These were settled during ideation and planning and are implemented rather than 
 
 Specification requirement 2 asks the harness to request the highest frame rate the device supports, on the reasoning that a display capable of 120 frames per second would halve the interval between samples. Godot 4.6 does not permit this. In `drivers/apple_embedded/godot_view_apple_embedded.mm`, `godot_commonInit` assigns `self.preferredFrameRate = 60` as a literal, and `startRendering` passes that value straight into `displayLink.preferredFramesPerSecond`. The only related project setting selects between the display link and a timer, and the timer path uses the same hard-coded value. Neither `Engine.max_fps` nor the `CADisableMinimumFrameDurationOnPhone` property-list key can raise it, because the ceiling belongs to the engine rather than to the operating system.
 
-The interval between samples is therefore 16.7 milliseconds, which places roughly eight samples across a typical 130 millisecond stroke, with the deceleration at the stop spanning perhaps two or three of them. This is enough to establish that a stop occurred and marginal for establishing exactly when, which raises the likelihood that the chosen technique has to interpolate the peak between samples rather than take the largest sample as the peak. That determination belongs to the analysis in Phase 5 and is one of the findings requirement 9 asks for.
+The interval between samples is therefore 16.7 milliseconds, which places roughly eight samples across a typical 130 millisecond stroke, with the deceleration at the stop spanning perhaps two or three of them. This is enough to establish that a stop occurred and marginal for establishing exactly when, which raises the likelihood that the chosen technique has to interpolate the peak between samples rather than take the largest sample as the peak. That determination belongs to the analysis in Phase 4 and is one of the findings requirement 9 asks for.
 
 What requirement 2 becomes in practice is the second half of what it asked for: the harness records the rate it actually achieved, and the per-sample frame delta makes any variation visible sample by sample rather than only in an average. This matters more than it might appear. Because the sample clock is the frame clock, a dropped frame during a vigorous shake is indistinguishable from a slower shake unless the frame delta is recorded alongside every sample. Two consequences follow and are built in rather than left to care: the capture screen carries nothing that animates, and samples are held in memory and written to disk only when the run stops, never during it. Writing a line per frame would introduce file system latency into the very clock being measured.
 
@@ -89,15 +89,9 @@ Nothing derived is stored. Linear acceleration, jerk, magnitude, and any project
 
 4. Confirm `display/window/energy_saving/keep_screen_on` is left at its default of enabled. A capture run receives no touch input between the start press and the stop press, which is precisely the condition under which a phone dims and locks its screen. No project setting is added; this step is a check that none needs to be.
 
-### Phase 2: Desktop shakedown
+### Phase 2: Device build, retrieval, and the format check
 
-5. Run the capture scene in the editor and record a short run. Every motion column will read zero, because `Input.get_accelerometer()`, `Input.get_gravity()`, and `Input.get_gyroscope()` all return a zero vector off-device by design. This is not a failure and no substitute value is generated for it, per the no-fallbacks rule.
-
-   What this step does verify is everything except the sensor: that the file is created, that the header carries a plausible device, operating system, engine version, sample count, duration, achieved rate, and longest frame, that the row count matches the sample count in the header, that `t_ms` increases monotonically, that the accumulated `dt_ms` agrees with the elapsed `t_ms`, and that the file opens cleanly in a spreadsheet. Getting the file format wrong is the one mistake that would invalidate an entire capture session, and it is far cheaper to find here than on the handset.
-
-### Phase 3: Device build and file retrieval
-
-6. Add the two property-list entries to `application/additional_plist_content` in the iOS preset of `export_presets.cfg`, which currently holds an empty string:
+5. Add the two property-list entries to `application/additional_plist_content` in the iOS preset of `export_presets.cfg`, which currently holds an empty string:
 
    ```xml
    <key>UIFileSharingEnabled</key>
@@ -108,23 +102,25 @@ Nothing derived is stored. Linear acceleration, jerk, magnitude, and any project
 
    This is requirement 8. On iOS, Godot's `user://` resolves to the application's Documents directory, confirmed in `drivers/apple_embedded/os_apple_embedded.mm`, where `get_user_data_dir` returns the first path from `NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)`. These two keys are what make that directory visible in the phone's Files application, so the captured runs can be copied off without attaching the phone to the development machine.
 
-7. Temporarily point `run/main_scene` in `project.godot` at `capture/shake_capture.tscn`, export an iOS build, and install it on the handset. **Restoring `run/main_scene` to the version 2 title screen afterwards is a completion criterion**, listed in §7, because leaving it pointed at the capture harness would ship the measurement tool as the audience experience. This swap is the mechanism because the phone has to be untethered while it is being shaken, which rules out running the scene from the editor over a debug connection.
+6. Temporarily point `run/main_scene` in `project.godot` at `capture/shake_capture.tscn`, export an iOS build, and install it on the handset. **Restoring `run/main_scene` to the version 2 title screen afterwards is a completion criterion**, listed in §7, because leaving it pointed at the capture harness would ship the measurement tool as the audience experience. This swap is the mechanism because the phone has to be untethered while it is being shaken, which rules out running the scene from the editor over a debug connection.
 
-8. Confirm the retrieval path before recording anything worth keeping: record one throwaway run on the handset, open the Files application, find the application's folder, and copy the file to the development machine. A capture session that discovers at the end that the files cannot be reached is a capture session performed twice.
+7. Record one throwaway run on the handset and use it to prove out both the retrieval path and the file format before anything worth keeping is recorded. Open the Files application, find the application's folder, copy the file to the development machine, and open it. Confirm the header carries every field listed in "The capture record" with none blank, that the row count equals the header's `sample_count`, that `t_ms` increases monotonically from zero, that the accumulated `dt_ms` agrees with the final `t_ms`, that the motion columns carry real varying values rather than zeros, and that the file opens cleanly in a spreadsheet.
 
-### Phase 4: Perform the runs
+   This step exists because the two mistakes it catches are both session-invalidating and neither is visible from the phone. A capture session that discovers at the end that the files cannot be reached is a capture session performed twice, and a malformed file is sixteen malformed files. Both are found here for the price of one run.
 
-9. Record the eight motions of requirement 7, twice each, for sixteen runs, each held for approximately ten seconds. In catalogue order: still, gentle, normal, vigorous, in tempo, single stops, jerky drive, and rotation only. The two repetitions of a motion are recorded in the same session, so that variation between them reflects the hand rather than the day.
+### Phase 3: Perform the runs
+
+8. Record the eight motions of requirement 7, twice each, for sixteen runs, each held for approximately ten seconds. In catalogue order: still, gentle, normal, vigorous, in tempo, single stops, jerky drive, and rotation only. The two repetitions of a motion are recorded in the same session, so that variation between them reflects the hand rather than the day.
 
    Two procedural points that the data cannot recover from if they are ignored. **Hold the phone still for about a second after pressing start, and again before pressing stop**, because the button press is itself a motion transient and would otherwise appear at the head and tail of every run as an event no shaking produced. And **perform the in-tempo run against an actual metronome at 100 to 105 beats per minute**, one stroke per eighth note, rather than an estimate, because that run's value lies entirely in its rate being known independently of what the analysis measures.
 
-10. Record which file corresponds to which motion, outside the application, as the runs are performed. The file names carry timestamps only, by design, so this note is the sole link between a file and what the hand was doing.
+9. Record which file corresponds to which motion, outside the application, as the runs are performed. The file names carry timestamps only, by design, so this note is the sole link between a file and what the hand was doing.
 
-11. Copy the sixteen files into `features/data/C1_09/` in the repository.
+10. Copy the sixteen files into `features/data/C1_09/` in the repository.
 
-### Phase 5: Analysis and the finding
+### Phase 4: Analysis and the finding
 
-12. Analyse the runs and compare candidate detection techniques against them, per requirement 9. The techniques compared, at minimum:
+11. Analyse the runs and compare candidate detection techniques against them, per requirement 9. The techniques compared, at minimum:
 
     | Technique | Signal it works on | What it fires on |
     |---|---|---|
@@ -135,7 +131,7 @@ Nothing derived is stored. Linear acceleration, jerk, magnitude, and any project
 
     Each is evaluated on the magnitude of linear acceleration and on its projection onto a dominant motion axis estimated from recent samples, and the gyroscope is evaluated as both an additional and an alternative signal. Linear acceleration throughout is `accel` minus `grav` from the captured columns, which is the one quantity whose sign convention is the same on both target platforms.
 
-13. Judge each technique against what the runs are known to contain. A technique that fails any of these is eliminated regardless of how it performs elsewhere:
+12. Judge each technique against what the runs are known to contain. A technique that fails any of these is eliminated regardless of how it performs elsewhere:
 
     | Run | What a correct technique must do |
     |---|---|
@@ -145,33 +141,33 @@ Nothing derived is stored. Linear acceleration, jerk, magnitude, and any project
     | Jerky drive | Produce events, since a real bell sounds here and silence would be wrong |
     | Gentle and vigorous | Produce events across both, with a separable intensity range between them |
 
-14. Fix the intensity scale. The candidate measures compared are the peak magnitude of linear acceleration within the stroke, the root mean square energy over a short window, the peak jerk, and the change in speed across the stop obtained by integrating linear acceleration through it. The chosen measure is reported with the range it actually spans between the gentle and vigorous runs, and with a mapping from that range onto intensity levels spaced perceptually rather than evenly in raw acceleration.
+13. Fix the intensity scale. The candidate measures compared are the peak magnitude of linear acceleration within the stroke, the root mean square energy over a short window, the peak jerk, and the change in speed across the stop obtained by integrating linear acceleration through it. The chosen measure is reported with the range it actually spans between the gentle and vigorous runs, and with a mapping from that range onto intensity levels spaced perceptually rather than evenly in raw acceleration.
 
-15. Settle the two remaining findings requirement 9 asks for: whether 60 samples per second locates the stop adequately or whether the peak must be interpolated between samples, and what refractory period, if any, prevents one stop from registering twice.
+14. Settle the two remaining findings requirement 9 asks for: whether 60 samples per second locates the stop adequately or whether the peak must be interpolated between samples, and what refractory period, if any, prevents one stop from registering twice.
 
-16. Write `features/C1_09_shake_it_discovery_findings.md`, carrying the chosen technique and why the others were rejected, every constant with its measured value, the intensity measure with its observed range and its mapping onto levels, the refractory period, the sample-rate conclusion, and the conditions the runs were recorded under. This is requirement 10 and the deliverable the feature exists to produce. The number of intensity levels it names determines how many recordings each bell needs at each level, which is information the audio work being produced separately as task `C1_T04` depends on.
+15. Write `features/C1_09_shake_it_discovery_findings.md`, carrying the chosen technique and why the others were rejected, every constant with its measured value, the intensity measure with its observed range and its mapping onto levels, the refractory period, the sample-rate conclusion, and the conditions the runs were recorded under. This is requirement 10 and the deliverable the feature exists to produce. The number of intensity levels it names determines how many recordings each bell needs at each level, which is information the audio work being produced separately as task `C1_T04` depends on.
 
 ## Test Cases
 
 **No automated tests are created or changed by this plan**, following the precedent recorded in the plan for the Fit the Audience Flow to Any Phone Screen feature (C1_07). This repository has no test framework, and introducing one is outside this feature's scope. There is accordingly no unit-test table; the run acceptance table in the final section of this plan is the closest equivalent, and it is a verification artefact rather than a test suite.
 
-The consequence worth recording: the harness cannot be exercised anywhere except a physical handset. The editor, the desktop build, and the iOS simulator all return a zero vector from the three motion calls, which is documented behaviour and not a fault. Phase 2 therefore verifies everything about the file that does not require a sensor, and the sensor itself is verified only in Phase 3 and only by eye, through the liveness readout of requirement 5. That division is deliberate and is the reason Phase 2 exists as a separate step rather than being folded into the device work.
+The consequence worth recording: **every check in this plan happens on a physical handset.** The editor, the desktop build, and the iOS simulator all return a zero vector from the three motion calls, which is documented behaviour rather than a fault, so nothing about this harness can be meaningfully exercised off-device. That is why step 7 spends a throwaway run proving the file format before any real capture begins: it is the only opportunity to find a malformed file that costs one run instead of sixteen.
 
 ## README and Documentation Updates
 
 No README exists in this repository and none is created by this plan. Two pieces of knowledge introduced here are not evident from reading the code, and both are recorded as comment blocks at the top of `capture/shake_capture.gd`, which is where someone changing this will be looking: that sampling must happen in `_process` and why `_physics_process` would fabricate data, and that the sample clock is the frame clock, so nothing on the capture screen may animate and nothing may be written to disk during a run.
 
-The findings document written in step 16 is itself the documentation this feature produces, and it is the artefact the Shake-to-Jingle interaction (C1_02) reads.
+The findings document written in step 15 is itself the documentation this feature produces, and it is the artefact the Shake-to-Jingle interaction (C1_02) reads.
 
 ## Manual Verification Steps
 
 Because there are no automated tests, these steps are the verification.
 
-**In the editor, before the device.** Run the capture scene, record a run of roughly ten seconds, stop it, and open the written file. Confirm the header carries every field listed in "The capture record" and that none is blank. Confirm the row count equals the header's `sample_count`. Confirm `t_ms` increases monotonically from zero. Confirm the sum of the `dt_ms` column agrees with the final `t_ms` to within a few milliseconds. Confirm all nine motion columns read zero, which is correct off-device. Confirm the on-screen readout shows a rising sample count and elapsed time while the run is active, and that the file path label updates when the run stops.
+Every step below is performed on the handset. The editor and the simulator report a zero motion vector by design, so there is no off-device check worth making.
 
-**On the handset, before the real runs.** Install the capture build and confirm the liveness readout responds: the linear acceleration magnitude should sit near zero when the phone is held still and rise visibly when it is moved. A flat zero here means the sensor is not reaching the engine, and no run recorded in that state is worth keeping. Confirm the screen does not dim or lock during a ten-second run with no touch input. Confirm the achieved rate reads approximately 60 and holds there during a vigorous shake rather than sagging.
+**On the handset, before the real runs.** Install the capture build and confirm the liveness readout responds: the linear acceleration magnitude should sit near zero when the phone is held still and rise visibly when it is moved. A flat zero here means the sensor is not reaching the engine, and no run recorded in that state is worth keeping. Confirm the screen does not dim or lock during a ten-second run with no touch input. Confirm the achieved rate reads approximately 60 and holds there during a vigorous shake rather than sagging. Confirm the on-screen readout shows a rising sample count and elapsed time while a run is active, and that the file path label updates when the run stops.
 
-**Retrieval, before the real runs.** Record a throwaway run, open the Files application on the phone, locate the application's folder, and copy the file off. Open it and confirm it is the same format the editor produced, now with non-zero motion columns.
+**Retrieval and format, before the real runs.** Record a throwaway run, open the Files application on the phone, locate the application's folder, and copy the file off. Open it and confirm the header carries every field listed in "The capture record" with none blank, that the row count equals the header's `sample_count`, that `t_ms` increases monotonically from zero, that the sum of the `dt_ms` column agrees with the final `t_ms` to within a few milliseconds, and that all nine motion columns carry real varying values.
 
 **After the runs.** Confirm sixteen files are present, that each covers approximately ten seconds, and that the note linking files to motions is complete and unambiguous. Spot-check the still run: its linear acceleration magnitude should stay below roughly 0.8 metres per second squared throughout, and a still run that does not is a still run that was not still. Spot-check the vigorous run for sensor saturation, visible as a column pinning at a repeated extreme value rather than varying, since a saturated run cannot support an intensity measurement at its top end.
 
@@ -186,7 +182,7 @@ The application coding standards document named in the skill's project instructi
 - Static typing on declarations and return types, including `-> void` on functions that return nothing, as the existing scripts do.
 - Signals connected in `_ready()` rather than in the scene file, matching `v2/main.gd` and `v2/instrument_select.gd`. Connecting in both places raises a duplicate-connection error at runtime.
 - Scene and script files named in lower snake case, matching `instrument_select.tscn` and `instrument_select.gd`.
-- No fallbacks. The motion calls return a zero vector off-device and that zero is recorded as measured, with no substituted value, no simulated shaking, and no synthetic data path for desktop testing.
+- No fallbacks. The motion calls return a zero vector off-device and that zero is recorded as measured, with no substituted value, no simulated shaking, and no synthetic data path for testing off-device.
 
 ## File-Level Compliance Review
 
@@ -217,7 +213,7 @@ The unit of every recorded column is fixed by the engine and stated in "The capt
 ## Completion Criteria
 
 1. `capture/shake_capture.gd` and `capture/shake_capture.tscn` exist, and the capture screen is reachable only by being run directly, never from the four screens of the audience flow.
-2. A run recorded in the editor produces a file whose header is complete, whose row count matches its header, and whose timing columns are self-consistent.
+2. A run recorded on the handset produces a file whose header is complete, whose row count matches its header, and whose timing columns are self-consistent.
 3. The iOS export preset carries both property-list entries, and a run recorded on the handset is retrievable through the phone's Files application without a development machine.
 4. The liveness readout responds to real motion on the handset, and the achieved rate holds at approximately 60 samples per second through a vigorous shake.
 5. Sixteen runs exist in `features/data/C1_09/`, two for each of the eight named motions, each approximately ten seconds, each linked to its motion by the note taken during the session.
@@ -235,11 +231,11 @@ No teaching topic is needed; this feature adds no capability the tutor covers.
 
 ## Run Acceptance Table
 
-This replaces the unit-test table, for the reason given in §2. It is the check applied to each captured run before it is accepted into `features/data/C1_09/`, and a run that fails its row is re-recorded rather than analysed. The expected values are what the run must exhibit for the analysis in Phase 5 to be able to use it.
+This replaces the unit-test table, for the reason given in §2. It is the check applied to each captured run before it is accepted into `features/data/C1_09/`, and a run that fails its row is re-recorded rather than analysed. The expected values are what the run must exhibit for the analysis in Phase 4 to be able to use it.
 
 | Run | Recorded input | Expected result |
 |---|---|---|
-| Still, both takes | Phone held in the hand, no deliberate motion, ten seconds | Magnitude of linear acceleration stays below approximately 0.8 m/s² for the whole run. This run defines the noise floor, so any threshold chosen in Phase 5 must sit above what this run contains |
+| Still, both takes | Phone held in the hand, no deliberate motion, ten seconds | Magnitude of linear acceleration stays below approximately 0.8 m/s² for the whole run. This run defines the noise floor, so any threshold chosen in Phase 4 must sit above what this run contains |
 | Gentle, both takes | Soft wrist jingle, ten seconds | Clear periodic structure; peak linear acceleration in the region of 5 to 15 m/s². No column saturates |
 | Normal, both takes | Ordinary shaking, ten seconds | Peak linear acceleration in the region of 15 to 30 m/s², separable from the gentle run's range |
 | Vigorous, both takes | As hard as anyone would reasonably shake, ten seconds | Peak linear acceleration of 30 m/s² or above. No column pins at a repeated extreme, which would indicate sensor saturation and make the top of the intensity range unmeasurable |

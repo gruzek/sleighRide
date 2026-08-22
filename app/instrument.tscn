@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://dadoo1l1t70ls"]
+
+[ext_resource type="Script" path="res://app/instrument.gd" id="1_play"]
+[ext_resource type="Script" path="res://app/sprite_position.gd" id="90_pos"]
+[ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
+
+[node name="Instrument" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_play")
+
+[node name="background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.019607844, 0.02745098, 0.047058824, 1)
+
+[node name="Vignette" parent="." instance=ExtResource("99_vig")]
+design_position = Vector2(532.5, 466.40155)
+horizontal_anchor = 1
+vertical_anchor = 0
+respect_safe_area = false
+
+[node name="Title" parent="." instance=ExtResource("2_title")]
+design_position = Vector2(523.0, 163.00002)
+horizontal_anchor = 1
+vertical_anchor = 0
+respect_safe_area = true
+
+[node name="InstrumentHolder" type="Node2D" parent="."]
+scale = Vector2(2, 2)
+script = ExtResource("90_pos")
+design_position = Vector2(559.0, 1247.0)
+horizontal_anchor = 1
+vertical_anchor = 1
+respect_safe_area = true

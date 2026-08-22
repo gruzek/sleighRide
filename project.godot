@@ -17,8 +17,14 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Sleigh Ride"
 run/main_scene="uid://bpebykdxeem4"
 config/features=PackedStringArray("4.6", "Mobile")
+run/delta_smoothing=false
 boot_splash/image="uid://bus1pcgg6xuyk"
 config/icon="res://icon.svg"
+
+[autoload]
+
+InstrumentSelection="*res://app/instrument_selection.gd"
+ShakeEvents="*res://shake/shake_event_bus.gd"
 
 [display]
 
@@ -36,6 +42,7 @@ bells=""
 
 sensors/enable_accelerometer=true
 sensors/enable_gravity=true
+sensors/enable_gyroscope=true
 
 [rendering]
 

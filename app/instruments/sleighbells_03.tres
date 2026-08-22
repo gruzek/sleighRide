@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="InstrumentDefinition" format=3]
+
+[ext_resource type="PackedScene" path="res://app/sleighbells_03.tscn" id="1_onoqh"]
+[ext_resource type="Script" path="res://app/instrument_definition.gd" id="2_j1c5a"]
+
+[resource]
+script = ExtResource("2_j1c5a")
+artwork = ExtResource("1_onoqh")

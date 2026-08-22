@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://shake/shake_detector.gd" id="1_detector"]
+
+[node name="ShakeDetector" type="Node"]
+process_priority = -100
+script = ExtResource("1_detector")

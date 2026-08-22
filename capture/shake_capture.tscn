@@ -1,0 +1,82 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://capture/shake_capture.gd" id="1_capture"]
+[ext_resource type="PackedScene" path="res://shake/shake_detector.tscn" id="2_detector"]
+[ext_resource type="PackedScene" path="res://shake/responses/jingle_response.tscn" id="3_jingle"]
+[ext_resource type="PackedScene" path="res://shake/responses/flash_response.tscn" id="4_flash"]
+
+[node name="ShakeCapture" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_capture")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.08, 0.1, 1)
+
+[node name="FlashResponse" parent="." instance=ExtResource("4_flash")]
+
+[node name="Readout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 72.0
+offset_top = 260.0
+offset_right = -72.0
+offset_bottom = 800.0
+grow_horizontal = 2
+theme_override_constants/separation = 36
+
+[node name="ElapsedLabel" type="Label" parent="Readout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "elapsed  0.00 s"
+
+[node name="SampleCountLabel" type="Label" parent="Readout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "samples  0"
+
+[node name="RateLabel" type="Label" parent="Readout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "rate  --"
+
+[node name="MagnitudeLabel" type="Label" parent="Readout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "linear accel  0.00 m/s2"
+
+[node name="FilePathLabel" type="Label" parent="Readout"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+autowrap_mode = 3
+text = "no run written yet"
+
+[node name="RecordButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 72.0
+offset_top = -640.0
+offset_right = -72.0
+offset_bottom = -220.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 110
+text = "Start"
+
+[node name="ShakeDetector" parent="." instance=ExtResource("2_detector")]
+
+[node name="JingleResponse" parent="." instance=ExtResource("3_jingle")]

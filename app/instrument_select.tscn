@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://djro85f5ehxn3"]
+
+[ext_resource type="Script" uid="uid://qmtwpjfif7yq" path="res://app/instrument_select.gd" id="1_sel"]
+[ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
+[ext_resource type="PackedScene" uid="uid://bk3ygkfq4b307" path="res://app/instrument_carousel.tscn" id="4_selector"]
+[ext_resource type="PackedScene" path="res://app/swipe_to_select.tscn" id="5_swipe"]
+[ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_31ns7"]
+bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3rpyo"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[node name="InstrumentSelect" type="Control" unique_id=1734298380]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_sel")
+
+[node name="background" type="ColorRect" parent="." unique_id=1792008761]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.019607844, 0.02745098, 0.047058824, 1)
+
+[node name="Vignette" parent="." unique_id=1118231401 instance=ExtResource("99_vig")]
+design_position = Vector2(532.5, 466.40155)
+
+[node name="Title" parent="." unique_id=892207387 instance=ExtResource("2_title")]
+design_position = Vector2(523, 163.00002)
+respect_safe_area = true
+
+[node name="Winnie" parent="." unique_id=2000750561 instance=ExtResource("3_winnie")]
+design_position = Vector2(323, 1636)
+vertical_anchor = 2
+
+[node name="InstrumentSelector" parent="." unique_id=999126304 instance=ExtResource("4_selector")]
+design_position = Vector2(532, 931)
+vertical_anchor = 1
+respect_safe_area = true
+
+[node name="SwipeToSelect" parent="." unique_id=1052910708 instance=ExtResource("5_swipe")]
+design_position = Vector2(518, 448)
+respect_safe_area = true
+
+[node name="ContinueButton" type="Button" parent="." unique_id=1778197391]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -207.0
+offset_right = 340.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_31ns7")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3rpyo")
+theme_override_styles/hover = SubResource("StyleBoxFlat_31ns7")
+theme_override_styles/focus = SubResource("StyleBoxFlat_31ns7")
+text = "Continue"
+script = ExtResource("91_safe")

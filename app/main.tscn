@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://bpebykdxeem4"]
+
+[ext_resource type="Script" uid="uid://b2p05rtinh8hl" path="res://app/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" path="res://app/straight_red_tree.tscn" id="3_tree"]
+[ext_resource type="PackedScene" path="res://app/blue_snowflake.tscn" id="4_snow"]
+[ext_resource type="PackedScene" path="res://app/holiday_sleigh_bells.tscn" id="5_hsb"]
+[ext_resource type="PackedScene" path="res://app/play_along.tscn" id="6_play"]
+[ext_resource type="PackedScene" path="res://app/winnie.tscn" id="7_winnie"]
+[ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbt"]
+bg_color = Color(0.98039216, 0.27058825, 0.21176471, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbp"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[node name="Main" type="Control" unique_id=771110910]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="background" type="ColorRect" parent="." unique_id=1056248294]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.18039216, 0.56078434, 0.4392157, 1)
+
+[node name="Vignette" parent="." unique_id=799830547 instance=ExtResource("99_vig")]
+design_position = Vector2(532.5, 466.40155)
+
+[node name="Title" parent="." unique_id=470720390 instance=ExtResource("2_title")]
+design_position = Vector2(523, 163.00002)
+respect_safe_area = true
+
+[node name="StraightRedTree" parent="." unique_id=2143604320 instance=ExtResource("3_tree")]
+design_position = Vector2(191.75, 1346.2244)
+horizontal_anchor = 0
+vertical_anchor = 2
+
+[node name="BlueSnowflake" parent="." unique_id=1240345169 instance=ExtResource("4_snow")]
+design_position = Vector2(837, 1113)
+horizontal_anchor = 2
+vertical_anchor = 1
+
+[node name="HolidaySleighBells" parent="." unique_id=1076855490 instance=ExtResource("5_hsb")]
+design_position = Vector2(524, 568)
+respect_safe_area = true
+
+[node name="PlayAlong" parent="." unique_id=240466444 instance=ExtResource("6_play")]
+design_position = Vector2(511, 852.99994)
+respect_safe_area = true
+
+[node name="Winnie" parent="." unique_id=662401659 instance=ExtResource("7_winnie")]
+design_position = Vector2(652, 1300)
+vertical_anchor = 2
+
+[node name="StartButton" type="Button" parent="." unique_id=372136284]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -207.0
+offset_right = 340.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_tapbt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tapbp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tapbt")
+theme_override_styles/focus = SubResource("StyleBoxFlat_tapbt")
+text = "Tap to start"
+script = ExtResource("91_safe")

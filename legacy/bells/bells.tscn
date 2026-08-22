@@ -1,0 +1,65 @@
+[gd_scene load_steps=10 format=3 uid="uid://dvk22mmbamw0h"]
+
+[ext_resource type="Script" uid="uid://kyqobf147o23" path="res://legacy/bells/bounds_size.gd" id="1_555jt"]
+[ext_resource type="Script" uid="uid://c5gcsx7coy1y" path="res://legacy/bells/native_gravity_controller.gd" id="1_vwo53"]
+[ext_resource type="PackedScene" uid="uid://btraak5xk8hhc" path="res://legacy/bells/bell-01.tscn" id="2_xckbj"]
+[ext_resource type="PackedScene" uid="uid://inkds4ibqt36" path="res://legacy/bells/bell-02.tscn" id="3_3tigu"]
+[ext_resource type="PackedScene" uid="uid://ufudf5buyn7t" path="res://legacy/bells/bell-03.tscn" id="4_vwo53"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xckbj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8nq1t"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3tigu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vwo53"]
+
+[node name="Bells" type="Node2D"]
+script = ExtResource("1_vwo53")
+gravity_strength = 800.0
+shake_gain = 4000.0
+shake_deadzone = 0.0
+shake_max_impulse_per_kg = 400.0
+shake_smoothing = 0.5
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+position = Vector2(0, -1)
+script = ExtResource("1_555jt")
+inset_top = 300.0
+inset_bottom = 196.0
+inset_left = 64.0
+inset_right = 64.0
+thickness = 64.0
+
+[node name="Ceiling" type="CollisionShape2D" parent="Bounds"]
+shape = SubResource("RectangleShape2D_xckbj")
+
+[node name="Floor" type="CollisionShape2D" parent="Bounds"]
+shape = SubResource("RectangleShape2D_8nq1t")
+
+[node name="Left" type="CollisionShape2D" parent="Bounds"]
+shape = SubResource("RectangleShape2D_3tigu")
+
+[node name="Right" type="CollisionShape2D" parent="Bounds"]
+shape = SubResource("RectangleShape2D_vwo53")
+
+[node name="Bell-03" parent="." instance=ExtResource("2_xckbj")]
+position = Vector2(564, 461)
+
+[node name="Bell-02" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(396, 1329)
+
+[node name="Bell-01" parent="." instance=ExtResource("4_vwo53")]
+position = Vector2(635, 701)
+
+[node name="Bell-06" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(689, 1174)
+
+[node name="Bell-09" parent="." instance=ExtResource("4_vwo53")]
+position = Vector2(395, 638)
+
+[node name="Bell-04" parent="." instance=ExtResource("3_3tigu")]
+position = Vector2(306, 1096)
+
+[node name="Bell-05" parent="." instance=ExtResource("4_vwo53")]
+position = Vector2(571, 1516)
