@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://bpebykdxeem4"]
 
 [ext_resource type="Script" uid="uid://b2p05rtinh8hl" path="res://app/main.gd" id="1_main"]
-[ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
-[ext_resource type="PackedScene" path="res://app/straight_red_tree.tscn" id="3_tree"]
-[ext_resource type="PackedScene" path="res://app/blue_snowflake.tscn" id="4_snow"]
-[ext_resource type="PackedScene" path="res://app/holiday_sleigh_bells.tscn" id="5_hsb"]
+[ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" uid="uid://cs8ufkblh5tet" path="res://app/straight_red_tree.tscn" id="3_tree"]
+[ext_resource type="PackedScene" uid="uid://727x8vcn1yce" path="res://app/blue_snowflake.tscn" id="4_snow"]
+[ext_resource type="PackedScene" uid="uid://n6lxwfwn1621" path="res://app/holiday_sleigh_bells.tscn" id="5_hsb"]
 [ext_resource type="PackedScene" path="res://app/play_along.tscn" id="6_play"]
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="7_winnie"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
-[ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
+[ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbt"]
 bg_color = Color(0.98039216, 0.27058825, 0.21176471, 1)
@@ -43,8 +43,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.18039216, 0.56078434, 0.4392157, 1)
 
-[node name="Vignette" parent="." unique_id=799830547 instance=ExtResource("99_vig")]
-design_position = Vector2(532.5, 466.40155)
+[node name="Vignette" parent="." unique_id=2071551044 instance=ExtResource("99_vig")]
 
 [node name="Title" parent="." unique_id=470720390 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)

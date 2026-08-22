@@ -1,0 +1,16 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ce46312uxnuw5"
+
+[deps]
+
+source_file="res://features/data/C1_09/iPad/2026-08-22_09-13-30.csv"
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

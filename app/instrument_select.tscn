@@ -44,7 +44,6 @@ mouse_filter = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
 [node name="Vignette" parent="." unique_id=1118231401 instance=ExtResource("99_vig")]
-design_position = Vector2(532.5, 466.40155)
 
 [node name="Title" parent="." unique_id=892207387 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)

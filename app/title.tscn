@@ -1,11 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://k3kx2y0oih02"]
 
-[ext_resource type="Script" path="res://app/sprite_position.gd" id="1_pos"]
+[ext_resource type="Script" uid="uid://crm10bscv0hij" path="res://app/sprite_position.gd" id="1_pos"]
 [ext_resource type="Texture2D" uid="uid://bb44bqnvruh5n" path="res://images/v2/RS_MD_white 1.png" id="2_tex"]
 
-[node name="Title" type="Node2D"]
+[node name="Title" type="Node2D" unique_id=1543208561]
 script = ExtResource("1_pos")
 
-[node name="logo" type="Sprite2D" parent="."]
+[node name="logo" type="Sprite2D" parent="." unique_id=185167295]
 scale = Vector2(0.91501975, 0.91501975)
 texture = ExtResource("2_tex")

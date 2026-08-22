@@ -41,7 +41,6 @@ grow_vertical = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
 [node name="Vignette" parent="." unique_id=357405452 instance=ExtResource("99_vig")]
-design_position = Vector2(532.5, 466.40155)
 
 [node name="Title" parent="." unique_id=1414876787 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)

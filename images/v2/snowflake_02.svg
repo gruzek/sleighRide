@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="11.392" height="11.392" viewBox="0, 0, 11.392, 11.392">
+  <defs>
+    <radialGradient id="Gradient_1" gradientUnits="userSpaceOnUse" cx="536.711" cy="705.971" r="5.696">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.62" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g id="Holiday_Sleigh_Bells" transform="translate(-531.015, -700.275)">
+    <path d="M531.015,700.275 L542.407,700.275 L542.407,711.667 L531.015,711.667 L531.015,700.275 z" fill="url(#Gradient_1)" id="snowflake_02"/>
+  </g>
+</svg>

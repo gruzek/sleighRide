@@ -1,0 +1,16 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://d0sd7os3ai4ib"
+
+[deps]
+
+source_file="res://features/data/C1_09/iPhone/2026-08-22_09-44-16.csv"
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
