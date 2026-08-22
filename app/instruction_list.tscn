@@ -1,30 +1,43 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://df2jp54q3dweb"]
 
-[ext_resource type="Script" path="res://app/sprite_position.gd" id="1_pos"]
+[ext_resource type="Script" uid="uid://crm10bscv0hij" path="res://app/sprite_position.gd" id="1_pos"]
 [ext_resource type="Texture2D" uid="uid://c2rc2s6qdydox" path="res://images/v2/turn_up_your_volume.svg" id="2_tex"]
 [ext_resource type="Texture2D" uid="uid://d0f6diyymrmdc" path="res://images/v2/hold_your_phone_securely.svg" id="3_tex"]
 [ext_resource type="Texture2D" uid="uid://baxb4lfn1gcmw" path="res://images/v2/shake_gently_or_tap_to_play.svg" id="4_tex"]
 [ext_resource type="Texture2D" uid="uid://d2e2ffxy4s71" path="res://images/v2/wait_for_the_conductors_cue.svg" id="5_tex"]
 
-[node name="InstructionList" type="Node2D"]
+[sub_resource type="LabelSettings" id="LabelSettings_otpnq"]
+font_size = 58
+
+[node name="InstructionList" type="Node2D" unique_id=771609170]
 script = ExtResource("1_pos")
 
-[node name="TurnUpYourVolume" type="Sprite2D" parent="."]
-position = Vector2(-27.0, -252.4805)
-scale = Vector2(2.0, 2.0)
+[node name="TurnUpYourVolume" type="Sprite2D" parent="." unique_id=979250893]
+position = Vector2(-27, -252.4805)
+scale = Vector2(2, 2)
 texture = ExtResource("2_tex")
 
-[node name="HoldYourPhoneSecurely" type="Sprite2D" parent="."]
-position = Vector2(1.0, -96.4805)
-scale = Vector2(2.0, 2.0)
+[node name="HoldYourPhoneSecurely" type="Sprite2D" parent="." unique_id=1350694244]
+position = Vector2(1, -96.4805)
+scale = Vector2(2, 2)
 texture = ExtResource("3_tex")
 
-[node name="ShakeGentlyOrTapToPlay" type="Sprite2D" parent="."]
-position = Vector2(4.0, 84.5195)
-scale = Vector2(2.0, 2.0)
+[node name="ShakeGentlyOrTapToPlay" type="Sprite2D" parent="." unique_id=1881116671]
+position = Vector2(4, 84.5195)
+scale = Vector2(2, 2)
 texture = ExtResource("4_tex")
 
-[node name="WaitForTheConductorsCue" type="Sprite2D" parent="."]
-position = Vector2(0.0, 260.5195)
-scale = Vector2(2.0, 2.0)
+[node name="WaitForTheConductorsCue" type="Sprite2D" parent="." unique_id=349942609]
+position = Vector2(0, 260.5195)
+scale = Vector2(2, 2)
 texture = ExtResource("5_tex")
+
+[node name="Label" type="Label" parent="." unique_id=697720419]
+visible = false
+offset_left = -366.0
+offset_top = -303.0
+offset_right = 366.0
+offset_bottom = -215.0
+text = "Turn up your volume."
+label_settings = SubResource("LabelSettings_otpnq")
+horizontal_alignment = 1

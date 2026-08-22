@@ -13,7 +13,7 @@ uniform float sparkle_rate_spread : hint_range(0.0, 1.0) = 0.6;
    its narrowest; at 0.55 a flake never falls below 0.45 of its width, so it thins to a
    paper edge rather than disappearing. */
 uniform float tumble_amount : hint_range(0.0, 1.0) = 0.55;
-uniform float tumble_rate : hint_range(0.0, 8.0) = 0.9;
+uniform float tumble_rate : hint_range(0.0, 8.0) = 1.8;
 uniform float tumble_rate_spread : hint_range(0.0, 1.0) = 0.7;
 
 varying float flake_alpha;

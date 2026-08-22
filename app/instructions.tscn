@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://dlq3r7vicldy8"]
 
 [ext_resource type="Script" uid="uid://d03pjgot03f83" path="res://app/instructions.gd" id="1_instr"]
-[ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
-[ext_resource type="PackedScene" path="res://app/instruction_list.tscn" id="4_list"]
+[ext_resource type="PackedScene" uid="uid://df2jp54q3dweb" path="res://app/instruction_list.tscn" id="4_list"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="5_snow"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
-[ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
+[ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bomgk"]
 bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
@@ -34,6 +34,7 @@ grow_vertical = 2
 script = ExtResource("1_instr")
 
 [node name="background" type="ColorRect" parent="." unique_id=1349848921]
+z_index = -3
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -42,6 +43,11 @@ grow_vertical = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
 [node name="Vignette" parent="." unique_id=357405452 instance=ExtResource("99_vig")]
+z_index = -2
+layout_mode = 1
+anchors_preset = 0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="Title" parent="." unique_id=1414876787 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)
@@ -79,4 +85,4 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_bomgk")
 text = "Continue"
 script = ExtResource("91_safe")
 
-[node name="Snow" parent="." instance=ExtResource("5_snow")]
+[node name="Snow" parent="." unique_id=2026173225 instance=ExtResource("5_snow")]

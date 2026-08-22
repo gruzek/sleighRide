@@ -22,7 +22,7 @@ angle_min = -180.0
 angle_max = 180.0
 angular_velocity_min = -20.0
 angular_velocity_max = 20.0
-gravity = Vector3(0, 720, 0)
+gravity = Vector3(0, 576, 0)
 damping_min = 0.020
 damping_max = 0.020
 scale_min = 0.26
@@ -46,7 +46,7 @@ angle_min = -180.0
 angle_max = 180.0
 angular_velocity_min = -20.0
 angular_velocity_max = 20.0
-gravity = Vector3(0, 1080, 0)
+gravity = Vector3(0, 864, 0)
 damping_min = 0.020
 damping_max = 0.020
 scale_min = 0.45
@@ -70,11 +70,11 @@ angle_min = -180.0
 angle_max = 180.0
 angular_velocity_min = -20.0
 angular_velocity_max = 20.0
-gravity = Vector3(0, 1560, 0)
+gravity = Vector3(0, 1248, 0)
 damping_min = 0.020
 damping_max = 0.020
-scale_min = 0.75
-scale_max = 1.05
+scale_min = 0.6
+scale_max = 0.84
 color = Color(1, 1, 1, 0.85)
 anim_offset_max = 1.0
 turbulence_enabled = true
@@ -82,15 +82,16 @@ turbulence_noise_strength = 3.0
 turbulence_noise_scale = 2.0
 turbulence_noise_speed = Vector3(0.1, 0.1, 0)
 
-[node name="Snow" type="CanvasLayer"]
-layer = 1
+[node name="Snow" type="Node2D"]
 script = ExtResource("1_driver")
 
 [node name="Far" type="GPUParticles2D" parent="."]
+z_index = -1
 material = SubResource("ShaderMaterial_sparkle")
 position = Vector2(540, -201.45)
 rotation = 1.5707964
-amount = 130
+amount = 216
+amount_ratio = 0.6
 texture = ExtResource("4_far")
 lifetime = 13.5
 preprocess = 13.5
@@ -98,13 +99,15 @@ local_coords = false
 visibility_rect = Rect2(-1652.2, -1652.2, 3304.4, 3304.4)
 process_material = SubResource("ParticleProcessMaterial_far")
 script = ExtResource("2_layer")
-fall_strength = 720.0
+fall_strength = 576.0
 
 [node name="Middle" type="GPUParticles2D" parent="."]
+z_index = -1
 material = SubResource("ShaderMaterial_sparkle")
 position = Vector2(540, -201.45)
 rotation = 1.5707964
-amount = 80
+amount = 133
+amount_ratio = 0.6
 texture = ExtResource("5_middle")
 lifetime = 9.5
 preprocess = 9.5
@@ -112,13 +115,15 @@ local_coords = false
 visibility_rect = Rect2(-1652.2, -1652.2, 3304.4, 3304.4)
 process_material = SubResource("ParticleProcessMaterial_middle")
 script = ExtResource("2_layer")
-fall_strength = 1080.0
+fall_strength = 864.0
 
 [node name="Near" type="GPUParticles2D" parent="."]
+z_index = 1
 material = SubResource("ShaderMaterial_sparkle")
 position = Vector2(540, -201.45)
 rotation = 1.5707964
-amount = 45
+amount = 75
+amount_ratio = 0.6
 texture = ExtResource("6_near")
 lifetime = 7.0
 preprocess = 7.0
@@ -126,4 +131,4 @@ local_coords = false
 visibility_rect = Rect2(-1652.2, -1652.2, 3304.4, 3304.4)
 process_material = SubResource("ParticleProcessMaterial_near")
 script = ExtResource("2_layer")
-fall_strength = 1560.0
+fall_strength = 1248.0

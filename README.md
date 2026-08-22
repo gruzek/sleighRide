@@ -34,17 +34,23 @@ harness is in `capture/` and whose specification and plan are in `features/`.
 
 ## The snow
 
-`snow/` is falling snow that any screen gains by adding one node. `snow.tscn` is a `CanvasLayer`
-carrying three `GPUParticles2D` layers, so it draws above whatever the host screen puts on the
-default layer and needs nothing from it.
+`snow/` is falling snow that any screen gains by adding one node. `snow.tscn` carries three
+`GPUParticles2D` layers that differ in weight, speed, size, and opacity, and that draw at two
+different depths: the nearest passes over the screen's artwork and text, the other two behind
+them but still in front of the vignette.
 
 - `snow.gd` is the driver, and the only part of the effect that reads a sensor. It takes the
   device's gravity vector, projects it into the plane of the screen, smooths it, and writes each
-  layer's gravity and damping from it. A phone lying flat holds the heading it had and slows to a
-  drift rather than spinning on sensor noise.
-- `snow_layer.gd` is one depth layer. It owns how heavy its flakes are and how fast they fall;
-  the driver owns which way down is and where the flakes come in from. The three layers differ
-  only in weight, speed, size, and opacity.
+  layer's gravity from it. A phone lying flat holds the heading it had and slows to a drift
+  rather than spinning on sensor noise.
+- It reads the accelerometer too, for the snow-globe response: shaking throws the flakes against
+  the hand's motion, suppresses the fall so they tumble in place, drives the noise field harder,
+  and blooms the flake count, all from one agitation value whose slow release is the settle. The
+  snow neither emits on `ShakeEvents` nor listens to it, so it works on screens with no
+  instrument and can never double-fire a bell.
+- `snow_layer.gd` is one depth layer. It owns how heavy its flakes are, how fast they fall, and
+  how wildly they answer a shake; the driver owns which way down is and where flakes come in
+  from.
 - New flakes are born on a thin band just outside the viewport that orbits as the direction
   changes, so snow always arrives from off screen whichever way the phone is held. Flakes already
   in flight curve onto a new heading, because the direction is carried on gravity rather than on
@@ -52,10 +58,16 @@ default layer and needs nothing from it.
 - `shaders/snow_sparkle.gdshader` gives every flake its own rhythm from a per-flake seed: a
   brightness that oscillates, and a width that narrows to a paper edge and back.
 
-Two settings in `snow.tscn` are load-bearing and have no visual symptom that points at them.
-`local_coords` must stay off, or the live snow sweeps bodily across the screen when the band
-swings. `visibility_rect` must stay large, because the node spends its whole life outside the
-viewport and at the default the whole system is culled and nothing is drawn.
+Three settings are load-bearing and have no visual symptom that points at them. `local_coords`
+must stay off, or the live snow sweeps bodily across the screen when the band swings.
+`visibility_rect` must stay large, because the node spends most of its life outside the viewport
+and at the default the whole system is culled and nothing is drawn. And damping must stay in its
+friction form: in its default form it stops the snow dead rather than trimming its acceleration.
+
+The one thing the effect asks of a host is draw order. The host's own backdrop must sit below the
+back snow - on the instructions screen that is `z_index` -3 on the background and -2 on the
+vignette, leaving the content at its default 0. A screen that skips this gets its back snow
+hidden behind its own background.
 
 ## The capture harness
 

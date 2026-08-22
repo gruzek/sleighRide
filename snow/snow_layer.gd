@@ -1,9 +1,14 @@
 # snow_layer.gd (C1_12 snow) - one depth layer of falling snow.
 #
-# A layer owns how heavy its flakes are and how fast they fall; the driver owns which way
-# down is and where the flakes come in from. Everything this script writes is derived
-# output recomputed every frame, so nothing accumulates and nothing authored in the
-# inspector is overwritten.
+# A layer owns how heavy its flakes are, how fast they fall, and how wildly they answer a
+# shake; the driver owns which way down is, how hard the phone is being shaken, and where the
+# flakes come in from. Everything this script writes is derived output recomputed every frame,
+# so nothing accumulates and nothing authored in the inspector is overwritten.
+#
+# Four authored values are captured once, at ready, because the frame-by-frame writes are
+# computed from them rather than from whatever was last written. Read them back off the
+# material instead and the first agitated frame would become the baseline for the second, and
+# the swirl would ratchet up and never come down.
 #
 # The values authored in the scene file are not arbitrary. preprocess runs during _ready,
 # before the driver's first frame, so the band geometry and gravity a layer opens with are
@@ -36,19 +41,49 @@ extends GPUParticles2D
 # speed is this divided by the material's damping rate.
 @export var fall_strength: float = 520.0
 
-func apply(direction: Vector2, fall_scale: float, band_position: Vector2, band_length: float, cull_span: float) -> void:
-	position = band_position
+# How much wilder the noise field runs at full agitation, as a multiple of this layer's
+# authored turbulence. The flutter and the swirl are the same field; a shake turns it up.
+@export var swirl_gain: float = 6.0
+
+var _base_turbulence_strength: float
+var _base_turbulence_speed: Vector3
+var _base_band_thickness: float
+var _base_amount_ratio: float
+
+func _ready() -> void:
+	# Typed deliberately. A snow layer without a ParticleProcessMaterial is a broken scene,
+	# and this raises rather than quietly emitting nothing.
+	var process: ParticleProcessMaterial = process_material
+	_base_turbulence_strength = process.turbulence_noise_strength
+	_base_turbulence_speed = process.turbulence_noise_speed
+	_base_band_thickness = process.emission_box_extents.x
+	# The authored ratio is below one so that agitation has somewhere to go: amount_ratio
+	# cannot exceed one, so the bloom is headroom left unspent rather than flakes added.
+	_base_amount_ratio = amount_ratio
+
+func apply(direction: Vector2, fall: Vector2, agitation: float, source: Vector2, band_length: float, cull_span: float) -> void:
+	position = source
 	# The node's local +X points downwind, so the emission box's x extent is the band's
-	# thickness and its y extent is the band's length.
+	# thickness and its y extent is the band's length. The heading orients the band, not the
+	# pull: during a shake the pull slews about, and a band that followed it would thrash.
 	rotation = direction.angle()
 
-	# Typed deliberately. A snow layer without a ParticleProcessMaterial is a broken
-	# scene, and this raises rather than quietly emitting nothing.
 	var process: ParticleProcessMaterial = process_material
-	process.gravity = Vector3(direction.x, direction.y, 0.0) * fall_strength * fall_scale
-	process.emission_box_extents = Vector3(process.emission_box_extents.x, band_length * 0.5, 0.0)
+	process.gravity = Vector3(fall.x, fall.y, 0.0) * fall_strength
 
-	# The node spends its whole life outside the viewport, and this rectangle is measured
+	var swirl := 1.0 + swirl_gain * agitation
+	process.turbulence_noise_strength = _base_turbulence_strength * swirl
+	process.turbulence_noise_speed = _base_turbulence_speed * swirl
+
+	# More flakes in the air while the snow is disturbed, thinning back as it settles.
+	amount_ratio = lerpf(_base_amount_ratio, 1.0, agitation)
+
+	# The thin band swells into a broad box as the snow is agitated, so the flakes the bloom
+	# adds are born across the frame rather than in a line above it.
+	var thickness := lerpf(_base_band_thickness, band_length * 0.5, agitation)
+	process.emission_box_extents = Vector3(thickness, band_length * 0.5, 0.0)
+
+	# The node spends most of its life outside the viewport, and this rectangle is measured
 	# in the node's own space. At the default the system is culled and no snow is drawn
 	# anywhere, which looks like a broken shader rather than like a culling rectangle.
 	visibility_rect = Rect2(-cull_span * 0.5, -cull_span * 0.5, cull_span, cull_span)

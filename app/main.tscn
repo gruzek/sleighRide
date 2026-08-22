@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://n6lxwfwn1621" path="res://app/holiday_sleigh_bells.tscn" id="5_hsb"]
 [ext_resource type="PackedScene" path="res://app/play_along.tscn" id="6_play"]
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="7_winnie"]
+[ext_resource type="PackedScene" path="res://snow/snow.tscn" id="10_i37im"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
@@ -44,6 +45,9 @@ grow_vertical = 2
 color = Color(0.18039216, 0.56078434, 0.4392157, 1)
 
 [node name="Vignette" parent="." unique_id=2071551044 instance=ExtResource("99_vig")]
+layout_mode = 1
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="Title" parent="." unique_id=470720390 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)
@@ -94,3 +98,5 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_tapbt")
 theme_override_styles/focus = SubResource("StyleBoxFlat_tapbt")
 text = "Tap to start"
 script = ExtResource("91_safe")
+
+[node name="Snow" parent="." unique_id=437428202 instance=ExtResource("10_i37im")]

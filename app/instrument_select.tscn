@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
 [ext_resource type="PackedScene" uid="uid://bk3ygkfq4b307" path="res://app/instrument_carousel.tscn" id="4_selector"]
 [ext_resource type="PackedScene" path="res://app/swipe_to_select.tscn" id="5_swipe"]
+[ext_resource type="PackedScene" path="res://snow/snow.tscn" id="8_r8bxp"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
@@ -44,8 +45,9 @@ mouse_filter = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
 [node name="Vignette" parent="." unique_id=1118231401 instance=ExtResource("99_vig")]
-layout_mode = 0
-anchors_preset = 0
+layout_mode = 1
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="Title" parent="." unique_id=892207387 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)
@@ -88,3 +90,5 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_31ns7")
 theme_override_styles/focus = SubResource("StyleBoxFlat_31ns7")
 text = "Continue"
 script = ExtResource("91_safe")
+
+[node name="Snow" parent="." unique_id=585041252 instance=ExtResource("8_r8bxp")]
