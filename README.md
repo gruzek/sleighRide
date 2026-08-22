@@ -72,6 +72,32 @@ back snow - on the instructions screen that is `z_index` -3 on the background an
 vignette, leaving the content at its default 0. A screen that skips this gets its back snow
 hidden behind its own background.
 
+## The title animation
+
+The three words of the title artwork arrive one at a time on a beat and then go on breathing on
+it. `app/holiday_sleigh_bells.tscn` holds `Holiday`, `Sleigh`, and `Bells` as three sprites, and
+`app/holiday_sleigh_bells.gd` animates them: the screen holds still for a second, then each word
+grows from nothing, past its resting size, and settles back onto it, one word every quarter note.
+
+- The pattern is two bars of 4/4 at 80 beats per minute - three words on beats one, two, and
+  three, then five beats of rest - repeating for as long as the screen is shown. The first loop
+  is the entrance; every loop after it is the same phrase as a slight pulse, with no overshoot to
+  correct.
+- The loop is exported in beats rather than seconds, so changing `beat_seconds` moves the whole
+  pattern together and the loop can never be set to a length that is out of time with the beat.
+- Every animated size is a multiplier on the scale each word is authored at, read from the scene
+  in `_ready`. The three words are hand-sized differently, so resizing one in the editor is
+  picked up on the next run rather than fought.
+- The animation travels inside the artwork scene, so any screen that instances it gets the
+  entrance and the pulse without doing anything. `animate` unticked leaves the three words at
+  their authored scales and nothing moves at all.
+
+Nothing runs in the editor, where all three words stay at their authored scales so the
+composition can still be authored. The script extends `app/sprite_position.gd` rather than
+replacing it, because the title screen places this scene through that script's exported
+properties and a node holds only one script. The bell carousel is built the same way, for the
+same reason.
+
 ## The capture harness
 
 `capture/shake_capture.tscn` records every motion sample the engine sees to one comma-separated

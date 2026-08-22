@@ -76,6 +76,8 @@ Screens are assembled from small scenes rather than authored as one tree. `title
 - **`app/sprite_position.gd`** positions a node against the design canvas — 1080 by 1920 — with an anchor per axis and an option to respect the device's safe area. The engine expands this canvas rather than stretching it, so on any portrait phone the canvas stays 1080 units wide and grows taller.
 - **`app/safe_area_margin.gd`** holds a bottom-anchored control clear of the home indicator. Godot's anchoring measures from the physical window edge and knows nothing about the safe area, so every button in the flow carries this script. It derives its offsets from authored base values rather than adjusting them in place, so repeated recomputes never compound.
 
+A composition scene that needs behaviour of its own extends the placement script rather than replacing it, because a node holds only one script. `app/instrument_carousel.gd` and `app/holiday_sleigh_bells.gd` are both built that way: each extends `app/sprite_position.gd`, calls `super()` from its own `_ready`, and goes on carrying the exported placement properties the hosting screen sets on it.
+
 Buttons are styled per screen with inline `StyleBoxFlat` sub-resources. There is no shared theme and no shared button scene; the flow's blue is `Color(0.2509804, 0.56078434, 0.8392157, 1)` with a red pressed state, 55-pixel corner radius, and 44-point white text, duplicated in each screen that needs it.
 
 ## What crosses a scene change
