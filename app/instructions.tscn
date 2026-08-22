@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
 [ext_resource type="PackedScene" path="res://app/instruction_list.tscn" id="4_list"]
+[ext_resource type="PackedScene" path="res://snow/snow.tscn" id="5_snow"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
 [ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
 
@@ -77,3 +78,5 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_bomgk")
 theme_override_styles/focus = SubResource("StyleBoxFlat_bomgk")
 text = "Continue"
 script = ExtResource("91_safe")
+
+[node name="Snow" parent="." instance=ExtResource("5_snow")]

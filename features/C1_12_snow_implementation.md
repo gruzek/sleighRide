@@ -96,6 +96,18 @@ damping    = fall_strength * fall_scale * damping_fraction
 
 **`visibility_rect` must be large.** It is the rectangle, in the node's own local space, that has to intersect the screen for the system to be drawn at all, and the node itself spends its whole life outside the viewport. At the default it would be culled and no snow would appear anywhere. The driver sizes it from the diagonal each frame.
 
+## Correction from the build
+
+The section above is wrong about damping, and the build measured it rather than inheriting it. It is left in place because it states the problem correctly; only its solution failed.
+
+**Godot's default damping does not trim acceleration.** The section reasons that a constant deceleration subtracts from the pull, leaving `fall_strength * (1 - damping_fraction)` to accelerate the flake. Measured on screen, it does not: at a damping of eight tenths of the pull, no snow reaches the screen at all — the flakes emit and stop dead just outside it. Sweeping the fraction from 0.0 to 0.8 moved the deepest visible flake steadily up the frame and then to nothing, with no value giving a full field.
+
+**Friction damping does work, and is what the build uses.** `particle_flag_damping_as_friction` changes the damping value from a deceleration into a rate that pulls a flake toward a terminal speed, which is the behaviour the section wanted. The driver therefore writes gravity alone and never touches damping: the rate is authored per layer and constant, so the terminal speed follows the pull, and a phone tilted back gives slower snow rather than snow that stalls. This is simpler than the plan's arrangement, not more complex.
+
+**Both numbers were measured, not derived.** Friction damping is roughly thirty times stronger than reading its rate as per-second would predict, so the authored rate is 0.02 rather than about 1.2, and the pull is 720, 1,080, and 1,560 rather than 240, 360, and 520. The lifetimes rose with them, to 13.5, 9.5, and 7.0 seconds. These were arrived at by running the instructions screen and measuring how far down the frame the deepest flake reached; the arithmetic in the section above predicts none of them.
+
+The consequence for anyone tuning this later is recorded in `snow/snow_layer.gd`: change the pull or the rate and check on screen that snow still reaches the bottom of the frame, because the arithmetic will not tell you.
+
 ## Implementation Steps and Phases
 
 ### Phase 1: The images

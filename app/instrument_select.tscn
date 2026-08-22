@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://djro85f5ehxn3"]
 
 [ext_resource type="Script" uid="uid://qmtwpjfif7yq" path="res://app/instrument_select.gd" id="1_sel"]
-[ext_resource type="PackedScene" path="res://app/title.tscn" id="2_title"]
+[ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
 [ext_resource type="PackedScene" uid="uid://bk3ygkfq4b307" path="res://app/instrument_carousel.tscn" id="4_selector"]
 [ext_resource type="PackedScene" path="res://app/swipe_to_select.tscn" id="5_swipe"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
-[ext_resource type="PackedScene" path="res://app/vignette.tscn" id="99_vig"]
+[ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_31ns7"]
 bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
@@ -44,6 +44,8 @@ mouse_filter = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
 [node name="Vignette" parent="." unique_id=1118231401 instance=ExtResource("99_vig")]
+layout_mode = 0
+anchors_preset = 0
 
 [node name="Title" parent="." unique_id=892207387 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)
@@ -54,6 +56,7 @@ design_position = Vector2(323, 1636)
 vertical_anchor = 2
 
 [node name="InstrumentSelector" parent="." unique_id=999126304 instance=ExtResource("4_selector")]
+scale = Vector2(1.5, 1.5)
 design_position = Vector2(532, 931)
 vertical_anchor = 1
 respect_safe_area = true
