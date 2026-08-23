@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://crm10bscv0hij" path="res://app/sprite_position.gd" id="1_pos"]
 [ext_resource type="Texture2D" uid="uid://jwrhb3catvki" path="res://images/v2/straight_red_tree.svg" id="2_g0gi2"]
+[ext_resource type="Script" uid="uid://d0ovsutx3jux0" path="res://app/tilt_sway.gd" id="3_sway"]
 
 [node name="StraightRedTree" type="Node2D" unique_id=372765785]
 script = ExtResource("1_pos")
@@ -11,3 +12,4 @@ position = Vector2(-214, 498)
 scale = Vector2(1.1889226, 1.1889226)
 texture = ExtResource("2_g0gi2")
 offset = Vector2(20.18634, -418.0255)
+script = ExtResource("3_sway")

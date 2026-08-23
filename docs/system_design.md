@@ -78,6 +78,8 @@ Screens are assembled from small scenes rather than authored as one tree. `title
 
 A composition scene that needs behaviour of its own extends the placement script rather than replacing it, because a node holds only one script. `app/instrument_carousel.gd` and `app/holiday_sleigh_bells.gd` are both built that way: each extends `app/sprite_position.gd`, calls `super()` from its own `_ready`, and goes on carrying the exported placement properties the hosting screen sets on it.
 
+A second family of shared scripts gives a sprite motion rather than a place: `app/tilt_sway.gd` leans one with the phone's side-to-side tilt, `app/continuous_spin.gd` turns one at a constant rate, and `app/tilt_drift.gd` slides one a short way as the phone tilts, all three reading the tilt through `app/phone_tilt.gd`. These attach to the **child sprites** inside an artwork scene rather than to its root, which is why they extend nothing: the root is where the placement script lives and owns `position`, and a child's transform is its own. They also carry no pivot — a sprite's origin is set in the scene by `centered` and `offset`, so where the red tree bends is authored in `app/straight_red_tree.tscn` by eye rather than written into the sway.
+
 Buttons are styled per screen with inline `StyleBoxFlat` sub-resources. There is no shared theme and no shared button scene; the flow's blue is `Color(0.2509804, 0.56078434, 0.8392157, 1)` with a red pressed state, 55-pixel corner radius, and 44-point white text, duplicated in each screen that needs it.
 
 ## What crosses a scene change
@@ -165,7 +167,7 @@ in `features/` that frames the web as the target is stale by the same cause.
 
 **`dt_ms` is not a measurement.** Godot on iOS reports the display link's nominal interval, so any per-frame delta reads as a constant while the real intervals vary by a factor of two. The monotonic timestamp is the only real clock.
 
-**Android is unverified.** The engine reports the gravity vector in opposite directions on the two platforms. Linear acceleration is unaffected, since the difference cancels when gravity is subtracted, which is why the detector works on that quantity and nothing else — but no Android hardware has been measured. `features/data/C1_09/README.md` records what to check first. `legacy/bells/native_gravity_controller.gd` is the illustration of what goes wrong when this is assumed: its mapping is iOS-shaped, and on Android its bells would fall upward.
+**Android is unverified.** The engine reports the gravity vector in opposite directions on the two platforms. Linear acceleration is unaffected, since the difference cancels when gravity is subtracted, which is why the detector works on that quantity and nothing else — but no Android hardware has been measured. `features/data/C1_09/README.md` records what to check first. `legacy/bells/native_gravity_controller.gd` is the illustration of what goes wrong when this is assumed: its mapping is iOS-shaped, and on Android its bells would fall upward. Two live copies of that same iOS-shaped mapping exist and are named together here so whoever measures an Android handset finds both: `snow/snow.gd`, which steers the snowfall, and `app/phone_tilt.gd`, which the artwork behaviours read through.
 
 ## Conventions
 

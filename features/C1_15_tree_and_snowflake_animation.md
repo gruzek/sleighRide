@@ -2,10 +2,10 @@
 DOCUMENT TYPE: Holiday Sleigh Bells Feature
 DOCUMENT TITLE: Artwork That Answers the Tilt of the Phone
 CONFIDENTIALITY: Vertex11 Confidential
-VERSION: 0.1
+VERSION: 0.2
 AUTHOR: George Ruzek
 VALUE STATEMENT: Gives the title screen a heartbeat, so the first thing an audience member sees is artwork that already knows how their phone is being held.
-LAST UPDATED: August, 22, 2026 15:19
+LAST UPDATED: August, 22, 2026 15:36
 ---
 
 # Artwork That Answers the Tilt of the Phone
@@ -46,7 +46,7 @@ There is one structural trap this feature has to stay clear of, and it is worth 
 - **2. Rotate the tree about the pivot the scene sets, never one the script invents.** The sway script rotates the node it is attached to and carries no pivot of its own.
 - **3. Turn the blue snowflake slowly and continuously, on its own.** A constant rate of rotation that reads no sensor and never stops.
 - **4. Slide the green halo with the tilt of the phone.** A short drift up, down, left, and right, mapped directly from tilt and clamped independently on each axis.
-- **5. Build the three motions as reusable behaviours any artwork can carry.** Three small scripts in `app/`, each attached to the sprite it animates.
+- **5. Build the three motions as reusable behaviours any artwork can carry.** Three small scripts in `app/`, each attached to the sprite it animates, plus a fourth holding the gravity reading the two tilt behaviours share.
 - **6. Make every constraint and rate adjustable from the editor.** Exported values with starting points that are meant to be argued with, and validation on the ones that could break the arithmetic.
 - **7. Hold the neutral pose where there is no sensor.** The editor, the desktop build, and the simulator report no gravity, and the two tilt behaviours must sit still rather than drift or spin.
 - **8. Bring the three behaviours to the title screen without editing the screen.** The motion arrives through the two artwork scenes the title screen already instances, so the screen itself is not touched.
@@ -97,6 +97,8 @@ The drift is an offset from the sprite's rest pose, captured when the node is re
 
 Three scripts, one per motion: a tilt sway, a continuous spin, and a tilt drift. Each attaches to the sprite it animates. Any sprite in the application gains a behaviour by having the script added to it and its values set, with nothing else to wire up.
 
+A fourth file holds the one piece the two tilt behaviours share: reading the device's gravity vector, projecting it into the plane of the screen, and rejecting a reading too small to be anything but noise. It carries no behaviour of its own and is attached to nothing. The reason it exists rather than the six lines being written twice is Android: §"Platform notes" in `docs/system_design.md` records that the engine reports the gravity vector in opposite directions on the two platforms and that no Android handset has been measured, so this projection carries a known sign correction waiting to be made. One file means one place to make it for both behaviours. `snow/snow.gd` keeps its own copy and is not routed through this one, because editing a working sensor path is not this feature's business.
+
 They live in `app/`, alongside the artwork scenes they serve. This is a departure from where the snow and the shake instrument live, and the reason is what they are. The snow is a self-contained effect with its own driver, its own emitters, and its own shader, which a screen adds as a unit; a top-level directory says that correctly. These are three small scripts that decorate existing artwork and produce nothing on their own. `app/` is where that artwork is and where `app/sprite_position.gd`, the script these most resemble, already sits.
 
 They are separate scripts rather than additions to `app/sprite_position.gd`, which is shared by Winnie, the title, the play-along line, the instruction list, and the instrument selector. Adding sway properties there would grow tilt controls on every piece of artwork in the application, most of which will never use them.
@@ -125,7 +127,7 @@ The continuous spin is unaffected. It reads no sensor, so it turns identically o
 
 The title screen, `app/main.tscn`, carries all three motions, and is the only screen affected. It is not itself edited.
 
-The whole of this feature's change surface is two scene files and three new scripts: the sway script attaches to the `Sprite2D` inside `app/straight_red_tree.tscn`, the spin and drift scripts attach to the two `Sprite2D` children inside `app/blue_snowflake.tscn`, and the three scripts themselves are new files in `app/`. Nothing else in the repository changes. Gravity is already enabled in `project.godot`, `app/sprite_position.gd` is untouched, the snow and the shake instrument are untouched, and no asset is added.
+The whole of this feature's change surface is two scene files and four new scripts: the sway script attaches to the `Sprite2D` inside `app/straight_red_tree.tscn`, the spin and drift scripts attach to the two `Sprite2D` children inside `app/blue_snowflake.tscn`, and those three scripts plus the shared tilt reading of requirement 5 are new files in `app/`. Nothing else in the repository changes. Gravity is already enabled in `project.godot`, `app/sprite_position.gd` is untouched, the snow and the shake instrument are untouched, and no asset is added.
 
 The title screen inherits the motion because it instances those two artwork scenes, and a script added to a node inside a scene reaches every instance of it. That is also why the title screen is the only screen affected: `app/straight_red_tree.tscn` and `app/blue_snowflake.tscn` are each instanced in exactly one place in the application, and that place is the title screen. Any screen that instances either scene later inherits the motion, and its exported values, with nothing further to do — which is the same drop-in property the snow has, arrived at from the other direction.
 

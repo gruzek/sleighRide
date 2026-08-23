@@ -98,6 +98,50 @@ replacing it, because the title screen places this scene through that script's e
 properties and a node holds only one script. The bell carousel is built the same way, for the
 same reason.
 
+## The artwork behaviours
+
+Three small scripts in `app/` give a still sprite motion. Each attaches to the sprite it animates
+and nothing else has to be wired up; a piece of artwork gains a behaviour by having a script added
+to it and its numbers set. The title screen carries all three, through the two artwork scenes it
+already instances rather than through any edit of its own.
+
+- `tilt_sway.gd` leans a sprite the way the phone is tilted side to side, smoothed so a hand that
+  is never quite still does not make it tremble, and clamped so no amount of tilt leans it further.
+  The red tree carries it.
+- `continuous_spin.gd` turns a sprite at a constant rate, forever. It reads no sensor, so it runs
+  the same on a handset and on the desktop. The blue snowflake carries it.
+- `tilt_drift.gd` slides a sprite a short way from where it is authored as the phone tilts, clamped
+  independently on each axis. The green halo behind the snowflake carries it.
+
+Two things about them are load-bearing and easy to undo by accident.
+
+**They carry no pivot.** `tilt_sway.gd` and `continuous_spin.gd` rotate the node they are attached
+to, about that node's own origin, and neither holds a pivot value. Where a sprite turns is set in
+the scene by `centered` and `offset`, so it is positioned by eye in the editor. That is what makes
+the tree bend rather than spin: `app/straight_red_tree.tscn` moves the origin down to the foot of
+the trunk, with a compensating `position` so the artwork does not move. A script that owned its own
+pivot would take that adjustment away from the editor.
+
+**They attach to child sprites, never to an artwork scene's root.** `app/sprite_position.gd` owns
+the root's `position`, overwrites it on ready, on resize, and on every exported-property change,
+and strips it from storage. A drift written there is discarded. Unlike `instrument_carousel.gd` and
+`holiday_sleigh_bells.gd`, which extend the placement script because they live on the root, these
+sit on children that no other script touches, so they extend nothing.
+
+Reading the tilt is shared. `app/phone_tilt.gd` projects the device's gravity vector into the plane
+of the screen and rejects a reading too small to be anything but noise, and both tilt behaviours go
+through it. Where there is no sensor at all - the editor, the desktop build, the simulator - it
+returns the caller's own idea of level, so the tree stands upright and the halo sits exactly where
+it was placed rather than drifting to a clamp.
+
+The one number that is not obvious is `vertical_neutral_tilt` on `tilt_drift.gd`. Side to side,
+level is genuinely no roll. Front to back it is not: the reading runs 1.0 with the phone upright
+down to 0.0 with it flat, so a phone being held normally sits near the top of that range, and
+treating zero as level would pin the halo at its clamp the whole time anyone is holding the thing.
+
+Nothing runs in the editor. None of the three is a `@tool` script, so a screen can be composed
+without a snowflake turning underneath the work.
+
 ## The capture harness
 
 `capture/shake_capture.tscn` records every motion sample the engine sees to one comma-separated

@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://crm10bscv0hij" path="res://app/sprite_position.gd" id="1_pos"]
 [ext_resource type="Texture2D" uid="uid://4g5pi8cmbhs" path="res://images/v2/green_circle.svg" id="2_2i4qc"]
 [ext_resource type="Texture2D" uid="uid://dw4epgm17jl" path="res://images/v2/blue_snowflake.svg" id="3_shgty"]
+[ext_resource type="Script" uid="uid://b7mebwch0d4ic" path="res://app/tilt_drift.gd" id="4_drift"]
+[ext_resource type="Script" uid="uid://be7v31qb2a8gl" path="res://app/continuous_spin.gd" id="5_spin"]
 
 [node name="BlueSnowflake" type="Node2D" unique_id=1756486527]
 script = ExtResource("1_pos")
@@ -11,8 +13,10 @@ script = ExtResource("1_pos")
 position = Vector2(317.125, -288.0868)
 scale = Vector2(1.8598995, 1.859899)
 texture = ExtResource("2_2i4qc")
+script = ExtResource("4_drift")
 
 [node name="BlueSnowflake" type="Sprite2D" parent="." unique_id=148905621]
 position = Vector2(202, -240.00002)
 scale = Vector2(1.9965278, 1.9965278)
 texture = ExtResource("3_shgty")
+script = ExtResource("5_spin")

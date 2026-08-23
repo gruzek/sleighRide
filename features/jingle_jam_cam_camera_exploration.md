@@ -2,7 +2,7 @@
 
 **Status:** research notes for the Jingle Jam Cam screens. Working document, not a sponsor deliverable.
 **Audience:** George + Claude.
-**Last verified:** 2026-08-22 against Godot 4.6 (`4.6.stable.official.89cea1439`) and iOS 26.
+**Last verified:** 2026-08-22 against Godot 4.6 (`4.6.stable.official.89cea1439`), iOS 26, Android 16.
 
 > Desk research only. Nothing below has been run on a handset. Every claim that needs a device
 > test is labelled **NEEDS DEVICE TEST**.
@@ -11,77 +11,279 @@
 
 ## 0. The short answer
 
-**Yes. The engine does this itself, and on the native build it is close to easy.**
+**Yes — but the platform that works today is the one we are not building.**
 
-`CameraServer` / `CameraFeed` / `CameraTexture` are
-[implemented on Linux, Android, macOS and iOS](https://docs.godotengine.org/en/stable/classes/class_cameraserver.html).
-The docs give the platform list verbatim: *"This class is currently only implemented on Linux,
-Android, macOS, and iOS."* We ship native iOS. We are on the supported list.
+| Build | Camera in Godot 4.6? | How hard |
+|---|---|---|
+| **Android** | **Yes, in the engine.** Shipped in 4.5. | Moderate — three gotchas, all known |
+| **iOS** | **Yes — but not from the stock template.** The engine's own iOS backend does not exist until 4.7. A maintained GDExtension supplies it on 4.6. | Moderate — one third-party dependency |
+| Web / SPA | No, and not ever soon | N/A — we are not a web app |
 
-The mockup's composition — graphics in front of a live face, a button that snaps — maps onto
-things this repository already does. A camera feed becomes an ordinary texture, the artwork sits
-in front of it in the same viewport, and the snap is a viewport capture. There is one genuine
-gap, and it is at the end: getting the finished picture out of the app and into the audience
-member's photos.
+**iOS is not blocked, it is just not free.** Verified against the export templates installed on
+this machine (§1a): the stock 4.6 iOS template has no camera backend in it at all, so
+`CameraServer.feeds` comes back empty. The fix is a drop-in GDExtension (§3), not an engine fork.
 
----
-
-## 1. Turning the camera on
-
-**iOS.** The camera module is in the engine now — the old external `godot-ios-plugins` camera
-plugin is no longer the route, and any advice that says otherwise is pre-4.2. It is an
-export-preset checkbox,
-[`EditorExportPlatformIOS.modules/camera`](https://docs.godotengine.org/en/stable/classes/class_editorexportplatformios.html),
-and turning it on requires `privacy/camera_usage_description` to be filled in — that string is
-what iOS shows in the permission prompt, so it is worth writing properly ("so you can take a
-photo with your bells").
-
-Our `export_presets.cfg` currently has the `privacy/camera_usage_description` key present and
-**empty**, and no `modules/camera` line at all. That is the expected untouched state, not a
-fault. Two edits turn the camera on.
-
-**Android.** Camera feed support landed in **Godot 4.5** via
-[PR #106094](https://github.com/godotengine/godot/pull/106094), merged 2025-05-13: Camera2
-backend, front and back cameras, `FEED_RGB` and `FEED_YCBCR_SEP`, API level 24+, and the camera
-permission is requested on demand rather than at startup. We are on 4.6, so it is in the build
-we have. Worth knowing, though `docs/system_design.md` records that no Android hardware has been
-measured for anything yet.
+The Godot documentation's platform note —
+[*"currently only implemented on Linux, Android, macOS, and iOS"*](https://docs.godotengine.org/en/stable/classes/class_cameraserver.html)
+— is **wrong in both directions** for 4.6, and following it is how the earlier draft went astray.
+Section 1 shows the receipts.
 
 ---
 
-## 2. Front or back, and getting it the right way up
+## 1. Where the camera actually lives in Godot 4.6
 
-A [`CameraFeed`](https://docs.godotengine.org/en/stable/classes/class_camerafeed.html) is
-activated with `set_active(true)` and reports its position from `get_position()` as `FEED_FRONT`,
-`FEED_BACK`, or `FEED_UNSPECIFIED`. Both cameras are therefore available, and the mockup's
-"could be front or back" is a matter of picking a feed out of `CameraServer.feeds` and offering
-a flip button, not a matter of platform support.
+The camera is an engine module, `modules/camera/`. Its `config.py` decides which platforms it
+builds on, and on the **4.6 branch** that line reads:
 
-The feed carries a `transform` property, which is the correction point for orientation and for
-mirroring the front camera — a selfie preview that is not mirrored reads as wrong to everyone
-who has ever used a phone, and a saved image that *is* mirrored reads as wrong to everyone who
-has ever read a t-shirt. Those two wants conflict, and the usual resolution is to mirror the
-preview and save unmirrored.
+```python
+return platform == "macos" or platform == "windows" or platform == "linuxbsd" or platform == "android"
+```
 
-**Most phone cameras deliver YCbCr, not RGB.** `get_datatype()` returns `FEED_RGB`,
-`FEED_YCBCR`, `FEED_YCBCR_SEP`, or `FEED_EXTERNAL`, and Android's own PR notes that
-`FEED_YCBCR_SEP` "is used in most cases". The engine converts automatically only when the feed
-is used as a camera background; anywhere else the display path needs the standard conversion
-shader. This repository already carries a shader (`shaders/snow_sparkle.gdshader`), so it is a
-known kind of work rather than a new one.
+The files in `modules/camera/` on 4.6 are `camera_android.cpp`, `camera_macos.mm`,
+`camera_win.cpp`, and `camera_linux.cpp`. **There is no iOS file.** `platform/ios/` on the 4.6
+branch contains no camera source either.
+
+On `master` (4.7-dev) that same directory has gained `camera_apple.h` / `camera_apple.mm` — a
+unified Apple backend covering macOS *and* iOS. That is the change the demo author refers to when
+[shiena/godot-camerafeed-demo](https://github.com/shiena/godot-camerafeed-demo) lists its
+platform requirements as:
+
+> macOS: Godot Engine 4.0 or later · Linux: Godot Engine 4.4 or later ·
+> **Android: Godot Engine 4.5 or later** · **iOS: Godot Engine 4.7 dev 4 or later**
+
+So: the docs undersell 4.6 (Windows is supported and unlisted) and oversell it (iOS is listed and
+absent). Take `config.py` as the authority, not the class reference.
+
+### 1a. Confirmed against the templates on this machine
+
+Source-branch reading is one thing; what actually ships is another. Both 4.6 export templates in
+`~/Library/Application Support/Godot/export_templates/4.6.stable/` were unpacked and inspected.
+
+**iOS (`ios.zip` → `libgodot.ios.release.xcframework/ios-arm64/libgodot.a`):**
+
+- Camera-related object files present: `camera_feed.o`, `camera_server.o`, `camera_texture.o`,
+  plus the unrelated `camera_2d.o` / `camera_3d.o`. These are the **platform-independent base
+  classes** from `servers/`, and they are compiled in unconditionally.
+- Camera **backend** object files: none. No `camera_apple.o`, no `camera_ios.o`.
+- References to `AVCaptureSession` or `AVCaptureDevice`: **zero**.
+- Objective-C camera classes: **none**.
+
+**Android (`android_release.apk` → `lib/arm64-v8a/libgodot_android.so`):**
+
+- `CameraAndroid` and `CameraFeedAndroid` symbols present.
+- `ACameraManager_create`, `ACameraManager_openCamera`, `ACameraManager_getCameraIdList`,
+  `ACameraManager_getCameraCharacteristics` present.
+- Links `libcamera2ndk.so`.
+
+That is the whole question settled empirically. `CameraServer` and `CameraFeed` **exist** as
+classes on iOS — which is exactly why this is easy to get wrong, since the API is there and the
+autocomplete works — but nothing implements them, so the feed list is permanently empty.
+
+One more confirmation from our own file: `export_presets.cfg` lists every option for our iOS
+preset, and there is **no `modules/` section in it at all**. The `EditorExportPlatformIOS.modules/camera`
+checkbox the class reference describes is not present in 4.6's iOS preset. (It was real in Godot
+3.x, where [PR #33992](https://github.com/godotengine/godot/pull/33992) shipped Camera and ARKit
+as separate `libgodot_camera_module.iphone.*.a` static libs so apps could exclude the camera API
+and avoid App Store rejection. That mechanism is gone in 4.x.)
 
 ---
 
-## 3. Compositing and snapping
+## 2. Android — the section this was written for
 
-This is the part that is nearly free, because it is the pattern the application already uses
-everywhere.
+### 2a. It is in the build we have
+
+Android camera support landed in **Godot 4.5** via
+[PR #106094](https://github.com/godotengine/godot/pull/106094) (merged 2025-05-13), written by
+the same author as the demo above. We are on 4.6, so `camera_android.cpp` is compiled into the
+Android template we would export with. Nothing to install, no plugin, no custom engine build.
+
+It uses the **Camera2 NDK**, which requires **API level 24**. The same PR raised Godot's Android
+minimum from 21 to 24 for exactly this reason, and Godot 4.6's `config.gradle` now defaults to
+`minSdk 24` / `targetSdk 36`. **The floor and the requirement are the same number, so there is
+nothing to configure** — but do not lower `gradle_build/min_sdk` below 24 or the camera goes away
+silently.
+
+### 2b. We have no Android export preset at all
+
+`export_presets.cfg` contains exactly two presets: `preset.0` "Web" and `preset.1` "iOS". There is
+no Android preset, which means none of the Android work below has ever been exercised, and the
+first step is creating one. That also drags in the Android SDK / JDK setup and, if the share
+plugin in §5 is used, a **custom Gradle build**.
+
+This is worth being honest about in a plan: "add the camera to Android" is really "stand up an
+Android target for a project that has never had one, then add the camera."
+
+### 2c. Permission: declare it, then request it, then wait
+
+Two separate things, and both are needed.
+
+1. **Manifest.** Tick `permissions/camera` in the Android export preset — the docs describe it as
+   *"Required to be able to access the camera device."* Without it the runtime request can never
+   succeed.
+2. **Runtime.** The engine asks for it itself. `CameraFeedAndroid::activate_feed()` opens with:
+
+   ```cpp
+   if (!OS::get_singleton()->request_permission("CAMERA")) {
+       return false;
+   }
+   ```
+
+The trap is in that `return false`. The Android permission dialog is **asynchronous** — the first
+`activate_feed()` call fires the prompt and then returns false, because the answer has not arrived
+yet. There is no retry inside the engine and no graceful degradation: the feed just stays
+inactive. If the code treats that false as "no camera on this device," the Jingle Jam Cam screen
+comes up dead on every first launch and works on every launch after.
+
+The correct shape is to request first, wait for the answer, and only then activate. The answer
+arrives on a `MainLoop` signal:
+
+```
+on_request_permissions_result(permission: String, granted: bool)
+```
+
+`OS.get_granted_permissions()` reads the current state, and this is the one part of the camera
+work that can be built and tested before any camera code exists.
+
+### 2d. `set_format()` before `set_active()`, or nothing happens
+
+This is the single most likely way to lose an afternoon. The Android backend refuses to activate a
+feed whose format has not been chosen:
+
+```cpp
+ERR_FAIL_INDEX_V_MSG(selected_format, formats.size(), false,
+    vformat("CameraFeed format needs to be set before activating..."))
+```
+
+`set_format()` also returns false if the feed is already active, so the order is fixed: pick a
+format from the feed's `formats` array, `set_format()`, then `set_active(true)`. On iOS-shaped
+example code this step is usually absent, which is why copying an iOS snippet onto Android
+produces a black rectangle and no obvious error.
+
+Choosing the format is also where the preview resolution gets decided. A phone will happily offer
+something enormous; the design canvas is 1080 wide and the composite only needs to look good at
+phone-screen and share-sheet sizes.
+
+### 2e. Rotation is handled; mirroring is not
+
+Android's implementation does the hard part for us. `calculate_rotation()` combines three things —
+the **sensor orientation** baked into the camera hardware, the **current display rotation**, and
+whether the lens is **front or back facing** — and writes the result into the feed's `Transform2D`.
+Sensor orientation varies between handset models, so this is genuinely the part you would not want
+to write yourself, and it is the clearest advantage Android currently has over the iOS plugin
+(§3), where rotation handling comes from whichever backend you bolt on rather than from the engine.
+
+What it does **not** do is mirror the front camera. Reading the implementation, only rotation is
+applied — there is no horizontal flip for front-facing lenses. So for a selfie we have to flip it
+ourselves, and the flip is a preview-only concern:
+
+- **Mirror the preview.** A selfie preview that is not mirrored feels wrong to anyone who has used
+  a phone camera.
+- **Do not mirror the saved image.** Text in the shot — a programme, a t-shirt, the Richmond
+  Symphony logo on a tote bag — comes out backwards if you do.
+
+Since the artwork overlay is drawn in Godot in front of the feed, take care that the flip applies
+to the camera layer only and not to the "LET'S SLEIGH BELLS" lettering.
+
+### 2f. Formats: expect YCbCr, not RGB
+
+Android exposes `FEED_RGB` and `FEED_YCBCR_SEP`, and the PR notes that **`YCBCR_SEP` is used in
+most cases**. `FEED_YCBCR_SEP` means the frame arrives as two separate textures — a Y plane and a
+CbCr plane — that have to be combined and converted to RGB in a shader. The engine only does that
+conversion automatically when the feed is used as a 3D environment background, which is not our
+case; we want it as a texture behind 2D artwork.
+
+So a conversion shader is required. shiena's demo ships one (`ycbcr_to_rgb.gdshader`) that can be
+read as a reference. This repository already owns a shader (`shaders/snow_sparkle.gdshader`), so
+it is a familiar kind of work rather than a new one — but it is real work, and it is the piece
+most likely to be missed when estimating.
+
+### 2g. Ask for the feed list properly
+
+`CameraServer.feeds` is not populated the instant you ask. Set `monitoring_feeds = true` and then
+wait — [PR #108165](https://github.com/godotengine/godot/pull/108165) (merged for 4.5) added a
+`feeds_updated` signal precisely because feeds appear a few frames later on mobile, and documents
+the async behaviour. Connect to `feeds_updated`; do not read `feeds` in `_ready()` and conclude
+there is no camera.
+
+Each feed's `get_position()` returns `FEED_FRONT`, `FEED_BACK`, or `FEED_UNSPECIFIED`, which is
+how the mockup's "could be front or back" gets implemented — pick a feed, offer a flip button.
+
+### 2h. And a caution from elsewhere in this repository
+
+`docs/system_design.md` records that **no Android hardware has been measured for anything on this
+project**, and that the engine reports the gravity vector in opposite directions on the two
+platforms. That is a sensor note, not a camera note, and the camera work does not depend on it —
+but it means an Android build is not just a camera question. The first Android build will be the
+first time the shake instrument and the snow have ever run on the platform.
+
+---
+
+## 3. iOS — yes, via a GDExtension
+
+**The stock 4.6 iOS template has no camera backend** (§1a). `CameraServer.feeds` returns an empty
+list, and no export setting changes that, because the code is not in the binary. That is the fact
+an earlier draft of this document got wrong in the opposite direction — it read the class
+reference and reported a one-checkbox job.
+
+**But "not in the engine" is not "not available."** There is a maintained, drop-in path.
+
+### 3a. The recommended path: CameraServerExtension
+
+[godot-cameraserver-extension](https://github.com/j20001970/godot-cameraserver-extension) is a
+**GDExtension** that supplies camera backends for the platforms the engine has not got round to.
+It requires **Godot 4.4+**, so 4.6 is in range, and its support table lists **iOS on AVFoundation
+delivering RGBA**.
+
+Why this is the right shape of dependency:
+
+- **It is a GDExtension, not an engine patch.** Drop it in the project. No custom engine build, no
+  patched export template, no forked toolchain — which is the difference between a dependency the
+  project can carry and one it cannot.
+- **It extends `CameraServer` rather than replacing it.** Feeds it creates appear in the ordinary
+  `CameraServer.feeds`, so every line of code in §4 stays the same and nothing in the design is
+  extension-shaped. If 4.7 later makes it redundant, deleting it should be close to a no-op.
+- **It is alive and it has been fixing exactly our problem.** The most recent release, **2026-03-27**,
+  reads *"Fix iOS camera format selection, BGRA conversion, and camera feed activation."* Eight
+  releases since March 2025.
+- **It carries permission handling**, with `permission_granted()` and a `permission_result` signal
+  — which on iOS means the `privacy/camera_usage_description` string in the export preset (ours is
+  present and empty) must be written properly, since that is the sentence iOS shows in the prompt.
+- **RGBA on iOS means no conversion shader**, unlike Android's YCbCr (§2f). The iOS display path
+  is simpler than the Android one.
+
+**NEEDS DEVICE TEST.** Releases are all marked pre-release, and no version compatibility matrix is
+published per release. Confirm the 2026-03-27 binaries load under 4.6 and that a feed comes up on
+a real iPhone before this is planned around.
+
+### 3b. The alternatives, for completeness
+
+- **Wait for 4.7.** `camera_apple.mm` — a unified Apple backend covering macOS and iOS — is on
+  `master` now, and iOS then becomes what Android already is: built in, no dependency. Cleanest
+  outcome, and it costs an engine upgrade on a project heading for a late-November concert. Worth
+  noting that the **share plugin story points at 4.7 as well** (§5), so one upgrade settles both.
+- **Build godot-ios-plugins from PR #89.**
+  [PR #89](https://github.com/godot-sdk-integrations/godot-ios-plugins/pull/89) brings that
+  package's camera plugin up to Godot 4.x — `get_formats()` / `set_format()`, display-rotation
+  callbacks, lazy feed init. It is **open, not merged**, and its own notes say the plugin is
+  absorbed into engine core at 4.7+. Depending on an unmerged branch of a third-party package for
+  a shipping app is strictly worse than 3a.
+- **Custom engine build.** Backport `camera_apple.mm` to 4.6 and build your own iOS template.
+  Possible, and disproportionate.
+
+This also retires
+[Godot issue #79551](https://github.com/godotengine/godot/issues/79551) — "CameraServer.feeds in
+iOS returns nothing" — as a mystery. It is still open, and it is not a bug so much as a missing
+implementation.
+
+## 4. Compositing and snapping — the same on both platforms
+
+This part is nearly free, because it is the pattern the application already uses.
 
 A `CameraTexture` bound to the feed id is an ordinary texture. Put it on a `TextureRect` at the
-back of the play screen and the artwork, the vignette, the snow, and the title all draw in front
-of it by `z_index`, exactly as they already draw in front of the background. The Jingle Jam Cam
-screen becomes another screen in `app/`, composed the same way as the other four, with
-`app/sprite_position.gd` placing its elements against the same 1080-by-1920 design canvas.
+back of the screen and the artwork, the vignette, the snow, and the title all draw in front of it
+by `z_index`, exactly as they already draw in front of the background. The Jingle Jam Cam screen
+becomes another screen in `app/`, composed like the other four, with `app/sprite_position.gd`
+placing its elements against the same 1080-by-1920 design canvas.
 
 The snap is then one line, because the overlay is already composited — it is all one viewport:
 
@@ -89,74 +291,82 @@ The snap is then one line, because the overlay is already composited — it is a
 var image := get_viewport().get_texture().get_image()
 ```
 
-`save_png` to `user://` writes it. Note that on iOS `user://` is the app's Documents directory,
-and the export preset already sets `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace`
-for the capture harness — so a saved photo is already retrievable through the Files app, which
-is a usable fallback if nothing else lands in time.
-
-One thing to get right: the capture has to happen at the end of a frame, and the record button
-itself must not be in the shot. Hiding the UI for one frame and capturing on the next is the
-standard shape.
+Two details to get right: the capture must happen at the end of a frame, and the record button
+must not be in the shot — hide the UI for one frame, capture on the next.
 
 ---
 
-## 4. The one real gap: getting the photo to the audience member
+## 5. Getting the photo to the audience member
 
-Godot has no photo-library API.
-[Issue #34007](https://github.com/godotengine/godot/issues/34007) is the standing gap on iOS.
+Godot has no photo-library API on either platform;
+[issue #34007](https://github.com/godotengine/godot/issues/34007) is the standing gap. The route is
+the **share sheet**, from which the audience member taps "Save Image" — and the same sheet is how
+they text it to whoever they came with, which is arguably the better product. A photo that saves
+silently to the camera roll is a photo nobody sees again.
 
-The route is the **share sheet**, via the
-[iOS Share Plugin](https://godotengine.org/asset-library/asset/2907) (asset library, submitted
-February 2026) or [Shin-NiL/Godot-Share](https://github.com/Shin-NiL/Godot-Share), which covers
-Android and iOS behind one GDScript interface. From the share sheet the audience member taps
-"Save Image" — and the same sheet is how they text it to whoever they came with, which is
-arguably the better product anyway. A photo that saves silently to the camera roll is a photo
-nobody sees again; a share sheet is the moment it gets sent.
+`save_png` to `user://` first; every plugin below requires the file to be under `user://`. On iOS
+that is the app's Documents directory, and the export preset already sets `UIFileSharingEnabled`
+and `LSSupportsOpeningDocumentsInPlace` for the capture harness — so on iOS a saved photo is
+already retrievable through the Files app, which is a usable fallback if nothing else lands in time.
+Android has no equivalent freebie; without a share plugin the file is stuck in app-private storage.
 
-`privacy/photolibrary_usage_description` needs filling in as well if the save path is used.
+**Plugin options, and none is clean on 4.6:**
 
-This is the only piece requiring a third-party dependency, and it is worth evaluating both
-options against the "no fallbacks" convention in `docs/system_design.md` before committing.
+| Option | Platforms | Godot version | Verdict |
+|---|---|---|---|
+| [iOS Share Plugin, asset 2907](https://godotengine.org/asset-library/asset/2907) | iOS only | v5.2, **targets 4.6** | The one that actually matches our engine — but iOS only, and moot until §3 is resolved |
+| [godot-share](https://github.com/godot-sdk-integrations/godot-share) (moved from cengiz-pz, archived 2026-02-01) | Android + iOS | **unconfirmed** | The natural choice for Android. `share_image()`, `share_texture()`, `share_viewport()` |
+| [Share Plugin, asset store listing](https://store.godotengine.org/asset/cengiz/share-plugin/) | Android + iOS | **4.7+** | Same lineage, but the published listing requires 4.7 |
+| [Shin-NiL/Godot-Share](https://github.com/Shin-NiL/Godot-Share) | Android + iOS | Godot 2 & 3 only | Dead for our purposes |
 
----
+**NEEDS VERIFY:** which release of `godot-share` runs on 4.6. The store listing says 4.7+ and the
+repository does not state a version; that gap has to be closed by reading the release tags before
+anyone plans around it. Note the pattern: **the share story and the iOS camera story both point at
+4.7.** If a 4.7 upgrade is happening anyway, doing it once resolves both.
 
-## 5. What has to be checked on a phone
+Android setup also needs a **custom Gradle build**, and the `$genname` token must be removed from
+`package/unique_name` in the export preset — the default `com.example.$genname` is not substituted
+before export and breaks the plugin.
 
-**NEEDS DEVICE TEST, and this one is not optional.**
-[Godot issue #79551](https://github.com/godotengine/godot/issues/79551) — "CameraServer.feeds in
-iOS returns nothing" — is **still open**. It was filed in 2023, predates the built-in camera
-module, and the reporter was using the abandoned external plugin, so it may well be stale. But
-it is the exact failure that would sink this, and it costs fifteen minutes to settle:
+`privacy/photolibrary_usage_description` needs filling in on iOS if a save path is used.
 
-1. Tick `modules/camera` in the iOS export preset.
-2. Write a real string into `privacy/camera_usage_description`.
-3. A throwaway scene that prints `CameraServer.feeds.size()` and each feed's `get_position()`.
-4. Run it on the iPhone. A non-zero count ends the question.
-
-Everything else in this document follows from that number. Do this before writing a feature spec.
-
-The second and third things to check, once feeds exist, are both about how the image arrives:
-whether the feed comes up rotated or mirrored in our portrait-locked orientation, and whether
-`get_datatype()` returns a YCbCr variant that needs the conversion shader. Both are fixable;
-both are easier to answer with a live feed on screen than by reading.
+This is the only part of the whole feature requiring a third-party dependency, and it is worth
+weighing against the **"No fallbacks"** convention in `docs/system_design.md` before committing.
 
 ---
 
-## 6. Note on the web
+## 6. What to check on a phone, in order
 
-An earlier draft of this document was written on the assumption that this project was a
-single-page web app, and reached the opposite conclusion — Godot has **no web camera
-implementation at all**, and the
-[CameraServerExtension GDExtension](https://github.com/j20001970/godot-cameraserver-extension)
-that exists to widen platform coverage lists Web as unsupported. On the web the camera can never
-be an object inside the game; it has to be a `<video>` element behind a transparent canvas, with
-the snapshot composited by hand in JavaScript. On top of that, every known iPhone camera defect
-is specific to installed-web-app standalone mode: permission not persisted across launches
-([WebKit 215884](https://bugs.webkit.org/show_bug.cgi?id=215884)), and a feed that arrives
-rotated 90° in home-screen apps but not in Safari
-([Apple Developer Forums 801146](https://developer.apple.com/forums/thread/801146), September
-2025, no response).
+Desk research cannot settle any of these, and each is cheap enough that guessing costs more.
 
-**None of that applies to us.** It is recorded here only so the question does not get re-asked,
-and as one more piece of evidence for why the native direction is the right one: the camera
-screens are straightforward natively and close to unshippable on an installed iPhone web app.
+1. **iOS, an hour.** Print `CameraServer.feeds.size()` on the iPhone with the stock template
+   first — expect zero, and that confirms §1a on our own hardware rather than on my reading of it.
+   Then add the CameraServerExtension release from 2026-03-27, write a real
+   `privacy/camera_usage_description`, and print it again. A non-zero number there is the whole
+   question answered, and it decides between §3a and waiting for 4.7.
+2. **Android, an afternoon.** Create the Android export preset, tick `permissions/camera`, and get
+   a feed on screen: request permission → wait for `on_request_permissions_result` → `set_format()`
+   → `set_active(true)` → `CameraTexture` on a `TextureRect`. Confirm the rotation is right in
+   portrait, confirm `get_datatype()` returns `FEED_YCBCR_SEP`, and see how bad it looks before the
+   conversion shader.
+3. **Then the shader**, then the mirror-the-preview-not-the-save rule, then sharing.
+
+Do step 1 and step 2 before writing a feature spec. Together they cost a day and they decide the
+platform, the engine version, and whether this is a stretch goal or a real one.
+
+---
+
+## 7. Note on the web
+
+Recorded only so the question is not re-asked. Godot has **no web camera implementation**, and the
+[CameraServerExtension GDExtension](https://github.com/j20001970/godot-cameraserver-extension) that
+exists to widen platform coverage lists Web as unsupported. On the web the camera can never be an
+object inside the game — it has to be a `<video>` element behind a transparent canvas, with the
+snapshot composited by hand in JavaScript. On top of that, every known iPhone camera defect is
+specific to installed-web-app standalone mode: permission not persisted across launches
+([WebKit 215884](https://bugs.webkit.org/show_bug.cgi?id=215884)), and a feed that arrives rotated
+90° in home-screen apps but not in Safari
+([Apple Developer Forums 801146](https://developer.apple.com/forums/thread/801146), September 2025,
+no response).
+
+None of it applies to us. Holiday Sleigh Bells is a native application.
