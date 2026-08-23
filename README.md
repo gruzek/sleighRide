@@ -142,6 +142,39 @@ treating zero as level would pin the halo at its clamp the whole time anyone is 
 Nothing runs in the editor. None of the three is a `@tool` script, so a screen can be composed
 without a snowflake turning underneath the work.
 
+## Winnie's fun fact bubble
+
+`app/fun_fact_bubble.tscn` is the speech bubble on the bell selection screen. It shows one fun
+fact, drawn when the screen is entered and held until the screen is left.
+
+- The facts are an exported list of text on the scene's root, edited in the inspector. Adding a
+  fact is adding an entry; there is no fixed count and no file to maintain. An empty list hides
+  the bubble at runtime rather than showing a heading over nothing, and does not hide it in the
+  editor, where the composition still has to be authorable.
+- Facts come from a shuffle bag rather than a random pick, so every fact is shown once before
+  any is repeated. The bag is a static variable, which is what lets it survive the scene change
+  the play screen's Back button causes; nothing is written to disk and no autoload is involved.
+  It refills from the pool as it stands when it empties, so a fact added between visits arrives
+  at the next refill rather than mid-shuffle.
+- Both pieces of text are live `Label` nodes, and they are the only live text in the application
+  outside a button label. The typeface is one exported property both of them take from, unset
+  today, so the engine's default face is what renders until a brand font is licensed. The fact is
+  measured and stepped down from its starting size until it fits the label's box, and never below
+  an exported floor; a fact that will not fit even there is reported by name.
+- **The entrance scales the whole node and the pulse scales the sprite alone.** There is nothing
+  to read while the bubble is arriving, so the pop carries the text with it. Once the fact is
+  legible only the white shape keeps the beat, because a five percent wobble resamples the glyphs
+  on the one thing on that screen anybody is reading.
+- The rhythm is the title animation's, reusing its numbers: an entrance that overshoots and
+  settles, then the same gesture at a smaller peak once every eight beats at 80 beats per minute.
+- **The pop grows from the tip of the tail, and the script carries no pivot.** The origin is set
+  in the scene by the sprite's `centered` and `offset`, at texture coordinates `(30, 402)`, which
+  is where the supplied artwork's tail meets Winnie's mouth. Moving it is a scene edit, the same
+  arrangement the red tree's bend uses.
+- Both labels ignore mouse and touch input. The bubble sits inside the carousel's drag band, so a
+  label left at its default would carve a dead zone out of the middle of the swipe region on the
+  screen whose whole purpose is swiping — invisible on a desktop and only found under a thumb.
+
 ## The capture harness
 
 `capture/shake_capture.tscn` records every motion sample the engine sees to one comma-separated

@@ -60,7 +60,7 @@ app/main.tscn            Title. "Tap to start"
         ↓
 app/instructions.tscn    How to play. "Continue"
         ↓
-app/instrument_select.tscn   Swipe between three bells. "Continue"
+app/instrument_select.tscn   Swipe between three bells, and one fun fact. "Continue"
         ↓
 app/instrument.tscn      Play. Shake to sound the chosen bell. "Back" returns to selection
 ```
@@ -76,7 +76,9 @@ Screens are assembled from small scenes rather than authored as one tree. `title
 - **`app/sprite_position.gd`** positions a node against the design canvas — 1080 by 1920 — with an anchor per axis and an option to respect the device's safe area. The engine expands this canvas rather than stretching it, so on any portrait phone the canvas stays 1080 units wide and grows taller.
 - **`app/safe_area_margin.gd`** holds a bottom-anchored control clear of the home indicator. Godot's anchoring measures from the physical window edge and knows nothing about the safe area, so every button in the flow carries this script. It derives its offsets from authored base values rather than adjusting them in place, so repeated recomputes never compound.
 
-A composition scene that needs behaviour of its own extends the placement script rather than replacing it, because a node holds only one script. `app/instrument_carousel.gd` and `app/holiday_sleigh_bells.gd` are both built that way: each extends `app/sprite_position.gd`, calls `super()` from its own `_ready`, and goes on carrying the exported placement properties the hosting screen sets on it.
+`app/fun_fact_bubble.tscn` is one of these small scenes, instanced once on the bell selection screen. It is the only one carrying live text: two `Label` nodes drawing a fun fact from an exported list, which is why it is also the only place in the application where a typeface is configured. The list is served by a shuffle bag held in a static variable, so no fact repeats until all have been shown and the sequence survives the scene change without an autoload or a file.
+
+A composition scene that needs behaviour of its own extends the placement script rather than replacing it, because a node holds only one script. `app/instrument_carousel.gd`, `app/holiday_sleigh_bells.gd`, and `app/fun_fact_bubble.gd` are all built that way: each extends `app/sprite_position.gd`, calls `super()` from its own `_ready`, and goes on carrying the exported placement properties the hosting screen sets on it.
 
 A second family of shared scripts gives a sprite motion rather than a place: `app/tilt_sway.gd` leans one with the phone's side-to-side tilt, `app/continuous_spin.gd` turns one at a constant rate, and `app/tilt_drift.gd` slides one a short way as the phone tilts, all three reading the tilt through `app/phone_tilt.gd`. These attach to the **child sprites** inside an artwork scene rather than to its root, which is why they extend nothing: the root is where the placement script lives and owns `position`, and a child's transform is its own. They also carry no pivot — a sprite's origin is set in the scene by `centered` and `offset`, so where the red tree bends is authored in `app/straight_red_tree.tscn` by eye rather than written into the sway.
 

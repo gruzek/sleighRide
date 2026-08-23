@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://app/fun_fact_bubble.gd" id="1_bubble"]
+[ext_resource type="Texture2D" path="res://images/v2/thought_bubble.svg" id="2_tex"]
+
+[node name="FunFactBubble" type="Node2D"]
+script = ExtResource("1_bubble")
+facts = Array[String](["Leroy Anderson dreamed up \"Sleigh Ride\" during a July heat wave. No snow in sight.", "The Boston Pops premiered \"Sleigh Ride\" on May 4, 1948 - in the spring, not winter.", "\"Sleigh Ride\" had no words for two years. Mitchell Parish added lyrics in 1950.", "Leroy Anderson translated for U.S. Army intelligence in Iceland during WWII.", "Anderson also wrote \"The Typewriter,\" scored for an actual typewriter.", "\"Let It Snow!\" is a Thanksgiving weekend tradition at the Carpenter Theatre.", "About 200,000 people hear the Richmond Symphony live every year.", "One patron insists Anderson's \"Bugler's Holiday\" is a perfect holiday tune."])
+
+[node name="Bubble" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+centered = false
+offset = Vector2(-30, -402)
+scale = Vector2(1.35, 1.35)
+
+[node name="Header" type="Label" parent="."]
+offset_left = 27.0
+offset_top = -455.0
+offset_right = 470.0
+offset_bottom = -385.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.078431375, 0.078431375, 0.078431375, 1)
+theme_override_font_sizes/font_size = 44
+text = "DID YOU KNOW?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Fact" type="Label" parent="."]
+offset_left = 27.0
+offset_top = -375.0
+offset_right = 470.0
+offset_bottom = -145.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.078431375, 0.078431375, 0.078431375, 1)
+theme_override_font_sizes/font_size = 40
+text = "The Boston Pops premiered Sleigh Ride on May 4, 1948 - in the spring, not winter."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

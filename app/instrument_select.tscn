@@ -2,10 +2,11 @@
 
 [ext_resource type="Script" uid="uid://qmtwpjfif7yq" path="res://app/instrument_select.gd" id="1_sel"]
 [ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
-[ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
+[ext_resource type="PackedScene" uid="uid://ctmi7sitcv5hi" path="res://app/winnie.tscn" id="3_winnie"]
 [ext_resource type="PackedScene" uid="uid://bk3ygkfq4b307" path="res://app/instrument_carousel.tscn" id="4_selector"]
 [ext_resource type="PackedScene" path="res://app/swipe_to_select.tscn" id="5_swipe"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="8_r8bxp"]
+[ext_resource type="PackedScene" path="res://app/fun_fact_bubble.tscn" id="35_bubble"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
@@ -25,6 +26,22 @@ corner_radius_bottom_right = 55
 corner_radius_bottom_left = 55
 corner_detail = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0c8ss"]
+bg_color = Color(0.98039216, 0.27058825, 0.21176471, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nex8d"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
 [node name="InstrumentSelect" type="Control" unique_id=1734298380]
 layout_mode = 3
 anchors_preset = 15
@@ -36,6 +53,7 @@ mouse_filter = 2
 script = ExtResource("1_sel")
 
 [node name="background" type="ColorRect" parent="." unique_id=1792008761]
+z_index = -3
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -45,6 +63,7 @@ mouse_filter = 2
 color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 
 [node name="Vignette" parent="." unique_id=1118231401 instance=ExtResource("99_vig")]
+z_index = -2
 layout_mode = 1
 grow_horizontal = 1
 grow_vertical = 1
@@ -54,30 +73,36 @@ design_position = Vector2(523, 163.00002)
 respect_safe_area = true
 
 [node name="Winnie" parent="." unique_id=2000750561 instance=ExtResource("3_winnie")]
-design_position = Vector2(323, 1636)
+scale = Vector2(0.7, 0.7)
+design_position = Vector2(323, 1787)
+vertical_anchor = 2
+
+[node name="FunFactBubble" parent="." unique_id=1262092165 instance=ExtResource("35_bubble")]
+design_position = Vector2(396, 1667)
 vertical_anchor = 2
 
 [node name="InstrumentSelector" parent="." unique_id=999126304 instance=ExtResource("4_selector")]
-scale = Vector2(1.5, 1.5)
-design_position = Vector2(532, 931)
-vertical_anchor = 1
+design_position = Vector2(532, 613)
+vertical_anchor = 2
 respect_safe_area = true
 
 [node name="SwipeToSelect" parent="." unique_id=1052910708 instance=ExtResource("5_swipe")]
-design_position = Vector2(518, 448)
+design_position = Vector2(518, 1078)
+vertical_anchor = 2
 respect_safe_area = true
 
 [node name="ContinueButton" type="Button" parent="." unique_id=1778197391]
-layout_mode = 0
-anchor_left = 0.5
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -320.0
-offset_top = -207.0
-offset_right = 340.0
-offset_bottom = -97.0
-grow_horizontal = 2
+offset_left = -263.0
+offset_top = -145.0
+offset_right = -38.0
+offset_bottom = -35.0
+grow_horizontal = 0
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
@@ -90,5 +115,35 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_31ns7")
 theme_override_styles/focus = SubResource("StyleBoxFlat_31ns7")
 text = "Continue"
 script = ExtResource("91_safe")
+base_offset_top = -145.0
+base_offset_bottom = -35.0
 
 [node name="Snow" parent="." unique_id=585041252 instance=ExtResource("8_r8bxp")]
+
+[node name="JingleCamButton" type="Button" parent="." unique_id=1794024905]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -536.0
+offset_top = -155.0
+offset_right = -290.0
+offset_bottom = -33.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_0c8ss")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nex8d")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0c8ss")
+theme_override_styles/focus = SubResource("StyleBoxFlat_0c8ss")
+text = "Jingle
+Cam"
+script = ExtResource("91_safe")
+base_offset_top = -155.0
+base_offset_bottom = -33.0
