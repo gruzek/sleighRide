@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" path="res://app/play_along.tscn" id="6_play"]
 [ext_resource type="PackedScene" path="res://app/winnie.tscn" id="7_winnie"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="10_i37im"]
-[ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="Script" path="res://app/beat_reveal.gd" id="92_beat"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbt"]
@@ -99,6 +99,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_tapbp")
 theme_override_styles/hover = SubResource("StyleBoxFlat_tapbt")
 theme_override_styles/focus = SubResource("StyleBoxFlat_tapbt")
 text = "Tap to start"
-script = ExtResource("91_safe")
+script = ExtResource("92_beat")
+title_animation = NodePath("../HolidaySleighBells")
 
 [node name="Snow" parent="." unique_id=437428202 instance=ExtResource("10_i37im")]

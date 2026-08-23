@@ -20,6 +20,13 @@ extends "res://app/sprite_position.gd"
 # animation with a message, instead of bringing the title in as two words and saying nothing.
 const WORD_NAMES: Array[String] = ["Holiday", "Sleigh", "Bells"]
 
+# Each beat of the opening loop, counted from 1, as it is reached. It exists so that something
+# else on the screen can arrive in time with the phrase without holding a second copy of the
+# tempo: this scene stays the only place the beat is defined, and changing `beat_seconds` still
+# moves everything together. Only the opening announces; once the pulse takes over the phrase has
+# been spoken and there is nothing left to arrive on.
+signal entrance_beat_reached(beat_index: int)
+
 # Unticked, the three words sit at their authored scales and nothing moves, which is the scene
 # exactly as it rendered before this feature.
 @export var animate: bool = true
@@ -81,16 +88,26 @@ func _collect_words() -> bool:
 		_resting_scales.append(word.scale)
 	return true
 
-# Two tweens carry the pattern and neither animates anything itself; both only schedule. The
+# Three tweens carry the pattern and none animates anything itself; all three only schedule. The
 # opening is played once - the delay, the entrance, and the rest of that first loop - and hands
-# over to the pulse, which repeats for as long as the screen is up. Both are bound to this node
-# and are killed with it, so a scene change needs no cleanup of its own.
+# over to the pulse, which repeats for as long as the screen is up. The clock runs alongside the
+# opening and announces its beats. All are bound to this node and are killed with it, so a scene
+# change needs no cleanup of its own.
 func _conduct() -> void:
 	var opening := create_tween()
 	opening.tween_interval(initial_delay_seconds)
 	opening.tween_callback(_play_set.bind(true))
 	opening.tween_interval(_loop_seconds())
 	opening.tween_callback(_start_pulsing)
+
+	# The clock is a separate tween rather than callbacks threaded into the opening, because the
+	# opening schedules the phrase in two hops and a beat has to be announced on every one of the
+	# loop's beats, including the five that carry no word.
+	var clock := create_tween()
+	clock.tween_interval(initial_delay_seconds)
+	for index in loop_beats:
+		clock.tween_callback(entrance_beat_reached.emit.bind(index + 1))
+		clock.tween_interval(beat_seconds)
 
 func _start_pulsing() -> void:
 	var pulsing := create_tween().set_loops()
