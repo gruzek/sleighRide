@@ -1,0 +1,165 @@
+[gd_scene format=3 uid="uid://bsjhbxfnjtusq"]
+
+[ext_resource type="Script" uid="uid://doa5x6wloxgw" path="res://app/jingle_cam.gd" id="1_cam"]
+[ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="2_2a50d"]
+[ext_resource type="PackedScene" path="res://app/camera_feed_view.tscn" id="2_feed"]
+[ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="3_title"]
+[ext_resource type="PackedScene" uid="uid://cs8ufkblh5tet" path="res://app/straight_red_tree.tscn" id="4_tree"]
+[ext_resource type="PackedScene" uid="uid://727x8vcn1yce" path="res://app/blue_snowflake.tscn" id="5_flake"]
+[ext_resource type="PackedScene" path="res://app/let_it_snow.tscn" id="6_letter"]
+[ext_resource type="PackedScene" path="res://app/valentina.tscn" id="7_valentina"]
+[ext_resource type="Texture2D" uid="uid://ba8n4124gx7wx" path="res://images/v2/cameraswitch.svg" id="8_switch"]
+[ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="9_safe"]
+[ext_resource type="Script" uid="uid://ckop65huwp64u" path="res://addons/SharePlugin/Share.gd" id="10_share"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_red"]
+bg_color = Color(0.98039216, 0.27058825, 0.21176471, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_red_pressed"]
+bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blue"]
+bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
+corner_radius_top_left = 55
+corner_radius_top_right = 55
+corner_radius_bottom_right = 55
+corner_radius_bottom_left = 55
+corner_detail = 12
+
+[node name="JingleCam" type="Control" unique_id=2057806612]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cam")
+
+[node name="background" type="ColorRect" parent="." unique_id=1863507546]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.019607844, 0.02745098, 0.047058824, 1)
+
+[node name="CameraFeedView" parent="." unique_id=506628036 instance=ExtResource("2_feed")]
+layout_mode = 1
+extra_quarter_turns = 0
+
+[node name="Vignette" parent="." unique_id=2071551044 instance=ExtResource("2_2a50d")]
+layout_mode = 0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="Title" parent="." unique_id=1766737182 instance=ExtResource("3_title")]
+design_position = Vector2(523, 163.00002)
+respect_safe_area = true
+
+[node name="StraightRedTree" parent="." unique_id=1491265732 instance=ExtResource("4_tree")]
+design_position = Vector2(191.75, 1346.2244)
+horizontal_anchor = 0
+vertical_anchor = 2
+
+[node name="BlueSnowflake" parent="." unique_id=576956769 instance=ExtResource("5_flake")]
+design_position = Vector2(837, 1113)
+horizontal_anchor = 2
+vertical_anchor = 1
+
+[node name="LetItSnow" parent="." unique_id=1908120768 instance=ExtResource("6_letter")]
+design_position = Vector2(300, 1420)
+horizontal_anchor = 0
+vertical_anchor = 2
+
+[node name="Valentina" parent="." unique_id=889957841 instance=ExtResource("7_valentina")]
+design_position = Vector2(790, 1560)
+horizontal_anchor = 2
+vertical_anchor = 2
+
+[node name="SwitchCameraButton" type="Button" parent="." unique_id=1082697751]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -207.0
+offset_right = 200.0
+offset_bottom = -97.0
+grow_vertical = 0
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_focus_color = Color(1, 1, 1, 1)
+theme_override_constants/icon_max_width = 56
+theme_override_styles/normal = SubResource("StyleBoxFlat_blue")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_red_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_blue")
+theme_override_styles/focus = SubResource("StyleBoxFlat_blue")
+icon = ExtResource("8_switch")
+icon_alignment = 1
+expand_icon = true
+script = ExtResource("9_safe")
+
+[node name="SnapButton" type="Button" parent="." unique_id=2146196552]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -207.0
+offset_right = 280.0
+offset_bottom = -97.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+theme_override_styles/normal = SubResource("StyleBoxFlat_red")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_red_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_red")
+theme_override_styles/focus = SubResource("StyleBoxFlat_red")
+text = "Press to Snap"
+script = ExtResource("9_safe")
+
+[node name="BackButton" type="Button" parent="." unique_id=702035958]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -207.0
+offset_right = -40.0
+offset_bottom = -97.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 36
+theme_override_styles/normal = SubResource("StyleBoxFlat_blue")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_red_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_blue")
+theme_override_styles/focus = SubResource("StyleBoxFlat_blue")
+text = "Back"
+script = ExtResource("9_safe")
+
+[node name="Share" type="Node" parent="." unique_id=887008209]
+script = ExtResource("10_share")

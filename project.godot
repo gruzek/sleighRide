@@ -14,7 +14,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Sleigh Ride"
+config/name="Holiday Sleigh Bells"
+config/version="0.01"
 run/main_scene="uid://bpebykdxeem4"
 config/features=PackedStringArray("4.7", "Mobile")
 run/delta_smoothing=false
@@ -33,6 +34,10 @@ window/size/viewport_height=1920
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/GMPShared/menu/plugin.cfg", "res://addons/SharePlugin/plugin.cfg")
 
 [global_group]
 

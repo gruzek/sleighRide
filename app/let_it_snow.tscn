@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" uid="uid://dss8vbivsc4ry" path="res://app/staggered_words.gd" id="1_anim"]
+[ext_resource type="Texture2D" uid="uid://c405utmkgfini" path="res://images/v2/let_it.svg" id="2_letit"]
+[ext_resource type="Texture2D" uid="uid://b1bsakghi6epl" path="res://images/v2/snow_!.svg" id="3_snow"]
+[ext_resource type="Texture2D" uid="uid://mrj4hdebp4qo" path="res://images/v2/2026.svg" id="4_year"]
+
+[node name="LetItSnow" type="Node2D"]
+script = ExtResource("1_anim")
+word_names = Array[String](["LetIt", "Snow", "Year"])
+initial_delay_seconds = 0.0
+
+[node name="LetIt" type="Sprite2D" parent="."]
+position = Vector2(0, -120)
+scale = Vector2(2.1, 2.1)
+texture = ExtResource("2_letit")
+
+[node name="Snow" type="Sprite2D" parent="."]
+position = Vector2(0, 0)
+scale = Vector2(2.1, 2.1)
+texture = ExtResource("3_snow")
+
+[node name="Year" type="Sprite2D" parent="."]
+position = Vector2(0, 110)
+scale = Vector2(2.1, 2.1)
+texture = ExtResource("4_year")

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://drfvttqkbp2of"
+path="res://.godot/imported/RS_SleighBell_B_011.wav-afb229979e81a74f43ca7f4c7882f5af.sample"
+
+[deps]
+
+source_file="res://sounds/v2/Type B/RS_SleighBell_B_011.wav"
+dest_files=["res://.godot/imported/RS_SleighBell_B_011.wav-afb229979e81a74f43ca7f4c7882f5af.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

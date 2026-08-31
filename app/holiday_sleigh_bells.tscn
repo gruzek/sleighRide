@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://n6lxwfwn1621"]
 
-[ext_resource type="Script" path="res://app/holiday_sleigh_bells.gd" id="1_anim"]
+[ext_resource type="Script" uid="uid://dss8vbivsc4ry" path="res://app/staggered_words.gd" id="1_anim"]
 [ext_resource type="Texture2D" uid="uid://bhiev13i63saq" path="res://images/v2/holiday.svg" id="2_qgd5l"]
 [ext_resource type="Texture2D" uid="uid://cf5h3mi1v8cqm" path="res://images/v2/sleigh.svg" id="3_hsmyv"]
 [ext_resource type="Texture2D" uid="uid://dpybtxmyw42y7" path="res://images/v2/bells.svg" id="4_g7c4u"]
 
 [node name="HolidaySleighBells" type="Node2D" unique_id=524937281]
 script = ExtResource("1_anim")
+word_names = Array[String](["Holiday", "Sleigh", "Bells"])
 
 [node name="Holiday" type="Sprite2D" parent="." unique_id=1076433839]
 position = Vector2(2.4682634, -144.125)

@@ -33,7 +33,7 @@ Two decisions this plan makes that the specification does not name, because they
 - **The back control is a text button reading "Back"**, styled like the existing buttons on the other screens. Every control in this application is a text button; introducing an icon-only control here would be the first.
 - **The supplied switch-camera icon is copied into the repository** as `images/v2/cameraswitch.svg`. Nothing is referenced from a path outside the project.
 
-## The four things worth getting right
+## The seven things worth getting right
 
 ### The camera image arrives as two textures, not one
 
@@ -41,17 +41,66 @@ Two decisions this plan makes that the specification does not name, because they
 
 So the display path is two `CameraTexture` nodes on one `TextureRect`, one bound to `CameraServer.FEED_Y_IMAGE` and one to `CameraServer.FEED_CBCR_IMAGE`, combined by a shader. A single `CameraTexture` on a `TextureRect` produces a grey, washed-out image that looks like a broken exposure rather than like a missing colour conversion, which is why this is named first: the symptom does not point at the cause.
 
-### A format must be selected before the feed is activated
+### The first activation always fails, and the engine never retries
 
-The engine refuses to activate a feed whose format has not been chosen. On Android this is an explicit `ERR_FAIL_INDEX_V_MSG` reading "CameraFeed format needs to be set before activating"; the Apple backend exposes `get_formats()` and `set_format()` on the same contract. The order is fixed and is not a matter of taste: read `formats`, call `set_format()`, then `set_active(true)`. `set_format()` on an already-active feed returns false.
+**This is an engine defect, measured on the handset on 2026-08-23, and it decides the shape of the activation code.**
 
-Most published example code predates format selection and omits the step entirely, which produces a black rectangle and no error visible on the device.
+`modules/camera/camera_apple.mm`'s `activate_feed()` returns `true` when camera permission is already granted. When permission has *not* yet been answered, it calls `requestAccessForMediaType` with a completion handler that builds the capture session later, and then **returns `false` immediately without waiting**. `servers/camera/camera_feed.cpp` only marks a feed active when that call returns true:
+
+```cpp
+} else if (p_is_active) {
+    if (activate_feed()) { active = true; }
+}
+```
+
+Nothing runs again when the person taps Allow. So on the launch where permission is first granted — which is every audience member's first launch, and the only launch most of them will have — the camera genuinely starts, the phone's green camera indicator comes on, and `feed_is_active` reports `false` for the rest of the session.
+
+The device probe confirmed both the failure and the cure. Deactivating and reactivating once permission has been answered brings the feed up: `active now: true`. Deactivating first rather than simply asking again matters, because the completion handler has already built a capture session and assigned it, and activating over the top would overwrite the pointer to a session still running.
+
+Two consequences to carry into the code: `set_active()` is the setter for `feed_is_active` and **returns `void`**, so success is read back from the property and never from a return value; and the retry is not a nicety but the only path to a working camera on a first launch.
+
+### No format is selected on iOS
+
+The plan originally called for `set_format()` before activation. **That step is removed.** The probe reports `formats: 0` on all eight feeds both before and after activation, and the feed activates and delivers frames regardless. The `ERR_FAIL_INDEX_V_MSG` reading "CameraFeed format needs to be set before activating" is in the **Android** backend, `camera_android.cpp`, and has no counterpart in `camera_apple.mm`. Calling `set_format()` against an empty array would fail rather than help.
 
 ### The controls are on the screen the photograph is a capture of
 
 Requirement 7 of the specification exists because the naive implementation is wrong in a way that is permanent. The photograph is `get_viewport().get_texture().get_image()`, and the shutter, the switch-camera button, and the back button are all in that viewport. Capturing straightforwardly puts a red button across the bottom of every keepsake anybody sends to anybody.
 
 The shape is: hide the three controls, wait for the frame to actually be drawn, capture, restore. The waiting is the part that is easy to get wrong — setting `visible = false` and capturing in the same call captures the frame that was already drawn, with the controls still in it.
+
+### The engine's rotation is right; adding to it is what breaks the picture
+
+**Corrected after the build, 2026-08-24.** The plan below was written expecting the rotation to
+need work. It needed less than expected in one respect and more in another.
+
+Less: `feed_transform` reports **90 degrees** on an iPhone in portrait, and applying exactly that
+stands the picture upright on both cameras. Two builds were spent on the assumption that the
+engine's figure was a half turn out, and both were wrong. The exported `extra_quarter_turns` knob
+survives for a handset that disagrees, and its correct value on this one is **zero**.
+
+More: the transform is not applied for us at all on this path, because `feed_transform` is only
+honoured automatically for a feed used as a 3D environment background. The rotation is applied to
+the node that draws the picture, which transposes the rectangle on quarter turns.
+
+A second correction, found while fixing the first: **mirroring must flip whichever texture axis is
+screen-horizontal at the current rotation**, not the texture's own horizontal axis. At a quarter
+or three-quarter turn those are different axes, and flipping the wrong one stands the person on
+their head rather than mirroring them.
+
+### Two faults that cost more than the code did
+
+Recorded because neither was a coding mistake and both will recur.
+
+**Godot's export cache never invalidated.** `.godot/exported/` names entries by a hash of the file
+path rather than its contents, so a `.tscn` edited outside the editor keeps shipping its stale
+cached copy. Several scenes had been exporting in that state for weeks - one dated from July.
+Every "no change at all" result during this build traces to it. **Clearing `.godot/exported/` is
+now a required step after any scene edit made outside the editor**, and is recorded in
+`docs/system_design.md` under Platform notes.
+
+**A scene open in the editor overwrites edits made on disk.** The `plugins/SharePlugin` flag was
+set three times and reverted twice by the running editor before it stuck.
 
 ### Mirroring the wrong node reverses the Symphony's name
 
@@ -71,7 +120,7 @@ Requirement 5 is emphatic for a reason. The mirror is a negative horizontal scal
 
 5. In the same preset, write `privacy/photolibrary_usage_description`, which iOS requires before the share sheet's "Save Image" will work. Suggested text: `Holiday Sleigh Bells saves your Jingle Cam photo to your photo library.`
 
-6. **Prove the feed exists on the handset before writing anything else.** A throwaway scene that sets `CameraServer.monitoring_feeds = true`, connects `camera_feeds_updated`, and prints the feed count, each feed's `get_position()`, each feed's `get_datatype()`, and the contents of `formats`. Deploy to the iPhone and read the output.
+6. **Prove the feed exists on the handset before writing anything else.** *(Completed 2026-08-23 — see the results recorded in the two sections above. `capture/camera_probe.gd` is the harness that produced them.)* A throwaway scene that sets `CameraServer.monitoring_feeds = true`, connects `camera_feeds_updated`, and prints the feed count, each feed's `get_position()`, each feed's `get_datatype()`, and the contents of `formats`. Deploy to the iPhone and read the output.
 
    This step gates the rest of the plan. Everything below assumes two feeds, a `FEED_YCBCR_SEP` datatype, and a non-empty format list. If the count is zero, stop and revisit `features/jingle_jam_cam_camera_exploration.md` §3 rather than proceeding.
 
@@ -109,7 +158,9 @@ Requirement 5 is emphatic for a reason. The mirror is a negative horizontal scal
 
     - Exports `mirror_selfie: bool = true`, so the mirroring rule of requirement 5 is a property rather than a constant.
     - Holds the feeds it found, and the index of the one in use.
-    - `open(position)` selects the feed whose `get_position()` matches, selects a format from its `formats`, activates it, and binds the two `CameraTexture` nodes to `FEED_Y_IMAGE` and `FEED_CBCR_IMAGE`.
+    - `open(position)` selects a feed, activates it, and binds the two `CameraTexture` nodes to `FEED_Y_IMAGE` and `FEED_CBCR_IMAGE`. **No format is selected**, for the reason in the section above.
+    - **Feed selection is by name and not by index.** The probe found **eight** feeds on the handset, not two: `Back Camera`, `Front Camera`, `Back Telephoto Camera`, `Back Dual Camera`, `Front TrueDepth Camera`, `Back Ultra Wide Camera`, `Back Dual Wide Camera`, and `Back Triple Camera`. The screen wants the two plain ones — `Front Camera` for the selfie and `Back Camera` for the other side. Selecting "the first feed whose position matches" happens to give the right answer today but would silently pick the TrueDepth camera on a handset that enumerates in a different order.
+    - **Activation carries the retry.** Call `set_active(true)`; if `feed_is_active` is still false, the permission prompt is outstanding. Await the answer, then `set_active(false)` followed by `set_active(true)`. `set_active()` returns `void`, so every check reads `feed_is_active`.
     - `switch()` deactivates the current feed and opens the other, returning false where there is no other.
     - `close()` deactivates whatever is active. Called when the screen is left, so the camera is not left running behind a scene change.
     - Applies the mirror as a negative horizontal scale on the display node when the active feed is `FEED_FRONT` and `mirror_selfie` is true, and never anywhere else.
@@ -152,7 +203,7 @@ Requirement 5 is emphatic for a reason. The mirror is a negative horizontal scal
 
 23. Handle the declined permission. Where opening the selfie feed does not produce an active feed, close the camera and change scene straight back to `res://app/instrument_select.tscn`. Requirement 10: the person lands back on the selection screen, where the button is now absent because the camera is now unavailable, and the state is consistent the moment they arrive.
 
-    Note for the build: the iOS permission answer is asynchronous. `camera_apple.mm` requests access via `requestAccessForMediaType` inside activation, so the first activation attempt can return before the person has answered. The build confirms the actual sequencing on the device in Phase 8 and drives the return from the point where the answer is known, not from the first false.
+    **The first false is not a decline.** This is the trap the engine defect sets: a first activation returns false whether the person is about to tap Allow or Don't Allow, because it returns before they have answered at all. Treating that false as a decline would send every first-time user straight back to the bell-selection screen with the camera light on. The return to bell selection happens only after the retry described in Phase 4 has also failed to bring the feed up.
 
 ### Phase 6: The shutter and the share sheet
 

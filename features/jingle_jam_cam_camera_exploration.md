@@ -9,6 +9,12 @@
 
 ---
 
+> ## Superseding note - 2026-08-23
+>
+> **The project is now on Godot 4.7.2, and the camera is built into the engine on iOS.** Sections 0, 1 and 3 below were written against 4.6, where it was not, and they recommend a GDExtension that is **no longer needed**. They are kept because the Android half of section 1 and the whole of section 2 remain accurate, and because the reasoning about how to tell what the engine actually supports is worth keeping.
+>
+> For what the camera really does on a handset, read **section 6a**, which is measurement rather than research. Where 6a and any earlier section disagree, 6a is right.
+
 ## 0. The short answer
 
 **Yes — but the platform that works today is the one we are not building.**
@@ -16,7 +22,7 @@
 | Build | Camera in Godot 4.6? | How hard |
 |---|---|---|
 | **Android** | **Yes, in the engine.** Shipped in 4.5. | Moderate — three gotchas, all known |
-| **iOS** | **Yes — but not from the stock template.** The engine's own iOS backend does not exist until 4.7. A maintained GDExtension supplies it on 4.6. | Moderate — one third-party dependency |
+| **iOS** | **Yes — built in as of 4.7**, which is what this project now runs. On 4.6 it was absent from the stock template and needed a GDExtension. | Moderate — see section 6a for what it actually took |
 | Web / SPA | No, and not ever soon | N/A — we are not a web app |
 
 **iOS is not blocked, it is just not free.** Verified against the export templates installed on
@@ -355,6 +361,101 @@ Do step 1 and step 2 before writing a feature spec. Together they cost a day and
 platform, the engine version, and whether this is a stretch goal or a real one.
 
 ---
+
+## 6a. Measured on the handset, 2026-08-23
+
+Everything above this point was desk research. This section is what an iPhone actually did, recorded because the Android build will need it and because two of the assumptions the desk research produced were wrong.
+
+The harness is `capture/camera_probe.gd`, kept in the repository. It is reached the same way the motion-capture harness is, and it reports on screen rather than to a console so it can be read without attaching the phone to Xcode.
+
+### What the phone reported
+
+**Eight feeds, not two.** An iPhone enumerates its physical cameras *and* the fused virtual ones as separate feeds:
+
+| Index | Position | Name |
+|---|---|---|
+| 0 | BACK | Back Camera |
+| 1 | FRONT | Front Camera |
+| 2 | BACK | Back Telephoto Camera |
+| 3 | BACK | Back Dual Camera |
+| 4 | FRONT | Front TrueDepth Camera |
+| 5 | BACK | Back Ultra Wide Camera |
+| 6 | BACK | Back Dual Wide Camera |
+| 7 | BACK | Back Triple Camera |
+
+The consequence for any code that wants "the selfie camera": **select by name, not by the first matching position.** Two feeds report FRONT and six report BACK. Taking the first match happens to give `Front Camera` on this handset and would give `Front TrueDepth Camera` on one that enumerates differently.
+
+**Every value read before activation is a placeholder.** All eight feeds reported `datatype: RGB (1)` and `formats: 0` before activation. After activation the same feed reported `datatype: YCBCR_SEP (3)`. A display path built against the pre-activation reading is built against a constructor default. This cost two probe runs to discover and is the single most useful thing in this section.
+
+**`formats` stays empty even when the feed is live.** `formats: 0` before activation and `formats: 0` after, on a feed delivering frames. On iOS no format is selected and none can be.
+
+### The activation defect
+
+On the launch where camera permission is first granted, the camera runs and the engine does not know it.
+
+`modules/camera/camera_apple.mm` `activate_feed()` returns `true` when permission is already granted. When permission is undetermined it calls `requestAccessForMediaType`, whose completion handler builds the capture session later, and **returns `false` immediately**. `servers/camera/camera_feed.cpp` marks a feed active only when that call returns true:
+
+```cpp
+} else if (p_is_active) {
+    if (activate_feed()) { active = true; }
+}
+```
+
+Nothing runs again when the person taps Allow. Measured result: the phone's green camera indicator came on and stayed on, and `feed_is_active` read `false` six seconds later. The application was holding the camera while believing it was not.
+
+**Confidence in calling this a defect.** The half that is not arguable is the state disagreeing with the hardware — a running camera reported as inactive is wrong on any reading. The half that could be argued as intended is `activate_feed()` returning false while a prompt is outstanding, on the view that the caller should try again. But the engine exposes **no signal, callback, or status query** to try again *on*: there is no `permission_result`, no `permission_granted()`, nothing. That the [CameraServerExtension](https://github.com/j20001970/godot-cameraserver-extension) adds exactly those two things is evidence other people found the same gap. **No existing Godot issue was found describing it**, which given that the iOS backend shipped only in 4.7 more likely means few people have reached it than that it is not real.
+
+### The cure, measured
+
+Deactivating and reactivating once permission has been answered brings the feed up — `active now: true`, `datatype: YCBCR_SEP (3)`.
+
+Deactivating first is not decoration. The completion handler has already built a capture session and assigned it; activating over the top overwrites that pointer while the session it referred to is still running. `set_active(false)` runs `deactivate_feed()`, which releases it.
+
+Note also that **`set_active()` returns `void`** — it is the setter for `feed_is_active`. Success is read back from the property, never from a return value.
+
+### Rotation and mirroring, as built
+
+**Apply the engine's rotation exactly, and add nothing to it.** On an iPhone held in portrait the
+feed's transform reports **90 degrees**, and applying precisely that stands the picture upright on
+both cameras. Two builds were spent on the assumption that the figure needed correcting by a half
+turn; it does not. `app/camera_feed_view.gd` keeps an exported `extra_quarter_turns` for a handset
+that disagrees, and its correct value here is zero.
+
+The transform is not applied for you on this path. `feed_transform` is honoured automatically only
+when a feed is used as a 3D environment background; a `CameraTexture` on a `TextureRect` ignores
+it, so the rotation is applied to the node that draws the picture. Rotating by a quarter turn
+transposes the rectangle, so the node is sized to the viewport with its axes swapped and shifted
+back over the screen.
+
+**Mirroring has to be a left-right flip on the screen, not in the texture.** After a quarter or
+three-quarter turn the texture's own horizontal axis is running up and down the screen, so
+flipping it there stands the person on their head instead of mirroring them. The shader takes a
+flag per axis and the caller sets whichever is screen-horizontal at the current rotation: `u` at
+no turn or a half turn, `v` at a quarter or three-quarter turn.
+
+**Hide the picture until the feed is genuinely delivering.** A `CameraTexture` with no frames yet
+returns the engine's placeholder image, which draws full-screen and reads as a fault.
+
+### What is different on Android, for the build that comes later
+
+Each row is a place where iOS-shaped camera code will not work unaltered.
+
+| | iOS (measured) | Android (from the source and PR #106094) |
+|---|---|---|
+| Where the backend lives | `modules/camera/camera_apple.mm`, since 4.7 | `modules/camera/camera_android.cpp`, since 4.5 |
+| `set_format()` before `set_active()` | **Not required, and impossible** — `formats` is empty | **Required.** `ERR_FAIL_INDEX_V_MSG` reading "CameraFeed format needs to be set before activating" |
+| Data type | `FEED_YCBCR_SEP` | `FEED_RGB` and `FEED_YCBCR_SEP`; the PR notes YCBCR_SEP is usual |
+| Feed count | 8, including fused virtual cameras | Not measured. No Android handset has been tested for anything on this project |
+| Permission request | Engine calls `requestAccessForMediaType` inside `activate_feed()` | Engine calls `OS::request_permission("CAMERA")` inside `activate_feed()` |
+| Permission also needs | `privacy/camera_usage_description` in the export preset | `permissions/camera` ticked in the export preset, for the manifest |
+| Retrying after the grant | Poll, because nothing reports the answer | **Event-driven.** `MainLoop`'s `on_request_permissions_result(permission, granted)` fires, so the retry keys off a signal rather than a timer |
+| Rotation | Handled in-engine, `handle_rotation_change()` | Handled in-engine, `calculate_rotation()` |
+| Front-camera mirroring | **Not applied.** Ours to do | **Not applied.** Ours to do |
+| Minimum platform version | — | API 24, matching Godot 4.7's `minSdk 24` default. Camera2 NDK requires it |
+
+The activation defect is the same shape on both — `activate_feed()` returns false while the permission answer is outstanding — but Android is the better-served platform for recovering from it, because `on_request_permissions_result` tells you exactly when to retry. An Android port should key the retry off that signal and keep the timed poll for iOS only.
+
+One thing that is not a camera question but will bite the same build: `docs/system_design.md` records that the engine reports the gravity vector in **opposite directions** on the two platforms and that no Android handset has been measured. The first Android build will be the first time the shake instrument and the snow have ever run on the platform.
 
 ## 7. Note on the web
 

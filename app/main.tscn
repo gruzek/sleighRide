@@ -6,9 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://727x8vcn1yce" path="res://app/blue_snowflake.tscn" id="4_snow"]
 [ext_resource type="PackedScene" uid="uid://n6lxwfwn1621" path="res://app/holiday_sleigh_bells.tscn" id="5_hsb"]
 [ext_resource type="PackedScene" path="res://app/play_along.tscn" id="6_play"]
-[ext_resource type="PackedScene" path="res://app/winnie.tscn" id="7_winnie"]
+[ext_resource type="PackedScene" uid="uid://ctmi7sitcv5hi" path="res://app/winnie.tscn" id="7_winnie"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="10_i37im"]
-[ext_resource type="Script" path="res://app/beat_reveal.gd" id="92_beat"]
+[ext_resource type="Script" uid="uid://nfbhfbh5r5k1" path="res://app/beat_reveal.gd" id="92_beat"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tapbt"]

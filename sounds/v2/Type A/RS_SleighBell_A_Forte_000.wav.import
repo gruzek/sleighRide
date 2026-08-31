@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dy0vngiaql1ss"
+path="res://.godot/imported/RS_SleighBell_A_Forte_000.wav-e882777a7bd9ce0fc64a72e8a4b6bea5.sample"
+
+[deps]
+
+source_file="res://sounds/v2/Type A/RS_SleighBell_A_Forte_000.wav"
+dest_files=["res://.godot/imported/RS_SleighBell_A_Forte_000.wav-e882777a7bd9ce0fc64a72e8a4b6bea5.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

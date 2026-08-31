@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://csscyx2l388w"
+path="res://.godot/imported/RS_SleighBell_A_Piano_003.wav-e6f8c69d3c34a74ddbbc0c2ca54f709b.sample"
+
+[deps]
+
+source_file="res://sounds/v2/Type A/RS_SleighBell_A_Piano_003.wav"
+dest_files=["res://.godot/imported/RS_SleighBell_A_Piano_003.wav-e6f8c69d3c34a74ddbbc0c2ca54f709b.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
