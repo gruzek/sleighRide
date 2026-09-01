@@ -19,6 +19,7 @@ This plan implements the Tap to Choose Your Bell feature (C1_19). It adds tap ha
 - **One-bell carousels are not supported.** With Continue gone the carousel is the only control that leaves the bell selection screen, and `_unhandled_input` returns immediately below two slots. Rather than leave a configuration that traps the audience member on a screen with no way forward, the configuration check in `_rebuild_slots()` is raised from rejecting exactly two instruments to rejecting fewer than three. Two remains rejected for its original reason, which is that a two-instrument cycle puts the far side at a cyclic distance of exactly 1.0 and the opacity ramp has no room to hide the wrap.
 - **The camera artwork is resized in the file, not in the Import dock.** `images/v2/photo_camera.svg.import` already exists and carries `svg/scale=1.0`. Changing that number is an editor action that cannot be performed from a plan step, and it is stored in a sidecar the editor regenerates whenever import settings are reset. Editing the scalable vector graphic's own `width` and `height` attributes while leaving its `viewBox` alone produces an identical texture at the default import scale, is visible in the asset itself, and survives a sidecar regeneration.
 - **The carousel emits, the screen navigates.** Tapping the centred bell changes scenes, but the carousel has never known that screens exist. It emits a signal and `app/instrument_select.gd` performs the scene change, which is the role that script already plays for the screen's buttons.
+- **The navigation is deferred, and the button's contents are composed.** Both were found on the handset rather than in planning and are recorded here. `centre_tapped` is emitted from `_unhandled_input`, so changing the scene synchronously in the listener tears down the node the engine is about to return into; the listener defers the change, and `_pointer_button` marks the event handled before dispatching a release rather than after. Separately, Godot's `Button` cannot centre an icon together with its lettering: `icon_alignment` LEFT pins the icon to the left margin, and its documentation states that CENTER draws the text on top of the icon when the vertical alignment is also centred. The button therefore carries no `text` and no `icon` of its own, and holds a full-rect `HBoxContainer` with a `TextureRect` and a `Label` instead.
 - **The shake prompt is a `Label` inside a `Node2D`.** `app/sprite_position.gd` extends `Node2D` and a `Label` is a `Control`, so the placement script cannot attach to a label directly. The new scene follows the shape `app/fun_fact_bubble.tscn` already uses.
 
 ## The tap rectangle, in the numbers the artwork actually occupies
@@ -146,10 +147,10 @@ The script's header comment, which explains that nothing here touches `CameraSer
 
 - `offset_right` moves from -290.0 to -38.0, which is where the Continue button's right edge was. The button becomes 498 design pixels wide.
 - `text` becomes the single-line `Jingle Cam` in place of the two-line `"Jingle\nCam"`.
-- `icon` is set to the new external resource.
-- `theme_override_constants/h_separation` is set to 24, because the default separation of 4 sits the icon against the lettering.
+- `text` and `icon` are not set on the button at all, and its now-dead font colour and font size overrides are removed with them. Godot's `Button` places the icon at the left margin and centres the text independently, which on a 498-pixel button leaves the icon stranded at the far left. Its documentation rules out the obvious alternative: with `icon_alignment` set to centre and the vertical alignment centred, the text draws on top of the icon.
+- A full-rect `HBoxContainer` named `Content` is added as a child, with `alignment` centre and `separation` 24, holding a `TextureRect` carrying the camera texture and a `Label` carrying `Jingle Cam` at 44 point white. All three set `mouse_filter` to ignore, so the press still reaches the button.
 
-Everything else is unchanged: the bottom-right anchors, `offset_left` at -536.0, `offset_top` at -155.0 and `offset_bottom` at -33.0, the red styles, the 44 point white lettering, `app/safe_area_margin.gd`, and its `base_offset_top` and `base_offset_bottom`.
+Everything else is unchanged: the bottom-right anchors, `offset_left` at -536.0, `offset_top` at -155.0 and `offset_bottom` at -33.0, the red styles, `app/safe_area_margin.gd`, and its `base_offset_top` and `base_offset_bottom`.
 
 `expand_icon` is deliberately left off and `icon_max_width` is deliberately not set. Both scale the imported texture rather than change what is rasterised, which on an upscale produces a soft icon. Sizing the source is what keeps it sharp.
 
@@ -208,6 +209,7 @@ Four failure modes worth naming, because each looks like something other than it
 - **Tapping a bell does nothing at all** is `tap_half_width` or `tap_half_height` failing validation in `_ready()`, which returns before slots are built. The screen shows no bells at all in that case, so an empty carousel is the symptom to look for before suspecting the rectangle.
 - **Tapping the centre bell moves the carousel instead of advancing** is `_max_travel` not being reset on press, so the first gesture after a drag inherits the previous one's travel and is judged a drag.
 - **The carousel sits between two bells after a tap on empty space** is the missed-tap branch returning without calling `_settle_to`. The press killed a settle and nothing restarted it.
+- **The application crashes on a tap that advances the screen** is the scene change running synchronously inside input propagation, or `set_input_as_handled` being called after the gesture is dispatched rather than before. Both are required; either one alone leaves the crash.
 - **A side bell cannot be tapped near its inner edge** is `tap_half_width` tuned above `side_slot_distance / (1.0 + side_slot_scale)`, where the centre rectangle shadows it. The validation in `_ready()` is what makes this loud rather than mysterious.
 
 ## README and Documentation Updates
@@ -257,7 +259,7 @@ There is no application coding standards document for this repository; §"Where 
 | File | Change | Review points |
 |---|---|---|
 | `app/instrument_carousel.gd` | Signal, three exported values, three validations, two state members, `_handle_tap`, `_slot_at`, `_end_drag` signature | Travel is tracked in two dimensions and as a maximum. The missed-tap branch still settles. `_slot_at` skips invisible slots and resolves overlaps by cyclic distance. The three Continue comments are corrected. The configuration floor is three |
-| `app/instrument_select.tscn` | `ContinueButton` and its two sub-resources removed; `JingleCamButton` widened, retexted, given an icon and a separation | The Jingle Cam sub-resources `StyleBoxFlat_0c8ss` and `StyleBoxFlat_nex8d` are kept. `base_offset_top` and `base_offset_bottom` are untouched, so the safe-area script keeps working |
+| `app/instrument_select.tscn` | `ContinueButton` and its two sub-resources removed; `JingleCamButton` widened and its contents composed into an `HBoxContainer` | The Jingle Cam sub-resources `StyleBoxFlat_0c8ss` and `StyleBoxFlat_nex8d` are kept. `base_offset_top` and `base_offset_bottom` are untouched, so the safe-area script keeps working. All three content nodes ignore mouse input, so the button still receives the press |
 | `app/instrument_select.gd` | Continue members and handler removed; carousel reference, validation, connection, and handler added | The header comment about `CameraServer` stays true. The Jingle Cam validation is unchanged |
 | `app/instrument.tscn` | One node instanced after `Title` | Draws below the bell. No existing node's properties change |
 | `app/shake_to_jingle.tscn` | New | Node2D root with the shared placement script, one Label child, `mouse_filter` ignore. No script of its own |
@@ -272,7 +274,7 @@ The files read while planning this feature and found compliant, with no remediat
 2. `run/main_scene` in `project.godot` still points at the title screen, and `project.godot` is unmodified.
 3. All fifteen manual verification steps have been executed on a handset and confirmed.
 4. Every row of the acceptance table has been observed.
-5. A search of the repository outside `legacy/` for `ContinueButton`, `_on_continue_pressed`, and `continue_button` returns nothing, and a search for `continue button` in comments returns nothing in `app/`.
+5. A search of `app/` for `ContinueButton`, `_on_continue_pressed`, and `continue_button` returns only `app/instructions.gd` and `app/instructions.tscn`, which are the instructions screen's own continue button and are not in this feature's scope. `app/instrument_select.gd` and `app/instrument_select.tscn` return nothing.
 6. The documentation updates in Phase 6 are complete.
 7. The conventions checklist is satisfied for every touched file.
 

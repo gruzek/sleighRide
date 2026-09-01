@@ -8,23 +8,8 @@
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="8_r8bxp"]
 [ext_resource type="PackedScene" path="res://app/fun_fact_bubble.tscn" id="35_bubble"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="Texture2D" uid="uid://0cpccdmhiae0" path="res://images/v2/photo_camera.svg" id="92_cam"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_31ns7"]
-bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
-corner_radius_top_left = 55
-corner_radius_top_right = 55
-corner_radius_bottom_right = 55
-corner_radius_bottom_left = 55
-corner_detail = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3rpyo"]
-bg_color = Color(0.83137256, 0.20392157, 0.15686275, 1)
-corner_radius_top_left = 55
-corner_radius_top_right = 55
-corner_radius_bottom_right = 55
-corner_radius_bottom_left = 55
-corner_detail = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0c8ss"]
 bg_color = Color(0.98039216, 0.27058825, 0.21176471, 1)
@@ -91,33 +76,6 @@ design_position = Vector2(518, 1078)
 vertical_anchor = 2
 respect_safe_area = true
 
-[node name="ContinueButton" type="Button" parent="." unique_id=1778197391]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -263.0
-offset_top = -145.0
-offset_right = -38.0
-offset_bottom = -35.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 44
-theme_override_styles/normal = SubResource("StyleBoxFlat_31ns7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_3rpyo")
-theme_override_styles/hover = SubResource("StyleBoxFlat_31ns7")
-theme_override_styles/focus = SubResource("StyleBoxFlat_31ns7")
-text = "Continue"
-script = ExtResource("91_safe")
-base_offset_top = -145.0
-base_offset_bottom = -35.0
-
 [node name="Snow" parent="." unique_id=585041252 instance=ExtResource("8_r8bxp")]
 
 [node name="JingleCamButton" type="Button" parent="." unique_id=1794024905]
@@ -129,21 +87,40 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -536.0
 offset_top = -155.0
-offset_right = -290.0
+offset_right = -38.0
 offset_bottom = -33.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 44
 theme_override_styles/normal = SubResource("StyleBoxFlat_0c8ss")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nex8d")
 theme_override_styles/hover = SubResource("StyleBoxFlat_0c8ss")
 theme_override_styles/focus = SubResource("StyleBoxFlat_0c8ss")
-text = "Jingle
-Cam"
 script = ExtResource("91_safe")
 base_offset_top = -155.0
 base_offset_bottom = -33.0
+
+[node name="Content" type="HBoxContainer" parent="JingleCamButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="JingleCamButton/Content"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("92_cam")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="JingleCamButton/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 44
+text = "Jingle Cam"
+vertical_alignment = 1

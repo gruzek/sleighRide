@@ -18,7 +18,13 @@
 # selection screen places this scene through that script's exported properties,
 # and a node holds only one script.
 @tool
+class_name InstrumentCarousel
 extends "res://app/sprite_position.gd"
+
+# Emitted when the centred instrument is tapped. The screen hosting the carousel connects
+# this and performs the navigation: the carousel has never known that screens exist. The
+# choice is already published by the time this fires, so the signal carries no payload.
+signal centre_tapped
 
 # Velocity is measured across the last few drag samples rather than the last one,
 # so a single stuttering frame at release cannot read as a flick.
@@ -69,12 +75,27 @@ const MAX_FLICK_CONTRIBUTION: float = 0.9
 # Seconds the settle animation takes.
 @export var settle_duration: float = 0.32
 
+@export_group("Tap")
+# Design pixels of finger travel below which a released gesture is a tap rather than a drag.
+# Travel is measured in two dimensions and as the furthest point reached, so neither a
+# vertical drag - which moves the carousel not at all - nor a finger that travels out and
+# comes back can read as a tap.
+@export var tap_travel_limit: float = 24.0
+# Half-width of the tap rectangle around a centred instrument, in design pixels. Bounded by
+# the slot geometry rather than by the artwork: at or above side_slot_distance divided by
+# (1 + side_slot_scale) the centre rectangle reaches over the side ones and shadows them.
+@export var tap_half_width: float = 110.0
+# Half-height of the tap rectangle around a centred instrument, in design pixels.
+# Deliberately generous, because no artwork is symmetric about its origin: the paddle bells
+# reach 389 design pixels below theirs and only 291 above.
+@export var tap_half_height: float = 400.0
+
 @export_group("Drag band")
 # Design pixels below the top of the viewport where the drag band starts, which
 # places it under the Richmond Symphony logo.
 @export var drag_band_top_inset: float = 300.0
 # Design pixels above the bottom of the viewport where the band ends, which places
-# it above the continue button.
+# it above the Jingle Cam button.
 @export var drag_band_bottom_inset: float = 230.0
 
 var _slots: Array[Node2D] = []
@@ -85,10 +106,33 @@ var _drag_start_x: float = 0.0
 var _drag_start_offset: float = 0.0
 var _samples: Array[Vector2] = []
 var _settle: Tween = null
+var _press_at: Vector2 = Vector2.ZERO
+var _max_travel: float = 0.0
 
 func _ready() -> void:
 	super()
+	if not _tap_values_valid():
+		return
 	_rebuild_slots()
+
+# Validated before any slot is built, so a mis-tuned target leaves an obviously empty screen
+# rather than a carousel whose bells cannot be tapped for no visible reason.
+func _tap_values_valid() -> bool:
+	if tap_travel_limit <= 0.0:
+		push_error("instrument_carousel: `tap_travel_limit` is %f. It is design pixels of finger travel and must be greater than 0. The correct default is 24.0." % tap_travel_limit)
+		return false
+	if tap_half_height <= 0.0:
+		push_error("instrument_carousel: `tap_half_height` is %f. It is design pixels and must be greater than 0. The correct default is 400.0." % tap_half_height)
+		return false
+	var scale_sum := 1.0 + side_slot_scale
+	if scale_sum <= 0.0:
+		push_error("instrument_carousel: `side_slot_scale` is %f. It must be greater than -1 for the tap-width bound to be computable, and in practice belongs between 0 and 1. The correct default is 0.5." % side_slot_scale)
+		return false
+	var width_bound := side_slot_distance / scale_sum
+	if tap_half_width <= 0.0 or tap_half_width >= width_bound:
+		push_error("instrument_carousel: `tap_half_width` is %f. It must be greater than 0 and less than %f, which is `side_slot_distance` divided by (1 + `side_slot_scale`); at or above that the centre slot's tap rectangle reaches over the side slots and shadows them. The correct default is 110.0." % [tap_half_width, width_bound])
+		return false
+	return true
 
 # Slots are added without an owner. An un-owned child is not serialized, which is
 # what keeps this scene file holding nothing but its root even though a @tool
@@ -102,8 +146,8 @@ func _rebuild_slots() -> void:
 	_slots.clear()
 	_active.clear()
 
-	if instruments.size() == 2:
-		push_error("instrument_carousel: a carousel of exactly two instruments is not supported. Use one instrument, or three or more.")
+	if instruments.size() < 3:
+		push_error("instrument_carousel: a carousel of %d instrument(s) is not supported; use three or more. Below two there is nothing to swipe, and the carousel is the only control that advances the bell selection screen, so the screen would have no way forward. At exactly two the far side of the cycle falls at a cyclic distance of 1.0, where the opacity ramp has no room to hide the wrap." % instruments.size())
 		return
 
 	for index in instruments.size():
@@ -203,7 +247,7 @@ func drag_band_rect() -> Rect2:
 # the offset from an absolute pointer position rather than accumulating a delta,
 # so handling it twice lands on the same number.
 #
-# A press inside the continue button is marked handled during interface input,
+# A press inside the Jingle Cam button is marked handled during interface input,
 # which runs before this, so the button keeps its own rectangle without any check
 # here. The band is also measured so that it ends above the button, which is what
 # keeps that true on a platform that routes touch differently.
@@ -219,20 +263,26 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		_pointer_moved(event.position)
 
+# The event is marked handled before the gesture is dispatched, never after. A release can end
+# in a tap on the centred bell, which emits centre_tapped, and a listener is free to change the
+# scene in response. Touching this node's viewport after that has run reaches into a scene the
+# engine is already replacing, which crashes rather than failing.
 func _pointer_button(pressed: bool, at: Vector2) -> void:
 	if pressed:
 		if _dragging or not drag_band_rect().has_point(at):
 			return
+		_press_at = at
+		_max_travel = 0.0
+		get_viewport().set_input_as_handled()
 		_begin_drag(at.x)
 	elif _dragging:
-		_end_drag()
-	else:
-		return
-	get_viewport().set_input_as_handled()
+		get_viewport().set_input_as_handled()
+		_end_drag(at)
 
 func _pointer_moved(at: Vector2) -> void:
 	if not _dragging:
 		return
+	_max_travel = maxf(_max_travel, _press_at.distance_to(at))
 	_continue_drag(at.x)
 	get_viewport().set_input_as_handled()
 
@@ -254,8 +304,11 @@ func _continue_drag(pointer_x: float) -> void:
 	_render()
 	_publish_selection()
 
-func _end_drag() -> void:
+func _end_drag(at: Vector2) -> void:
 	_dragging = false
+	if _max_travel <= tap_travel_limit:
+		_handle_tap(at)
+		return
 	var predicted := _offset + clampf(
 		_release_speed() * flick_sensitivity, -MAX_FLICK_CONTRIBUTION, MAX_FLICK_CONTRIBUTION)
 	var lower := floorf(predicted)
@@ -272,6 +325,54 @@ func _release_speed() -> float:
 	if elapsed <= MIN_SAMPLE_SECONDS:
 		return 0.0
 	return (last.y - first.y) / elapsed
+
+# A tap that hit no instrument still settles, and that is not a contradiction of "a tap on
+# nothing does nothing". The press that began this gesture killed any running settle, so
+# returning here would leave the carousel stranded between two bells. Settling to the
+# nearest whole position finishes the animation the press interrupted: it changes no
+# selection, emits nothing, and _settle_to returns at once when the carousel was at rest.
+func _handle_tap(at: Vector2) -> void:
+	var count := _slots.size()
+	var index := _slot_at(at)
+	if index < 0:
+		_settle_to(roundf(_offset))
+		return
+	# The same expression _publish_selection uses, so the bell that advances the screen
+	# and the bell that has been published can never disagree.
+	if index == int(fposmod(roundf(_offset), float(count))):
+		centre_tapped.emit()
+		return
+	_settle_to(_offset + cyclic_distance(float(index) - _offset, count))
+
+# The index of the slot whose tap rectangle contains a point, or -1 for none.
+#
+# The rectangle is the authored half-extents scaled by the slot's own scale, which _render
+# has already set, so the target matches what is drawn at every point of a drag rather than
+# only at rest. Invisible slots are skipped, so the slot sitting at the wrap point behind the
+# others is never tapped. Overlapping rectangles resolve to the smallest cyclic distance,
+# which is the ordering _render uses to set z_index, so the slot that takes the tap is the
+# one drawn in front of the others.
+#
+# slot.global_position is a canvas coordinate and `at` is a viewport coordinate. They
+# coincide because these screens carry no camera and no canvas transform, which is the same
+# assumption drag_band_rect makes when its viewport-derived rectangle is tested against an
+# event position.
+func _slot_at(at: Vector2) -> int:
+	var count := _slots.size()
+	var best := -1
+	var best_spread := INF
+	for index in count:
+		var slot := _slots[index]
+		if not slot.visible:
+			continue
+		var half := Vector2(tap_half_width, tap_half_height) * slot.scale
+		if not Rect2(slot.global_position - half, half * 2.0).has_point(at):
+			continue
+		var spread := absf(cyclic_distance(float(index) - _offset, count))
+		if spread < best_spread:
+			best_spread = spread
+			best = index
+	return best
 
 func _settle_to(target: float) -> void:
 	_stop_settle()
@@ -293,8 +394,8 @@ func _set_offset(value: float) -> void:
 	_publish_selection()
 
 # The chosen instrument is the one nearest the centre, kept current as the
-# carousel moves, so the selection screen's continue button needs no code of its
-# own and the choice is already correct the moment it is pressed.
+# carousel moves, so the choice is already correct the moment the centred bell is
+# tapped. That is what lets `centre_tapped` carry no payload.
 func _publish_selection() -> void:
 	if Engine.is_editor_hint():
 		return

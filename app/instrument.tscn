@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dadoo1l1t70ls"]
+[gd_scene load_steps=12 format=3 uid="uid://dadoo1l1t70ls"]
 
 [ext_resource type="Script" uid="uid://hua26s5c0267" path="res://app/instrument.gd" id="1_play"]
 [ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://shake/shake_detector.tscn" id="3_detector"]
 [ext_resource type="PackedScene" path="res://shake/responses/jingle_response.tscn" id="4_jingle"]
 [ext_resource type="Script" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="PackedScene" path="res://app/shake_to_jingle.tscn" id="6_prompt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backn"]
 bg_color = Color(0.2509804, 0.56078434, 0.8392157, 1)
@@ -51,6 +52,10 @@ grow_vertical = 1
 
 [node name="Title" parent="." unique_id=1491627315 instance=ExtResource("2_title")]
 design_position = Vector2(523, 163.00002)
+respect_safe_area = true
+
+[node name="ShakeToJingle" parent="." instance=ExtResource("6_prompt")]
+design_position = Vector2(540, 470)
 respect_safe_area = true
 
 [node name="InstrumentHolder" type="Node2D" parent="." unique_id=43234073]

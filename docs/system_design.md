@@ -2,10 +2,10 @@
 DOCUMENT TYPE: Holiday Sleigh Bells System Design
 DOCUMENT TITLE: How Holiday Sleigh Bells Is Put Together
 CONFIDENTIALITY: Vertex11 Confidential
-VERSION: 1.0
+VERSION: 1.1
 AUTHOR: George Ruzek
 VALUE STATEMENT: The one document a developer reads before touching this repository, so the architecture is inherited rather than reverse-engineered from source comments.
-LAST UPDATED: August, 22, 2026 12:31
+LAST UPDATED: September, 1, 2026 13:52
 ---
 
 # How Holiday Sleigh Bells Is Put Together
@@ -60,7 +60,8 @@ app/main.tscn            Title. "Tap to start"
         ↓
 app/instructions.tscn    How to play. "Continue"
         ↓
-app/instrument_select.tscn   Swipe between three bells, and one fun fact. "Continue"
+app/instrument_select.tscn   Swipe or tap between three bells, and one fun fact.
+                             Tap the centred bell to advance; there is no continue button
                              The three are the paddle bells, the strap bells, and both together
         ↓
 app/instrument.tscn      Play. Shake to sound the chosen bell. "Back" returns to selection
@@ -72,12 +73,12 @@ The play screen is the only screen with backward navigation. The other three mov
 
 ### Screen composition
 
-Screens are assembled from small scenes rather than authored as one tree. `title.tscn`, `vignette.tscn`, `winnie.tscn`, and the rest are each a sprite plus a placement script, instanced into whichever screens need them. Two shared scripts do the placing:
+Screens are assembled from small scenes rather than authored as one tree. `title.tscn`, `vignette.tscn`, `winnie.tscn`, `shake_to_jingle.tscn`, and the rest are each a sprite or a label plus a placement script, instanced into whichever screens need them. Two shared scripts do the placing:
 
 - **`app/sprite_position.gd`** positions a node against the design canvas — 1080 by 1920 — with an anchor per axis and an option to respect the device's safe area. The engine expands this canvas rather than stretching it, so on any portrait phone the canvas stays 1080 units wide and grows taller.
 - **`app/safe_area_margin.gd`** holds a bottom-anchored control clear of the home indicator. Godot's anchoring measures from the physical window edge and knows nothing about the safe area, so every button in the flow carries this script. It derives its offsets from authored base values rather than adjusting them in place, so repeated recomputes never compound.
 
-`app/fun_fact_bubble.tscn` is one of these small scenes, instanced once on the bell selection screen. It is the only one carrying live text: two `Label` nodes drawing a fun fact from an exported list, which is why it is also the only place in the application where a typeface is configured. The list is served by a shuffle bag held in a static variable, so no fact repeats until all have been shown and the sequence survives the scene change without an autoload or a file.
+`app/fun_fact_bubble.tscn` is one of these small scenes, instanced once on the bell selection screen. It is the only one carrying live text: two `Label` nodes drawing a fun fact from an exported list. `app/shake_to_jingle.tscn` is the other scene built around a `Label` rather than a sprite, instanced once on the play screen, and its text is the fixed string "Shake to Jingle". Both are a `Node2D` root carrying the placement script with the `Label` as a child, because that script extends `Node2D` and cannot attach to a `Control` directly. The list is served by a shuffle bag held in a static variable, so no fact repeats until all have been shown and the sequence survives the scene change without an autoload or a file.
 
 A composition scene that needs behaviour of its own extends the placement script rather than replacing it, because a node holds only one script. `app/instrument_carousel.gd`, `app/holiday_sleigh_bells.gd`, and `app/fun_fact_bubble.gd` are all built that way: each extends `app/sprite_position.gd`, calls `super()` from its own `_ready`, and goes on carrying the exported placement properties the hosting screen sets on it.
 
@@ -96,7 +97,7 @@ Buttons are styled per screen with inline `StyleBoxFlat` sub-resources. There is
 
 A bell is an `InstrumentDefinition` resource — `app/instrument_definition.gd` — holding two things: the artwork scene that draws it and the recording it sounds. Three exist, in `app/instruments/`. Putting the recording on the bell rather than on the play screen is what lets the sound follow the choice without any screen knowing which bell was picked: the selection screen publishes a bell, the autoload carries it, the play screen and the sound responder each read what they need from it.
 
-The bell selection screen's carousel publishes the chosen bell continuously as it moves, so the choice is already correct the moment Continue is pressed and the button needs no code of its own. It also **opens on the bell already chosen**, which is what makes the play screen's Back button safe: a carousel that always opened on the first bell would overwrite the audience member's choice in the instant between being built and being positioned.
+The bell selection screen's carousel publishes the chosen bell continuously as it moves, so the choice is already correct the moment the centred bell is tapped and the `centre_tapped` signal needs to carry no payload. That property is what made the continue button redundant and is why it was removed: it confirmed a decision that had already been recorded. It also **opens on the bell already chosen**, which is what makes the play screen's Back button safe: a carousel that always opened on the first bell would overwrite the audience member's choice in the instant between being built and being positioned.
 
 ## The shake instrument
 
