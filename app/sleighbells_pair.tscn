@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://dg65xe61sjtex" path="res://app/sleighbells_01.tscn" id="1_paddle"]
+[ext_resource type="PackedScene" uid="uid://ck8bjqxgm28ml" path="res://app/sleighbells_03.tscn" id="2_strap"]
+
+[node name="SleighbellsPair" type="Node2D"]
+scale = Vector2(0.72, 0.72)
+
+[node name="Strap" parent="." instance=ExtResource("2_strap")]
+position = Vector2(100, 40)
+rotation = 0.1222
+
+[node name="Paddle" parent="." instance=ExtResource("1_paddle")]
+rotation = -0.1047

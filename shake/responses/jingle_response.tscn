@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://shake/responses/jingle_response.gd" id="1_jingle"]
-[ext_resource type="AudioStream" path="res://sounds/single_jingle.mp3" id="2_stream"]
+[ext_resource type="AudioStream" uid="uid://bdeurwn1uhooo" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_000.wav" id="2_stream"]
 
 [node name="JingleResponse" type="Node"]
 script = ExtResource("1_jingle")

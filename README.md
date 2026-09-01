@@ -14,7 +14,7 @@ performance of "Sleigh Ride".
 | `docs/` | The system design |
 | `features/` | Feature specifications, implementation plans, and the roadmap |
 | `shaders/` | Shared shaders |
-| `sounds/`, `images/` | Assets the application uses |
+| `sounds/`, `images/` | Assets the application uses. The bell recordings are in `sounds/v2/`, one folder per instrument |
 | `legacy/` | The abandoned version 1 build and every asset belonging only to it. Not imported, never shipped |
 
 ## The shake instrument
@@ -34,6 +34,31 @@ to it, without those effects knowing how detection works.
 Every constant in the detector was measured rather than guessed. The measurements come from the
 Measure a Real Shake So the Bells Sound When a Real Bell Would feature (C1_09), whose capture
 harness is in `capture/` and whose specification and plan are in `features/`.
+
+### How a bell sounds
+
+Each bell carries two banks of recordings rather than one, set on its resource in
+`app/instruments/`: a piano bank of softly struck takes and a forte bank of hard ones. How hard
+the shake was picks the bank, and how hard it was also scales the volume, because those are two
+different things — a bell struck hard is brighter and busier, not merely louder, and no amount of
+volume produces that.
+
+- Levels 1 and 2 of the detector's five draw from the piano bank, levels 3 to 5 from the forte
+  bank. The boundary is `piano_top_level` on the `JingleResponse` node, and it is one number.
+- A bell with an empty forte bank sounds its piano bank at every level. The strap bells are the
+  case: twenty-five takes were delivered for them with no soft-and-hard split. They still get
+  louder as you shake harder.
+- No recording sounds twice in a row. Within a bank the draw is random with the last one
+  excluded.
+- The voice pool is sized from the longest recording the bell carries, so nothing gets clipped by
+  its own voice being reused. Shaking faster than the pool holds still cuts a recording short;
+  that trade is deliberate.
+
+The three choices on the selection screen are the two instruments that were actually recorded and
+a scene showing both of them together, which is what the third set of recordings is. That pair is
+`app/sleighbells_pair.tscn`, and it instances the two bell scenes rather than their images, so
+re-cutting either instrument flows into the pair without editing it. Its overlap, angles, and
+scale are authored in that scene and tuned by opening it.
 
 ## The snow
 

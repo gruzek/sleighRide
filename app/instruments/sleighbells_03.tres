@@ -1,10 +1,35 @@
 [gd_resource type="Resource" script_class="InstrumentDefinition" format=3]
 
-[ext_resource type="PackedScene" path="res://app/sleighbells_03.tscn" id="1_onoqh"]
-[ext_resource type="Script" path="res://app/instrument_definition.gd" id="2_j1c5a"]
-[ext_resource type="AudioStream" path="res://sounds/deep_jingle_bells.mp3" id="3_snd03"]
+[ext_resource type="PackedScene" uid="uid://ck8bjqxgm28ml" path="res://app/sleighbells_03.tscn" id="1_art"]
+[ext_resource type="Script" uid="uid://08c4xhw6t2l2" path="res://app/instrument_definition.gd" id="2_def"]
+[ext_resource type="AudioStream" uid="uid://cj7iwtwtkkoxp" path="res://sounds/v2/Type B/RS_SleighBell_B_000.wav" id="p0"]
+[ext_resource type="AudioStream" uid="uid://bkjok3vx5gifp" path="res://sounds/v2/Type B/RS_SleighBell_B_001.wav" id="p1"]
+[ext_resource type="AudioStream" uid="uid://cbykougcy38pk" path="res://sounds/v2/Type B/RS_SleighBell_B_002.wav" id="p2"]
+[ext_resource type="AudioStream" uid="uid://kchk0vc4vdbq" path="res://sounds/v2/Type B/RS_SleighBell_B_003.wav" id="p3"]
+[ext_resource type="AudioStream" uid="uid://c640tixxwnkm8" path="res://sounds/v2/Type B/RS_SleighBell_B_004.wav" id="p4"]
+[ext_resource type="AudioStream" uid="uid://dj83ndkbdkn6k" path="res://sounds/v2/Type B/RS_SleighBell_B_005.wav" id="p5"]
+[ext_resource type="AudioStream" uid="uid://cr137aybg8u2j" path="res://sounds/v2/Type B/RS_SleighBell_B_006.wav" id="p6"]
+[ext_resource type="AudioStream" uid="uid://dr6dj4ruprv88" path="res://sounds/v2/Type B/RS_SleighBell_B_007.wav" id="p7"]
+[ext_resource type="AudioStream" uid="uid://bv43eh6i80jf" path="res://sounds/v2/Type B/RS_SleighBell_B_008.wav" id="p8"]
+[ext_resource type="AudioStream" uid="uid://lhxhdik6gqkl" path="res://sounds/v2/Type B/RS_SleighBell_B_009.wav" id="p9"]
+[ext_resource type="AudioStream" uid="uid://cesk3h5wy1bkg" path="res://sounds/v2/Type B/RS_SleighBell_B_010.wav" id="p10"]
+[ext_resource type="AudioStream" uid="uid://drfvttqkbp2of" path="res://sounds/v2/Type B/RS_SleighBell_B_011.wav" id="p11"]
+[ext_resource type="AudioStream" uid="uid://duddih46mo1h1" path="res://sounds/v2/Type B/RS_SleighBell_B_012.wav" id="p12"]
+[ext_resource type="AudioStream" uid="uid://drl14ab71iuae" path="res://sounds/v2/Type B/RS_SleighBell_B_013.wav" id="p13"]
+[ext_resource type="AudioStream" uid="uid://nxm4ue8vt3yf" path="res://sounds/v2/Type B/RS_SleighBell_B_014.wav" id="p14"]
+[ext_resource type="AudioStream" uid="uid://cj6o3jrnwr5lk" path="res://sounds/v2/Type B/RS_SleighBell_B_015.wav" id="p15"]
+[ext_resource type="AudioStream" uid="uid://cp3iyw6awjclo" path="res://sounds/v2/Type B/RS_SleighBell_B_016.wav" id="p16"]
+[ext_resource type="AudioStream" uid="uid://cbtq0c018x7l5" path="res://sounds/v2/Type B/RS_SleighBell_B_017.wav" id="p17"]
+[ext_resource type="AudioStream" uid="uid://cgq52spfbk517" path="res://sounds/v2/Type B/RS_SleighBell_B_018.wav" id="p18"]
+[ext_resource type="AudioStream" uid="uid://diubvuukt3f2c" path="res://sounds/v2/Type B/RS_SleighBell_B_019.wav" id="p19"]
+[ext_resource type="AudioStream" uid="uid://bjwc4pmmahx7f" path="res://sounds/v2/Type B/RS_SleighBell_B_020.wav" id="p20"]
+[ext_resource type="AudioStream" uid="uid://cio2nuaujs8fg" path="res://sounds/v2/Type B/RS_SleighBell_B_021.wav" id="p21"]
+[ext_resource type="AudioStream" uid="uid://dvvw21ttrw14y" path="res://sounds/v2/Type B/RS_SleighBell_B_022.wav" id="p22"]
+[ext_resource type="AudioStream" uid="uid://mc0fm6hmhrgt" path="res://sounds/v2/Type B/RS_SleighBell_B_023.wav" id="p23"]
+[ext_resource type="AudioStream" uid="uid://dcpeoeba3vg0y" path="res://sounds/v2/Type B/RS_SleighBell_B_024.wav" id="p24"]
 
 [resource]
-script = ExtResource("2_j1c5a")
-artwork = ExtResource("1_onoqh")
-sound = ExtResource("3_snd03")
+script = ExtResource("2_def")
+artwork = ExtResource("1_art")
+piano_samples = Array[AudioStream]([ExtResource("p0"), ExtResource("p1"), ExtResource("p2"), ExtResource("p3"), ExtResource("p4"), ExtResource("p5"), ExtResource("p6"), ExtResource("p7"), ExtResource("p8"), ExtResource("p9"), ExtResource("p10"), ExtResource("p11"), ExtResource("p12"), ExtResource("p13"), ExtResource("p14"), ExtResource("p15"), ExtResource("p16"), ExtResource("p17"), ExtResource("p18"), ExtResource("p19"), ExtResource("p20"), ExtResource("p21"), ExtResource("p22"), ExtResource("p23"), ExtResource("p24")])
+forte_samples = Array[AudioStream]([])

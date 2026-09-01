@@ -61,6 +61,7 @@ app/main.tscn            Title. "Tap to start"
 app/instructions.tscn    How to play. "Continue"
         ↓
 app/instrument_select.tscn   Swipe between three bells, and one fun fact. "Continue"
+                             The three are the paddle bells, the strap bells, and both together
         ↓
 app/instrument.tscn      Play. Shake to sound the chosen bell. "Back" returns to selection
 ```
@@ -135,11 +136,15 @@ There is no refractory period. The tightest measured gap between two real stops 
 
 ### The sound responder
 
-`shake/responses/jingle_response.gd` sounds a recording on every stop, at a volume following the event's intensity. It takes its recording from one of two places, selected by an exported flag: the chosen bell, which it reads from `InstrumentSelection` itself, or an exported stream, which is how the capture harness uses it.
+`shake/responses/jingle_response.gd` sounds a recording on every stop. **Two things about the stop are used, and they do different jobs.** Its level chooses which recording plays, and its intensity scales how loudly that recording plays. A struck bell changes timbre with force rather than only amplitude, so the change of character between a soft strike and a hard one has to come from a different recording; volume alone cannot produce it. The intensity ramp then gives the continuous response inside each band, so a shake at the bottom of the soft range is still quieter than one at the top of it.
 
-It reads the selection rather than having the play screen assign a stream because both the screen and the responder run `_ready()`, in an order that would make an assignment from the screen arrive too late. Reading it in the responder removes the ordering question and keeps the play screen ignorant of how sound is produced.
+A bell carries two banks of recordings, a piano bank and a forte bank, declared on `app/instrument_definition.gd`. Levels at or below the responder's exported `piano_top_level`, which defaults to 2 of the detector's 5, draw from the piano bank; every level above it draws from the forte bank. **A bell whose forte bank is empty sounds its piano bank at every level.** That is not a fallback: the bell has one bank because only one was recorded, and it still answers how hard it was shaken through the volume ramp. The strap bells are the case, delivered as twenty-five takes with no dynamic split.
 
-Voices are a pool, sized from the recording's own length against eight events per second, with a floor of four. A two-second recording therefore builds sixteen. Voices are taken in turn, so the one reused is always the oldest. The trade is explicit: a burst faster than the pool holds cuts a recording short.
+Within a bank the draw is random, excluding whatever sounded last, so no recording is heard twice in a row. The exclusion is by index in a single pass rather than a draw-and-retry loop: a retry loop never terminates on a bank holding the same recording in two entries, which is one mis-click to create in a list of twenty-five near-identical filenames and would hang the application on the first shake.
+
+It reads the selection rather than having the play screen assign a stream because both the screen and the responder run `_ready()`, in an order that would make an assignment from the screen arrive too late. Reading it in the responder removes the ordering question and keeps the play screen ignorant of how sound is produced. The exported stream the capture harness uses resolves into a one-entry piano bank with an empty forte bank, so there is one code path rather than two shapes with a branch between them at every step.
+
+Voices are a pool, sized from the **longest** recording the bell carries against eight events per second, with a floor of four. The longest is the right measure because the pool exists to stop a recording being cut short by reuse of its voice, and the longest is the one most at risk of it. The paddle bells therefore build 18 voices, the strap bells 23, and the pair 24. Each voice is assigned its recording at the moment it is played rather than when the pool is built, since any voice can now play anything in either bank. Voices are taken in turn, so the one reused is always the oldest. The trade is explicit: a burst faster than the pool holds cuts a recording short.
 
 ## The capture harness
 

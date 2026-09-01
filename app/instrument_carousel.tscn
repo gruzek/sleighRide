@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://app/instrument_carousel.gd" id="1_0he1l"]
 [ext_resource type="Script" path="res://app/instrument_definition.gd" id="2_kjhfc"]
 [ext_resource type="Resource" path="res://app/instruments/sleighbells_01.tres" id="3_yd44f"]
-[ext_resource type="Resource" path="res://app/instruments/sleighbells_02.tres" id="4_wgfgh"]
-[ext_resource type="Resource" path="res://app/instruments/sleighbells_03.tres" id="5_e8j5q"]
+[ext_resource type="Resource" path="res://app/instruments/sleighbells_03.tres" id="4_strap"]
+[ext_resource type="Resource" path="res://app/instruments/sleighbells_pair.tres" id="5_pair"]
 
 [node name="InstrumentCarousel" type="Node2D" unique_id=584059288]
 script = ExtResource("1_0he1l")
-instruments = Array[ExtResource("2_kjhfc")]([ExtResource("3_yd44f"), ExtResource("4_wgfgh"), ExtResource("5_e8j5q")])
+instruments = Array[ExtResource("2_kjhfc")]([ExtResource("3_yd44f"), ExtResource("4_strap"), ExtResource("5_pair")])

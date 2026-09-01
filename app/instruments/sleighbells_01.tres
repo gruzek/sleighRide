@@ -1,10 +1,38 @@
 [gd_resource type="Resource" script_class="InstrumentDefinition" format=3]
 
-[ext_resource type="PackedScene" path="res://app/sleighbells_01.tscn" id="1_ivphf"]
-[ext_resource type="Script" path="res://app/instrument_definition.gd" id="2_6jmmy"]
-[ext_resource type="AudioStream" path="res://sounds/bright_jingle_bells.mp3" id="3_snd01"]
+[ext_resource type="PackedScene" uid="uid://dg65xe61sjtex" path="res://app/sleighbells_01.tscn" id="1_art"]
+[ext_resource type="Script" uid="uid://08c4xhw6t2l2" path="res://app/instrument_definition.gd" id="2_def"]
+[ext_resource type="AudioStream" uid="uid://bdeurwn1uhooo" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_000.wav" id="p0"]
+[ext_resource type="AudioStream" uid="uid://cb0h3xca21h3q" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_001.wav" id="p1"]
+[ext_resource type="AudioStream" uid="uid://clgwbk41cxtwx" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_002.wav" id="p2"]
+[ext_resource type="AudioStream" uid="uid://csscyx2l388w" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_003.wav" id="p3"]
+[ext_resource type="AudioStream" uid="uid://b7q3h2w2fp5c8" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_004.wav" id="p4"]
+[ext_resource type="AudioStream" uid="uid://c15mcwah2arkx" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_005.wav" id="p5"]
+[ext_resource type="AudioStream" uid="uid://cpk7kmvn4a80k" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_006.wav" id="p6"]
+[ext_resource type="AudioStream" uid="uid://d2n741li5hyb4" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_007.wav" id="p7"]
+[ext_resource type="AudioStream" uid="uid://dl1a8vdjanfg5" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_008.wav" id="p8"]
+[ext_resource type="AudioStream" uid="uid://00dmcurrt0aq" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_009.wav" id="p9"]
+[ext_resource type="AudioStream" uid="uid://cl7aqmhwdwc84" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_010.wav" id="p10"]
+[ext_resource type="AudioStream" uid="uid://tc67vm0pxuwh" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_011.wav" id="p11"]
+[ext_resource type="AudioStream" uid="uid://7hdbxc3vh4h6" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_012.wav" id="p12"]
+[ext_resource type="AudioStream" uid="uid://blojuokeli1ii" path="res://sounds/v2/Type A/RS_SleighBell_A_Piano_013.wav" id="p13"]
+[ext_resource type="AudioStream" uid="uid://dy0vngiaql1ss" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_000.wav" id="f0"]
+[ext_resource type="AudioStream" uid="uid://3q0bsgw4qvy7" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_001.wav" id="f1"]
+[ext_resource type="AudioStream" uid="uid://b8pa656kvjedn" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_002.wav" id="f2"]
+[ext_resource type="AudioStream" uid="uid://n16s2d0aolis" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_003.wav" id="f3"]
+[ext_resource type="AudioStream" uid="uid://7ul5xe6a6olw" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_004.wav" id="f4"]
+[ext_resource type="AudioStream" uid="uid://cims52rjf0llm" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_005.wav" id="f5"]
+[ext_resource type="AudioStream" uid="uid://veekeia6qdng" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_006.wav" id="f6"]
+[ext_resource type="AudioStream" uid="uid://cn7rfi46c7hxk" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_007.wav" id="f7"]
+[ext_resource type="AudioStream" uid="uid://cb332hhkhkn6b" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_008.wav" id="f8"]
+[ext_resource type="AudioStream" uid="uid://bv563nuta614h" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_009.wav" id="f9"]
+[ext_resource type="AudioStream" uid="uid://cmh7d3ltkouxg" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_010.wav" id="f10"]
+[ext_resource type="AudioStream" uid="uid://rj2rbl5cd0ns" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_011.wav" id="f11"]
+[ext_resource type="AudioStream" uid="uid://dkf18d4vfoe84" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_012.wav" id="f12"]
+[ext_resource type="AudioStream" uid="uid://dydpdvkkgkw27" path="res://sounds/v2/Type A/RS_SleighBell_A_Forte_013.wav" id="f13"]
 
 [resource]
-script = ExtResource("2_6jmmy")
-artwork = ExtResource("1_ivphf")
-sound = ExtResource("3_snd01")
+script = ExtResource("2_def")
+artwork = ExtResource("1_art")
+piano_samples = Array[AudioStream]([ExtResource("p0"), ExtResource("p1"), ExtResource("p2"), ExtResource("p3"), ExtResource("p4"), ExtResource("p5"), ExtResource("p6"), ExtResource("p7"), ExtResource("p8"), ExtResource("p9"), ExtResource("p10"), ExtResource("p11"), ExtResource("p12"), ExtResource("p13")])
+forte_samples = Array[AudioStream]([ExtResource("f0"), ExtResource("f1"), ExtResource("f2"), ExtResource("f3"), ExtResource("f4"), ExtResource("f5"), ExtResource("f6"), ExtResource("f7"), ExtResource("f8"), ExtResource("f9"), ExtResource("f10"), ExtResource("f11"), ExtResource("f12"), ExtResource("f13")])
