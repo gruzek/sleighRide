@@ -2,10 +2,10 @@
 DOCUMENT TYPE: Holiday Sleigh Bells Feature
 DOCUMENT TITLE: Tap the Bell You Want, Then Tap It Again to Play
 CONFIDENTIALITY: Vertex11 Confidential
-VERSION: 0.1
+VERSION: 0.2
 AUTHOR: George Ruzek
 VALUE STATEMENT: Removes the button nobody presses and makes the bells themselves the controls, so the way the audience already behaves becomes the way the screen actually works.
-LAST UPDATED: September, 1, 2026 12:48
+LAST UPDATED: September, 1, 2026 14:49
 ---
 
 # Tap the Bell You Want, Then Tap It Again to Play
@@ -108,7 +108,7 @@ The button continues to carry `app/safe_area_margin.gd` and its authored base of
 
 ### 7. Put a camera icon on the Jingle Cam button
 
-The supplied camera artwork is added to the repository under `images/v2/` and set as the button's icon, drawn to the left of the lettering with the icon and the text together centred in the button.
+The supplied camera artwork is added to the repository under `images/v2/` and drawn to the left of the lettering, with the icon and the text together centred in the button. It is not set as the button's own `icon` property: Godot places a button icon at the left margin and centres the button's text independently of it, so on a button this wide the icon would sit alone in the corner. The button carries neither `text` nor `icon` and holds its contents in a centred container instead.
 
 The artwork is a 24 pixel Material Symbols camera glyph filled white, which is far too small to sit beside 44 point lettering at its authored size. It is scaled on import rather than by scaling the button's contents, so the icon is rasterised at the size it is drawn at and stays crisp. The target is an icon that reads as the same visual weight as the lettering beside it, tuned by eye on a handset.
 

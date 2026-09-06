@@ -86,6 +86,10 @@ A second family of shared scripts gives a sprite motion rather than a place: `ap
 
 Buttons are styled per screen with inline `StyleBoxFlat` sub-resources. There is no shared theme and no shared button scene; the flow's blue is `Color(0.2509804, 0.56078434, 0.8392157, 1)` with a red pressed state, 55-pixel corner radius, and 44-point white text, duplicated in each screen that needs it.
 
+One button does not carry its own `text` and `icon`, and the reason is worth recording so it is not undone. Godot's `Button` places an icon at its left margin and centres its text independently of it, which on a wide button strands the icon in the corner, and its documentation rules out the obvious alternative: an icon centred both horizontally and vertically has the text drawn on top of it. The Jingle Cam button on the bell selection screen therefore holds a full-rect `HBoxContainer` with a `TextureRect` and a `Label`, all three ignoring mouse input so the press still reaches the button. Any button needing an icon beside its lettering, centred, has to be built the same way.
+
+**Nothing touches its own viewport after dispatching a gesture.** The carousel marks a touch handled before it emits, never after, and `app/instrument_select.gd` defers the scene change it makes in response. A signal emitted from `_unhandled_input` can be answered by a listener that replaces the scene, and code running after that reaches into a tree the engine is already tearing down, which crashes rather than failing. A button's `pressed` does not need this, because it fires once the viewport has finished with the event, which is why only the tap path defers.
+
 ## What crosses a scene change
 
 `change_scene_to_file` destroys everything on the screen, so anything that must outlive it is an autoload. There are two, and they carry very different things.

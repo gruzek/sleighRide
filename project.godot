@@ -15,12 +15,16 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Holiday Sleigh Bells"
-config/version="0.01"
+config/version="0.1"
 run/main_scene="uid://bpebykdxeem4"
 config/features=PackedStringArray("4.7", "Mobile")
 run/delta_smoothing=false
 boot_splash/image="uid://bus1pcgg6xuyk"
 config/icon="res://icon.svg"
+
+[audio]
+
+general/ios/session_category=3
 
 [autoload]
 

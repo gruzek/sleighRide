@@ -2,10 +2,10 @@
 DOCUMENT TYPE: Holiday Sleigh Bells Implementation Plan
 DOCUMENT TITLE: Implementation Plan for Tap the Bell You Want, Then Tap It Again to Play
 CONFIDENTIALITY: Vertex11 Confidential
-VERSION: 0.1
+VERSION: 0.2
 AUTHOR: George Ruzek
 VALUE STATEMENT: One script gains a tap, one screen loses a button, and one scene gains a sentence, with the tap rectangle's numbers, the settle that must still run after a tap that hit nothing, and the reason the icon is resized in the file rather than in the Import dock all worked out here rather than found on the handset.
-LAST UPDATED: September, 1, 2026 13:24
+LAST UPDATED: September, 1, 2026 14:49
 ---
 
 # Implementation Plan for Tap the Bell You Want, Then Tap It Again to Play

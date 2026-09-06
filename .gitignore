@@ -20,3 +20,7 @@ mono_crash.*.json
 exports/
 !exports/ios2/
 !exports/ios2/sleighRide.xcodeproj/
+
+# Godot Android build template (generated, regenerable via Project > Install Android Build Template)
+android/build/
+android/.build_version

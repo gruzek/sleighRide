@@ -111,13 +111,16 @@ var _max_travel: float = 0.0
 
 func _ready() -> void:
 	super()
-	if not _tap_values_valid():
-		return
 	_rebuild_slots()
 
-# Validated before any slot is built, so a mis-tuned target leaves an obviously empty screen
-# rather than a carousel whose bells cannot be tapped for no visible reason.
-func _tap_values_valid() -> bool:
+# Checked from _rebuild_slots rather than from _ready, because the `instruments` setter reaches
+# _rebuild_slots too: gating only _ready leaves the editor able to build a carousel out of
+# values that failed. A failure leaves an obviously empty screen rather than a carousel whose
+# bells cannot be tapped for no visible reason.
+func _exported_values_valid() -> bool:
+	if drag_distance_per_position <= 0.0:
+		push_error("instrument_carousel: `drag_distance_per_position` is %f. It is the design pixels of finger travel that equal one position and divides every drag, so it must be greater than 0. The correct default is 420.0." % drag_distance_per_position)
+		return false
 	if tap_travel_limit <= 0.0:
 		push_error("instrument_carousel: `tap_travel_limit` is %f. It is design pixels of finger travel and must be greater than 0. The correct default is 24.0." % tap_travel_limit)
 		return false
@@ -145,6 +148,9 @@ func _rebuild_slots() -> void:
 		slot.queue_free()
 	_slots.clear()
 	_active.clear()
+
+	if not _exported_values_valid():
+		return
 
 	if instruments.size() < 3:
 		push_error("instrument_carousel: a carousel of %d instrument(s) is not supported; use three or more. Below two there is nothing to swipe, and the carousel is the only control that advances the bell selection screen, so the screen would have no way forward. At exactly two the far side of the cycle falls at a cyclic distance of 1.0, where the opacity ramp has no room to hide the wrap." % instruments.size())

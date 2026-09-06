@@ -99,7 +99,7 @@ script = ExtResource("91_safe")
 base_offset_top = -155.0
 base_offset_bottom = -33.0
 
-[node name="Content" type="HBoxContainer" parent="JingleCamButton"]
+[node name="Content" type="HBoxContainer" parent="JingleCamButton" unique_id=720441428]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -110,16 +110,15 @@ mouse_filter = 2
 theme_override_constants/separation = 24
 alignment = 1
 
-[node name="Icon" type="TextureRect" parent="JingleCamButton/Content"]
+[node name="Icon" type="TextureRect" parent="JingleCamButton/Content" unique_id=862380981]
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 texture = ExtResource("92_cam")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="JingleCamButton/Content"]
+[node name="Label" type="Label" parent="JingleCamButton/Content" unique_id=1798626725]
 layout_mode = 2
-mouse_filter = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 44
 text = "Jingle Cam"
