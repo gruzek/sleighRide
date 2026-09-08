@@ -26,6 +26,17 @@ extends "res://app/sprite_position.gd"
 # choice is already published by the time this fires, so the signal carries no payload.
 signal centre_tapped
 
+# The bell nearest the centre has changed. Emitted as the carousel moves rather than when it comes
+# to rest, so an answer to it lands while the bell is arriving and not a beat afterwards.
+#
+# It carries the bell, unlike centre_tapped, because a listener that sounds it needs to know which
+# one arrived and reading the autoload back would be reading this node's own publication.
+#
+# Not emitted for the first selection of the screen's life. The carousel opens on the bell already
+# chosen and publishes it immediately, and that publication is the screen arriving rather than the
+# person choosing anything.
+signal centre_changed(bell: InstrumentDefinition)
+
 # Velocity is measured across the last few drag samples rather than the last one,
 # so a single stuttering frame at release cannot read as a flick.
 const SAMPLE_COUNT: int = 6
@@ -410,7 +421,13 @@ func _publish_selection() -> void:
 		return
 	var index := int(fposmod(roundf(_offset), float(count)))
 	if InstrumentSelection.chosen != _active[index]:
+		# Whether anything was chosen before is what tells a person's choice apart from the screen
+		# opening. On the first visit of a session nothing has been chosen, so this publication is
+		# the carousel establishing its own starting position and is not announced.
+		var had_a_choice: bool = InstrumentSelection.chosen != null
 		InstrumentSelection.chosen = _active[index]
+		if had_a_choice:
+			centre_changed.emit(_active[index])
 
 func _seconds() -> float:
 	return float(Time.get_ticks_msec()) / 1000.0

@@ -111,6 +111,8 @@ silently.
 
 ### 2b. We have no Android export preset at all
 
+> **Done as of 2026-09-06.** The Android Build and Play Store Release feature (C1_20) stood up the target: a configured `preset.2`, the Java Development Kit and Software Development Kit versions Godot 4.7.2 pins, the in-project Gradle build template, and the camera port itself. What this section predicted the work would cost was accurate, including the Gradle build. The section is kept because its reasoning is still the reason the work was shaped that way.
+
 `export_presets.cfg` contains exactly two presets: `preset.0` "Web" and `preset.1` "iOS". There is
 no Android preset, which means none of the Android work below has ever been exercised, and the
 first step is creating one. That also drags in the Android SDK / JDK setup and, if the share

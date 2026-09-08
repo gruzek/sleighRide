@@ -69,8 +69,10 @@ The remainder of requirement 2.
 
 1. Create `images/v2/android/` and generate three assets from `images/v2/ios_icon.png` (1024 by 1024):
    - `launcher_192.png` at 192 by 192, the whole icon.
-   - `adaptive_foreground_432.png` at 432 by 432, with the icon artwork scaled to sit inside the inner 66 per cent safe zone, roughly 288 pixels, and transparent elsewhere. A launcher masks this layer to a circle, squircle, or teardrop, and only the safe zone is guaranteed to survive.
-   - `adaptive_background_432.png` at 432 by 432, a flat fill in the flow's blue, `Color(0.2509804, 0.56078434, 0.8392157, 1)`, which is the blue already duplicated in every screen's button styling.
+   - `adaptive_foreground_432.png` at 432 by 432, carrying the photograph. A launcher masks this layer to a circle, squircle, or teardrop and shows only the inner 66 per cent, roughly 288 pixels, so the artwork is scaled to 360 and offset to put Winnie's face at the layer's centre. **Filling the layer at 432 was tried first and is wrong**: the mask took the ears and the muzzle and left an unreadable brown field.
+   - `adaptive_background_432.png` at 432 by 432, a flat fill in the green sampled from the photograph's own ground, `(47, 143, 112)`.
+
+   **This is a deviation from the plan as first written**, which called for the flow's blue as the background with the icon on the foreground. That split suits a logo on transparency; `images/v2/ios_icon.png` is a fully opaque photograph of Winnie with a green ground, and a blue field behind it would have shown as a coloured band wherever the mask or a parallax animation exposed the layer beneath. Sampling the photograph's own ground makes the seam invisible instead.
 2. Point `launcher_icons/main_192x192`, `launcher_icons/adaptive_foreground_432x432`, and `launcher_icons/adaptive_background_432x432` at them.
 3. Leave `launcher_icons/adaptive_monochrome_432x432` empty. A monochrome layer drives Android 13's themed icons and is optional; supplying a poor one is worse than supplying none.
 4. Leave the splash configuration alone. `splash_screen/disable_godot_boot_splash=false` keeps the engine's boot splash, which already draws `images/RichmondSymphonyLogo.png` through `boot_splash/image` in `project.godot` and is therefore the same splash the iPhone shows.
@@ -91,7 +93,13 @@ Requirements 3, 4, 5, and 6, all in `app/camera_feed_view.gd`.
 
 2. **Add a format selection, Android only.** Before activation, when the platform is Android, read `_feed.get_formats()`, choose a format, and call `_feed.set_format()`. The order is fixed: choose, set, then activate. `set_format()` fails on a feed that is already active, and the Android backend refuses to activate a feed whose format was never chosen.
 
-   The choice is the smallest format whose width is at least an exported `preferred_preview_width`, defaulting to 1080 to match the design canvas, falling back to the widest format offered when none reaches it. A phone offers formats far larger than the canvas, and a preview larger than the canvas costs frame time and memory for a picture that is drawn behind artwork and captured at viewport size.
+   **The format is filtered by image format first, and only then by width.** Each entry in `feed.formats` is a Dictionary of `width`, `height`, and `format`, where `format` is one of the strings `"YUV_420_888"`, `"RGBA_8888"`, or `"RGB_888"`. The backend calls `set_ycbcr_images()` and reports `FEED_YCBCR_SEP` when the chosen format is the first of those, and `set_rgb_image()` reporting `FEED_RGB` when it is either of the others. `shaders/ycbcr_to_rgb.gdshader` converts two planes and nothing else, so choosing an RGB format would draw its bytes as though they were luma and chroma and produce garbage colour with no error anywhere.
+
+   The datatype is therefore a consequence of the format chosen rather than a property of the handset, and selecting `"YUV_420_888"` makes it deterministic and identical to the iOS path. Only entries carrying that format are considered.
+
+   Within them, the choice is the smallest whose width is at least an exported `preferred_preview_width`, defaulting to 1080 to match the design canvas, taking the widest of the filtered set when none reaches it. A phone offers formats far larger than the canvas, and a preview larger than the canvas costs frame time and memory for a picture that is drawn behind artwork and captured at viewport size.
+
+   A feed offering no `"YUV_420_888"` entry at all fails with a message naming the feed and how many formats it did offer. That is not a fallback; it is the absence of the one format this screen can draw.
 
    `preferred_preview_width` is validated in `_ready()` with a message naming the value, its permitted range, and the correct default, as the repository's convention requires of an exported value used as a bound.
 

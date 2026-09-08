@@ -113,7 +113,11 @@ func _process(delta: float) -> void:
 		layer.apply(direction, fall, _agitation, source, diagonal * band_length_factor, diagonal * cull_factor)
 
 func _read_gravity(delta: float) -> void:
-	var gravity := Input.get_gravity()
+	# Read through PhoneTilt rather than from the sensor, because the two platforms report gravity
+	# in opposite directions and that correction belongs in one place. Only the read is shared:
+	# the in-plane vector below is kept un-normalised for its own angle smoothing, which is why
+	# this does not call PhoneTilt.read().
+	var gravity := PhoneTilt.gravity()
 	var magnitude := gravity.length()
 	# No reading at all, which is every desktop run. The held angle and tilt stand, and those
 	# are the authored straight-down at full strength. This is the same hold rule requirement 3
@@ -134,8 +138,9 @@ func _read_gravity(delta: float) -> void:
 
 func _read_shake(delta: float) -> void:
 	# Gravity subtracted out leaves the hand's own motion. This is the same isolation
-	# shake/shake_detector.gd performs, and for the same reason.
-	var linear := Input.get_accelerometer() - Input.get_gravity()
+	# shake/shake_detector.gd performs, and for the same reason, so both take it from the same
+	# place - which is also what gives a phone with no gravity sensor the estimated value.
+	var linear := PhoneTilt.linear_acceleration()
 	var magnitude := linear.length()
 	var target := 0.0
 	if magnitude > shake_floor:

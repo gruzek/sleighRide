@@ -11,9 +11,19 @@ Runs are grouped by the device that recorded them, because the same motion produ
 ```
 iPad/     iPad13,16 (iPad Air, 5th generation), iOS 18.6.2 — 60 samples per second
 iPhone/   iPhone14,2 (iPhone 13 Pro), iOS 26.6.0 — 120 samples per second
+Android/  awaiting its first recordings — see below
 ```
 
 The iPad runs were exploratory and established the shape of a stroke. **The iPhone runs are the ones the detector's constants come from**, because the iPhone is the target device.
+
+### What the Android runs are for
+
+The Android Build and Play Store Release feature (C1_20) added the platform; no handset has been recorded yet. Two things are being measured, and they are different questions:
+
+- **The gravity sign.** `docs/system_design.md` has recorded since the project began that the engine reports gravity in opposite directions on the two platforms, and nothing had ever confirmed it. The correction now lives in one constant, `PhoneTilt.ANDROID_GRAVITY_IS_INVERTED`, and it currently reads `true` on that expectation. If the snow falls downward on the first Android build, the expectation was right; if it falls upward, that constant is wrong and is the only line to change. Record which, with the `grav_` columns from a run holding the phone upright and still.
+- **Whether the detector's constants hold.** Every constant in `shake/shake_detector.gd` was measured on the iPhone. A handset of different mass and a different sample rate will not stop with the same force, so the counts and peaks want checking against a fresh run rather than assuming. A disagreement here is a finding to record, not a change to make: the constants are the iPhone's and the iPhone is the reference.
+
+Recordings come off the handset with `adb pull` — the capture harness writes to `user://`, which on Android is application-private storage rather than something the Files application can browse.
 
 ## File format
 

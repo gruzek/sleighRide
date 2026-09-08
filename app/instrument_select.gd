@@ -11,6 +11,7 @@ extends Control
 
 @onready var carousel: InstrumentCarousel = $InstrumentSelector
 @onready var jingle_cam_button: Button = $JingleCamButton
+@onready var bell_preview: Node = $BellPreview
 
 func _ready() -> void:
 	if carousel == null:
@@ -19,7 +20,13 @@ func _ready() -> void:
 	if jingle_cam_button == null:
 		push_error("instrument_select: no Button node named `JingleCamButton`. The screen cannot reach the Jingle Cam without it.")
 		return
+	if bell_preview == null:
+		push_error("instrument_select: no node named `BellPreview` carrying bell_preview.gd. A bell arriving at the centre would then be chosen in silence.")
+		return
 	carousel.centre_tapped.connect(_on_centre_tapped)
+	# The carousel reports that a bell arrived; this screen decides that arriving should be heard.
+	# The carousel has never known that screens exist and does not learn it here.
+	carousel.centre_changed.connect(bell_preview.play)
 	jingle_cam_button.pressed.connect(_on_jingle_cam_pressed)
 
 # Deferred, and the Jingle Cam handler below is not, because the two arrive by different

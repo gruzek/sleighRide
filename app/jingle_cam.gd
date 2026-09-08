@@ -13,9 +13,13 @@ extends Control
 const BELL_SELECTION_SCENE: String = "res://app/instrument_select.tscn"
 
 # Where the photograph is written before it is handed to the share sheet. The share plugin
-# requires the file to live under user://, which on iOS is the application's Documents
-# directory - so a photograph is retrievable through the Files application even if the person
-# dismisses the share sheet without choosing anything.
+# requires the file to live under user://, and what that means to the person differs by platform.
+#
+# On iOS it is the application's Documents directory, and the export preset opens that directory
+# to the Files application, so a photograph survives a share sheet the person dismisses without
+# choosing anything. On Android it is application-private storage the person cannot browse, so a
+# dismissed share sheet leaves the photograph reachable only by taking it again. Nothing here
+# changes between the two; the file is written before sharing either way.
 const PHOTO_PATH: String = "user://jingle_cam.png"
 
 @onready var camera: Control = $CameraFeedView
@@ -23,6 +27,9 @@ const PHOTO_PATH: String = "user://jingle_cam.png"
 @onready var switch_button: Button = $SwitchCameraButton
 @onready var back_button: Button = $BackButton
 @onready var share: Share = $Share
+
+# Whether the camera has already been opened for this visit to the screen. See _on_feeds_updated.
+var _opened: bool = false
 
 func _ready() -> void:
 	if camera == null:
@@ -54,6 +61,15 @@ func _ready() -> void:
 func _on_feeds_updated() -> void:
 	if CameraServer.feeds().is_empty():
 		return
+	# Disconnecting is not on its own enough to make this happen once. Setting `monitoring_feeds`
+	# can emit `camera_feeds_updated` before the line after it runs, so the signal's call and
+	# _ready's own direct call both arrive - the second one finding the signal already disconnected
+	# and opening the camera a second time regardless. Two opens race each other over the same
+	# feed, which on Android was visible in the log as one camera activating twice a third of a
+	# second apart, with two rotation watchers left running on it.
+	if _opened:
+		return
+	_opened = true
 	if CameraServer.camera_feeds_updated.is_connected(_on_feeds_updated):
 		CameraServer.camera_feeds_updated.disconnect(_on_feeds_updated)
 	switch_button.visible = camera.has_both_cameras()

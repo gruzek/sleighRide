@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://df2jp54q3dweb" path="res://app/instruction_list.tscn" id="4_list"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="5_snow"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="Script" uid="uid://crm10bscv0hij" path="res://app/sprite_position.gd" id="92_place"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bomgk"]
@@ -23,6 +24,8 @@ corner_radius_top_right = 55
 corner_radius_bottom_right = 55
 corner_radius_bottom_left = 55
 corner_detail = 12
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_privacy"]
 
 [node name="Instructions" type="Control" unique_id=1436082793]
 layout_mode = 3
@@ -84,5 +87,26 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_bomgk")
 theme_override_styles/focus = SubResource("StyleBoxFlat_bomgk")
 text = "Continue"
 script = ExtResource("91_safe")
+
+[node name="PrivacyPolicyLink" type="Node2D" parent="." unique_id=863234612]
+script = ExtResource("92_place")
+design_position = Vector2(540, 1180)
+respect_safe_area = true
+
+[node name="Link" type="Button" parent="PrivacyPolicyLink"]
+offset_left = -260.0
+offset_top = 0.0
+offset_right = 260.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.6392157)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 0.6392157)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxEmpty_privacy")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_privacy")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_privacy")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_privacy")
+text = "Privacy Policy"
 
 [node name="Snow" parent="." unique_id=2026173225 instance=ExtResource("5_snow")]

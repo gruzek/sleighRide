@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="8_r8bxp"]
 [ext_resource type="PackedScene" path="res://app/fun_fact_bubble.tscn" id="35_bubble"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
+[ext_resource type="Script" path="res://app/bell_preview.gd" id="93_preview"]
 [ext_resource type="Texture2D" uid="uid://0cpccdmhiae0" path="res://images/v2/photo_camera.svg" id="92_cam"]
 [ext_resource type="PackedScene" uid="uid://c04g43via8j80" path="res://app/vignette.tscn" id="99_vig"]
 
@@ -77,6 +78,9 @@ vertical_anchor = 2
 respect_safe_area = true
 
 [node name="Snow" parent="." unique_id=585041252 instance=ExtResource("8_r8bxp")]
+
+[node name="BellPreview" type="Node" parent="." unique_id=585041253]
+script = ExtResource("93_preview")
 
 [node name="JingleCamButton" type="Button" parent="." unique_id=1794024905]
 layout_mode = 1

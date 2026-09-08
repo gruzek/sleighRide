@@ -62,7 +62,10 @@ func _ready() -> void:
 		push_error("shake_detector axis_time_constant_seconds is %f and must be greater than zero; it is the divisor of the motion-axis smoothing. The measured value is 0.5." % axis_time_constant_seconds)
 
 func _process(delta: float) -> void:
-	var linear: Vector3 = Input.get_accelerometer() - Input.get_gravity()
+	# Read through PhoneTilt rather than subtracting the two sensors here. A phone with no
+	# gyroscope has no gravity sensor and reports a zero vector for it, which would leave gravity
+	# in this signal and put every constant below against a quantity they were not measured on.
+	var linear: Vector3 = PhoneTilt.linear_acceleration()
 	_update_axis(linear, delta)
 	var projection: float = linear.dot(_axis)
 	var projection_sign: float = signf(projection)
