@@ -7,7 +7,7 @@ extends Control
 #
 # The Richmond Symphony publishes the page; until they do, this address is the one thing to change
 # here, and it is deliberately the only place the address appears.
-const PRIVACY_POLICY_URL: String = "https://www.richmondsymphony.com/who-we-are/privacy-policy/"
+const PRIVACY_POLICY_URL: String = "https://www.richmondsymphony.com/who-we-are/holidaybells-privacy-policy/"
 
 @onready var continue_button: Button = $ContinueButton
 # The link is a Button inside a Node2D rather than a Control on the screen root, because it sits

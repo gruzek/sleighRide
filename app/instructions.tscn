@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d03pjgot03f83" path="res://app/instructions.gd" id="1_instr"]
 [ext_resource type="PackedScene" uid="uid://k3kx2y0oih02" path="res://app/title.tscn" id="2_title"]
-[ext_resource type="PackedScene" path="res://app/winnie.tscn" id="3_winnie"]
+[ext_resource type="PackedScene" uid="uid://ctmi7sitcv5hi" path="res://app/winnie.tscn" id="3_winnie"]
 [ext_resource type="PackedScene" uid="uid://df2jp54q3dweb" path="res://app/instruction_list.tscn" id="4_list"]
 [ext_resource type="PackedScene" path="res://snow/snow.tscn" id="5_snow"]
 [ext_resource type="Script" uid="uid://bow2akwso7sjn" path="res://app/safe_area_margin.gd" id="91_safe"]
@@ -48,7 +48,6 @@ color = Color(0.019607844, 0.02745098, 0.047058824, 1)
 [node name="Vignette" parent="." unique_id=357405452 instance=ExtResource("99_vig")]
 z_index = -2
 layout_mode = 1
-anchors_preset = 0
 grow_horizontal = 1
 grow_vertical = 1
 
@@ -93,9 +92,8 @@ script = ExtResource("92_place")
 design_position = Vector2(540, 1180)
 respect_safe_area = true
 
-[node name="Link" type="Button" parent="PrivacyPolicyLink"]
+[node name="Link" type="Button" parent="PrivacyPolicyLink" unique_id=1360953455]
 offset_left = -260.0
-offset_top = 0.0
 offset_right = 260.0
 offset_bottom = 56.0
 theme_override_colors/font_color = Color(1, 1, 1, 0.6392157)
@@ -107,6 +105,6 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_privacy")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_privacy")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_privacy")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_privacy")
-text = "Privacy Policy"
+text = "Holiday Bells App Privacy Policy"
 
 [node name="Snow" parent="." unique_id=2026173225 instance=ExtResource("5_snow")]
