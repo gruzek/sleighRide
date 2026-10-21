@@ -8,21 +8,21 @@ VALUE STATEMENT: The one document a developer reads before touching this reposit
 LAST UPDATED: September, 1, 2026 13:52
 ---
 
-# How Holiday Sleigh Bells Is Put Together
+# Overview
 
-Holiday Sleigh Bells turns an audience member's phone into a sleigh bell they shake along with a live orchestral performance of "Sleigh Ride". This document describes how the application is built: what the screens are, what carries state between them, how a shake becomes a sound, and where everything lives.
+Holiday Sleigh Bells turns an audience member's phone into a sleigh bell that the audience member shakes along with a live orchestral performance of "Sleigh Ride". This system design describes how the application is built: the screens, the autoloads that carry state between the screens, the path from a shake to a sound, and where each file lives.
 
-It is written for a developer arriving at this repository for the first time, and for the development skills that need architectural context. It describes the system as built, not as intended.
+This system design serves two readers: a developer arriving at the repository for the first time, and the development skills that need architectural context. The document describes the system as built.
 
-## The hard rule about assets
+## About Assets
 
-**A media file is never deleted.**
+**Media files leave the application only by moving into `legacy/`.**
 
-Artwork, audio, fonts, and any other media determined to be unused are moved into `legacy/`, mirroring the path they came from. They are never removed from the repository. This applies to automated work and to hand edits alike, and it holds regardless of how confident anyone is that a file is unused.
+A person or tool that finds artwork, audio, fonts or other media to be unused moves the file into `legacy/`, mirroring the path the file came from, and keeps the file in the repository. The rule binds automated work and hand edits alike, however confident anyone is that the file is unused.
 
-The reasoning is that the two possible mistakes cost wildly different amounts. An archived file that turns out to be needed costs one move to recover. A deleted file that turns out to be needed may be unrecoverable, because an asset never committed to version control leaves no trace once removed.
+Archiving a file by mistake costs one move to recover, while deleting a file by mistake may lose the file for good. A deleted asset that nobody committed to version control leaves no trace.
 
-And the analysis that declares a file unused is exactly the kind of analysis that can be wrong. `images/RichmondSymphonyLogo.png` is referenced by the abandoned first version's background scene and by no scene in the current application, so a search for which scenes name it condemns it — yet it is the project's boot splash, reached through `project.godot` by resource identifier rather than by path. Archiving it would have broken the launch of every build. What is in use is decided by tracing both file paths and resource identifiers from the main scene, never by a filename search.
+A filename search would have condemned `images/RichmondSymphonyLogo.png`, which is the project's boot splash. The abandoned first version's background scene references the logo and no scene in the current application does, so a search for scenes that name the file marks the logo unused. `project.godot` reaches the logo by resource identifier instead of by path. Archiving the logo would have broken the launch of every build. To decide what is in use, trace both file paths and resource identifiers from the main scene; a filename search cannot answer the question.
 
 ## Repository layout
 
@@ -31,32 +31,32 @@ And the analysis that declares a file unused is exactly the kind of analysis tha
 | `app/` | The application: the four screens of the audience flow, their shared placement scripts, and the bell definitions |
 | `shake/` | The shake instrument: the signal bus, the detector, and the responders that react to a detected stop |
 | `snow/` | The snow effect, which reads the phone's orientation and shake energy to steer falling snow |
-| `capture/` | The motion capture harness used to calibrate the shake instrument. Not part of the audience flow |
+| `capture/` | The motion capture harness that calibrates the shake instrument. Outside the audience flow |
 | `shaders/` | Shared shaders |
 | `sounds/`, `images/` | Assets the current application uses |
 | `docs/` | This document |
 | `features/` | Feature specifications, implementation plans, findings, and the captured motion data under `features/data/` |
-| `legacy/` | The abandoned first version of the application and every asset belonging only to it |
-| `android/` | The Gradle build template Godot installs for the Android export. Generated, and gitignored |
-| `exports/` | Build output, including the iOS Xcode project. Gitignored apart from that project |
+| `legacy/` | The abandoned first version of the application and each asset belonging only to it |
+| `android/` | The Gradle build template Godot installs for the Android export. The editor generates it, and `.gitignore` excludes it |
+| `exports/` | Build output, including the iOS Xcode project. `.gitignore` excludes everything except the Xcode project |
 
-`legacy/` carries a `.gdignore` marker. The engine does not import that directory at all, so nothing in it can be referenced by a scene, reached by a resource identifier, or included in an export bundle. **The consequence is deliberate: the first version of the application no longer runs.** Bringing it back means removing that marker and reimporting.
+A `.gdignore` marker in `legacy/` stops the engine from importing the directory, so no scene, resource identifier or export bundle can reach a file in `legacy/`. **The marker stops the first version of the application from running, by design.** Restoring the first version means removing the marker and reimporting.
 
-`android/build/` is written by the editor's Project menu rather than by hand, and `.gitignore` excludes it along with `android/.build_version`. It is roughly two hundred megabytes of Gradle source and is regenerated by reinstalling the build template. Anything hand-authored under `android/` would be committed, but nothing is: the share plugin declares its own Android packaging through an `EditorExportPlugin` rather than through a plugin definition file, so there is nothing to author there.
+The editor's Project menu writes `android/build/`, and `.gitignore` excludes `android/build/` along with `android/.build_version`. The directory holds about two hundred megabytes of Gradle source, and reinstalling the build template regenerates the directory. Git would commit a hand-authored file under `android/`, but `android/` holds none: the share plugin declares its own Android packaging through an `EditorExportPlugin` instead of a plugin definition file, so `android/` needs no authored file.
 
-### Where the governing documents live
+### Governing documents
 
-The development skills read a project instructions file that names an application called `manta-rai` and places its governing documents under `docs/manta-rai/`. That is a different product. For this repository:
+The development skills read a project instructions file that names an application called `manta-rai` and places the `manta-rai` governing documents under `docs/manta-rai/`. `manta-rai` is a different product. For this repository:
 
-- **System design** — this document, `docs/system_design.md`.
-- **Application coding standards** — **does not exist.** The conventions the repository actually demonstrates are listed under "Conventions" below, and a code violation review run here has to substitute them.
-- **Implementation plan requirements** — **does not exist.**
+- **System design**: this document, `docs/system_design.md`.
+- **Application coding standards**: **does not exist.** The "Conventions" section below lists the conventions the repository demonstrates, and a code violation review in this repository has to substitute those conventions.
+- **Implementation plan requirements**: **does not exist.**
 
-The project instructions file is not in this repository. It is injected into each development skill at deploy time from the plugin source, and six copies of it exist, so it cannot be corrected from here.
+The project instructions file lives outside this repository. The plugin source injects the file into each development skill at deploy time, and six copies of the file exist, so no edit in this repository can correct the file.
 
 ## The audience flow
 
-Four screens, each advancing to the next with `change_scene_to_file`, which frees the entire scene tree including everything held in it.
+The audience flow runs through four screens, and each screen advances to the next with `change_scene_to_file`, which frees the entire scene tree and everything the tree holds.
 
 ```
 app/main.tscn            Title. "Tap to start"
@@ -64,51 +64,51 @@ app/main.tscn            Title. "Tap to start"
 app/instructions.tscn    How to play. "Continue"
         ↓
 app/instrument_select.tscn   Swipe or tap between three bells, and one fun fact.
-                             Tap the centred bell to advance; there is no continue button
+                             Tap the centred bell to advance; the screen has no continue button
                              The three are the paddle bells, the strap bells, and both together
         ↓
 app/instrument.tscn      Play. Shake to sound the chosen bell. "Back" returns to selection
 ```
 
-`run/main_scene` in `project.godot` points at the title screen by resource identifier. Pointing it at `capture/shake_capture.tscn` instead produces a capture build; that is the only way the harness is reached, and restoring the title screen afterwards is a completion criterion of any feature that changes it.
+`run/main_scene` in `project.godot` points at the title screen by resource identifier. Pointing `run/main_scene` at `capture/shake_capture.tscn` produces a capture build, the only route to the harness. Any feature that changes `run/main_scene` carries restoring the title screen as a completion criterion.
 
-The play screen is the only screen with backward navigation. The other three move forward only.
+The play screen is the only screen with backward navigation; the title, instructions and bell selection screens move forward only.
 
 ### Screen composition
 
-Screens are assembled from small scenes rather than authored as one tree. `title.tscn`, `vignette.tscn`, `winnie.tscn`, `shake_to_jingle.tscn`, and the rest are each a sprite or a label plus a placement script, instanced into whichever screens need them. Two shared scripts do the placing:
+Each screen instances small scenes instead of holding one authored tree. `title.tscn`, `vignette.tscn`, `winnie.tscn`, `shake_to_jingle.tscn` and the other small scenes are each a sprite or a label plus a placement script, instanced into the screens that need them. Two shared scripts do the placing:
 
-- **`app/sprite_position.gd`** positions a node against the design canvas — 1080 by 1920 — with an anchor per axis and an option to respect the device's safe area. The engine expands this canvas rather than stretching it, so on any portrait phone the canvas stays 1080 units wide and grows taller.
-- **`app/safe_area_margin.gd`** holds a bottom-anchored control clear of the home indicator. Godot's anchoring measures from the physical window edge and knows nothing about the safe area, so every button in the flow carries this script. It derives its offsets from authored base values rather than adjusting them in place, so repeated recomputes never compound.
+- **`app/sprite_position.gd`** positions a node against the 1080 by 1920 design canvas, with an anchor per axis and an option to respect the device's safe area. The engine expands the canvas instead of stretching it, so on a portrait phone the canvas stays 1080 units wide and grows taller.
+- **`app/safe_area_margin.gd`** holds a bottom-anchored control clear of the home indicator. Godot's anchoring measures from the physical window edge and ignores the safe area, so each button in the flow carries `safe_area_margin.gd`. The script derives its offsets from authored base values instead of adjusting the offsets in place, so repeated recomputes do not compound.
 
-`app/fun_fact_bubble.tscn` is one of these small scenes, instanced once on the bell selection screen. It is the only one carrying live text: two `Label` nodes drawing a fun fact from an exported list. `app/shake_to_jingle.tscn` is the other scene built around a `Label` rather than a sprite, instanced once on the play screen, and its text is the fixed string "Shake to Jingle". Both are a `Node2D` root carrying the placement script with the `Label` as a child, because that script extends `Node2D` and cannot attach to a `Control` directly. The list is served by a shuffle bag held in a static variable, so no fact repeats until all have been shown and the sequence survives the scene change without an autoload or a file.
+`app/fun_fact_bubble.tscn`, instanced once on the bell selection screen, is the one small scene that carries live text: two `Label` nodes that draw a fun fact from an exported list. `app/shake_to_jingle.tscn`, instanced once on the play screen, is the other small scene built around a `Label` instead of a sprite, and its `Label` shows the fixed string "Shake to Jingle". Both scenes use a `Node2D` root that carries the placement script, with the `Label` as a child, because the placement script extends `Node2D` and cannot attach to a `Control` node. A shuffle bag held in a static variable serves the fun fact list, so no fact repeats until the bubble has shown every fact in the list, and the sequence survives the scene change without an autoload or a file.
 
-A composition scene that needs behaviour of its own extends the placement script rather than replacing it, because a node holds only one script. `app/instrument_carousel.gd`, `app/holiday_sleigh_bells.gd`, and `app/fun_fact_bubble.gd` are all built that way: each extends `app/sprite_position.gd`, calls `super()` from its own `_ready`, and goes on carrying the exported placement properties the hosting screen sets on it.
+A composition scene that needs behaviour of its own extends the placement script instead of replacing the placement script, because a node holds only one script. `app/instrument_carousel.gd`, `app/holiday_sleigh_bells.gd` and `app/fun_fact_bubble.gd` each extend `app/sprite_position.gd`, call `super()` from their own `_ready`, and keep the exported placement properties that the hosting screen sets.
 
-A second family of shared scripts gives a sprite motion rather than a place: `app/tilt_sway.gd` leans one with the phone's side-to-side tilt, `app/continuous_spin.gd` turns one at a constant rate, and `app/tilt_drift.gd` slides one a short way as the phone tilts, all three reading the tilt through `app/phone_tilt.gd`. These attach to the **child sprites** inside an artwork scene rather than to its root, which is why they extend nothing: the root is where the placement script lives and owns `position`, and a child's transform is its own. They also carry no pivot — a sprite's origin is set in the scene by `centered` and `offset`, so where the red tree bends is authored in `app/straight_red_tree.tscn` by eye rather than written into the sway.
+A second family of shared scripts gives a sprite motion instead of a place. `app/tilt_sway.gd` leans a sprite with the phone's side-to-side tilt, `app/continuous_spin.gd` turns a sprite at a constant rate, and `app/tilt_drift.gd` slides a sprite a short way as the phone tilts. `tilt_sway.gd` and `tilt_drift.gd` read the tilt through `app/phone_tilt.gd`. The motion scripts attach to the **child sprites** inside an artwork scene instead of the scene's root, and so extend nothing: the placement script lives on the root and owns `position`, while each child owns its own transform. The motion scripts carry no pivot either. The scene sets a sprite's origin through `centered` and `offset`, so a developer sets the red tree's bend point by eye in `app/straight_red_tree.tscn`, and the sway script holds no bend point.
 
-Buttons are styled per screen with inline `StyleBoxFlat` sub-resources. There is no shared theme and no shared button scene; the flow's blue is `Color(0.2509804, 0.56078434, 0.8392157, 1)` with a red pressed state, 55-pixel corner radius, and 44-point white text, duplicated in each screen that needs it.
+Each screen styles its own buttons with inline `StyleBoxFlat` sub-resources; the project has no shared theme and no shared button scene. The flow's blue is `Color(0.2509804, 0.56078434, 0.8392157, 1)` with a red pressed state, a 55-pixel corner radius and 44-point white text, and each screen that needs the style duplicates those values.
 
-One button does not carry its own `text` and `icon`, and the reason is worth recording so it is not undone. Godot's `Button` places an icon at its left margin and centres its text independently of it, which on a wide button strands the icon in the corner, and its documentation rules out the obvious alternative: an icon centred both horizontally and vertically has the text drawn on top of it. The Jingle Cam button on the bell selection screen therefore holds a full-rect `HBoxContainer` with a `TextureRect` and a `Label`, all three ignoring mouse input so the press still reaches the button. Any button needing an icon beside its lettering, centred, has to be built the same way.
+The Jingle Cam button on the bell selection screen leaves its own `text` and `icon` properties unused, and this section records the reason so nobody reverts the button. Godot's `Button` places an icon at the left margin and centres the text independently of the icon, and on a wide button Godot's layout strands the icon in the corner. Godot's documentation rules out the alternative: a button with an icon centred both horizontally and vertically draws the text on top of the icon. The Jingle Cam button therefore holds a full-rect `HBoxContainer` with a `TextureRect` and a `Label`, and all three nodes ignore mouse input so the press still reaches the button. A button that needs a centred icon beside its lettering has to copy the Jingle Cam button's construction.
 
-**Nothing touches its own viewport after dispatching a gesture.** The carousel marks a touch handled before it emits, never after, and `app/instrument_select.gd` defers the scene change it makes in response. A signal emitted from `_unhandled_input` can be answered by a listener that replaces the scene, and code running after that reaches into a tree the engine is already tearing down, which crashes rather than failing. A button's `pressed` does not need this, because it fires once the viewport has finished with the event, which is why only the tap path defers.
+**No node touches its own viewport after dispatching a gesture.** The carousel marks a touch handled before emitting the signal, and `app/instrument_select.gd` defers the scene change that `instrument_select.gd` makes in response. A listener can answer a signal emitted from `_unhandled_input` by replacing the scene, and code that runs after the replacement reaches into a tree the engine is already tearing down. The application then crashes instead of failing cleanly. A button's `pressed` signal needs no deferral, because `pressed` fires after the viewport has finished with the event, so only the tap path defers.
 
 ## What crosses a scene change
 
-`change_scene_to_file` destroys everything on the screen, so anything that must outlive it is an autoload. There are two, and they carry very different things.
+`change_scene_to_file` destroys everything on the screen, so state that must outlive a scene change lives in an autoload. The project has two autoloads:
 
 | Autoload | Script | What it carries |
 |---|---|---|
-| `InstrumentSelection` | `app/instrument_selection.gd` | The chosen bell, as an `InstrumentDefinition`. Nothing is written to disk; the choice lasts for the session |
+| `InstrumentSelection` | `app/instrument_selection.gd` | The chosen bell, as an `InstrumentDefinition`. The autoload writes nothing to disk, and the choice lasts for the session |
 | `ShakeEvents` | `shake/shake_event_bus.gd` | One signal, `jingled`. No state at all |
 
-A bell is an `InstrumentDefinition` resource — `app/instrument_definition.gd` — holding two things: the artwork scene that draws it and the recording it sounds. Three exist, in `app/instruments/`. Putting the recording on the bell rather than on the play screen is what lets the sound follow the choice without any screen knowing which bell was picked: the selection screen publishes a bell, the autoload carries it, the play screen and the sound responder each read what they need from it.
+A bell is an `InstrumentDefinition` resource, defined in `app/instrument_definition.gd`, that holds two things: the artwork scene that draws the bell and the recording the bell sounds. Three bells exist, in `app/instruments/`. Storing the recording on the bell instead of on the play screen lets the sound follow the audience member's choice without any screen knowing which bell the audience member picked. The selection screen publishes a bell, the autoload carries the bell, and the play screen and the sound responder each read what they need from the bell.
 
-The bell selection screen's carousel publishes the chosen bell continuously as it moves, so the choice is already correct the moment the centred bell is tapped and the `centre_tapped` signal needs to carry no payload. That property is what made the continue button redundant and is why it was removed: it confirmed a decision that had already been recorded. It also **opens on the bell already chosen**, which is what makes the play screen's Back button safe: a carousel that always opened on the first bell would overwrite the audience member's choice in the instant between being built and being positioned.
+The bell selection screen's carousel publishes the chosen bell on each move, so the choice is already correct when the audience member taps the centred bell, and the `centre_tapped` signal carries no payload. Publishing on each move made the continue button redundant, because the button confirmed a decision the carousel had already recorded, so the project removed the button. The carousel also **opens on the bell already chosen**, and opening there makes the play screen's Back button safe. A carousel that opened on the first bell each time would overwrite the audience member's choice in the instant between being built and being positioned.
 
 ## The shake instrument
 
-The instrument separates detecting a stop from responding to one, and the separation is the whole design.
+The shake instrument keeps the code that detects a stop apart from the code that responds to a stop.
 
 ```
     Input.get_accelerometer() − Input.get_gravity()
@@ -122,87 +122,79 @@ The instrument separates detecting a stop from responding to one, and the separa
  jingle_response  flash_response  (an animation, later)
 ```
 
-A detector emits without knowing what listens. A responder connects to the bus in its own `_ready()` and never refers to the detector. **Adding, removing, or replacing an effect is therefore adding or deleting a node**, with no wiring to change anywhere else — which is what lets the sound live on the play screen and the flash live on the capture harness without either screen knowing the other exists.
+The shake detector emits without knowing what listens. A responder connects to the bus in its own `_ready()` and holds no reference to the detector. **Adding, removing or replacing an effect therefore means adding or deleting a node**, with no wiring to change elsewhere. The play screen carries the sound and the capture harness carries the flash, and neither screen knows the other exists.
 
-The bus is global because it is stateless and costs nothing when nothing is shaking. The detector is deliberately **not** global: it belongs to a screen that wants an instrument, not to the title and instructions screens.
+The `ShakeEvents` bus is global because the bus is stateless and costs nothing while no one shakes the phone. The detector is **not** global, by design: the detector belongs to a screen that wants an instrument, and the title and instructions screens want none.
 
 ### What a detected stop carries
 
-`ShakeEvent` — `shake/shake_event.gd` — is a small object rather than a set of loose signal arguments, so adding a field later does not break every responder already connected. It carries the peak magnitude of the stop in metres per second squared, that same stop normalized to a 0-to-1 intensity spaced perceptually, its quantized level, which end of the stroke it was, and when it happened. **Every one of those is computed once, in the detector.** No responder recomputes intensity from magnitude.
+`ShakeEvent`, defined in `shake/shake_event.gd`, is a small object instead of a set of loose signal arguments, so adding a field later does not break the responders already connected. A `ShakeEvent` carries the peak magnitude of the stop in metres per second squared, that peak normalized to a 0-to-1 intensity on a perceptual scale, the quantized level, which end of the stroke the stop was, and when the stop happened. **The detector computes each of those values once.** No responder recomputes intensity from magnitude.
 
 ### How the detector works, and why
 
-Once per rendered frame it computes linear acceleration, updates a rolling estimate of the dominant motion axis, projects onto that axis, tracks the running peak, and fires when the projection falls a set fraction below that peak or reverses direction.
+Once per rendered frame, the detector computes linear acceleration, updates a rolling estimate of the dominant motion axis, projects the acceleration onto that axis, and tracks the running peak. The detector fires when the projection falls a set fraction below the peak or reverses direction.
 
-**Every constant in it was measured**, not chosen. `features/C1_09_shake_it_discovery_findings.md` states each value, the run it came from, and why the four alternative techniques were rejected; the sixteen recordings behind it are in `features/data/C1_09/`. Three design points are worth carrying in your head, because each replaced an approach that looked obviously correct:
+**Each constant in the detector comes from measurement.** `features/C1_09_shake_it_discovery_findings.md` states each value, the run that produced the value, and the reasons the project rejected four alternative techniques; the sixteen recordings behind the findings are in `features/data/C1_09/`. Three design points each replaced an approach that looked correct, and a developer working on the detector should keep all three in mind:
 
-- **The projection onto a motion axis, not the magnitude.** Magnitude does not fall back between the two ends of a stroke when shaking is hard, so a magnitude-based detector merged 52 real stops into 3 on the vigorous runs.
-- **Firing at the peak's release, not at the first turnover.** A vigorous stroke is noisy while accelerating, and the first dip is usually noise partway up. Firing there reported 13 metres per second squared where the true peak was 53.
-- **Re-arming on a change of direction as well as on falling near zero.** On hard shaking the projection never returns to the release level between stops, so a gate waiting only for that found 20 events where there were 52.
+- **The detector projects onto a motion axis instead of using magnitude.** During hard shaking, magnitude does not fall back between the two ends of a stroke, so a magnitude-based detector merged 52 real stops into 3 on the vigorous runs.
+- **The detector fires at the peak's release instead of at the first turnover.** A vigorous stroke is noisy while accelerating, and the first dip is most often noise partway up the stroke. Firing at the first dip reported 13 metres per second squared where the true peak was 53.
+- **The detector re-arms on a change of direction as well as on falling near zero.** During hard shaking the projection does not return to the release level between stops, so a gate that waited for the release level alone found 20 events where there were 52.
 
-There is no refractory period. The tightest measured gap between two real stops is 50 milliseconds, and any fixed refractory long enough to be useful would start swallowing them; the arming gate does the same job without a timer.
+The detector has no refractory period, because the tightest measured gap between two real stops is 50 milliseconds, and a fixed refractory period long enough to help would start swallowing real stops. The arming gate does the same job without a timer.
 
 ### The sound responder
 
-`shake/responses/jingle_response.gd` sounds a recording on every stop. **Two things about the stop are used, and they do different jobs.** Its level chooses which recording plays, and its intensity scales how loudly that recording plays. A struck bell changes timbre with force rather than only amplitude, so the change of character between a soft strike and a hard one has to come from a different recording; volume alone cannot produce it. The intensity ramp then gives the continuous response inside each band, so a shake at the bottom of the soft range is still quieter than one at the top of it.
+`shake/responses/jingle_response.gd` sounds a recording on each stop and uses two values from the stop for different jobs: the level chooses which recording plays, and the intensity scales the recording's volume. A struck bell changes timbre with force as well as amplitude, so the difference in character between a soft strike and a hard strike has to come from a different recording, and volume cannot produce that difference. The intensity ramp then gives a continuous response inside each band, so a shake at the bottom of the soft range still plays quieter than a shake at the top of the soft range.
 
-A bell carries two banks of recordings, a piano bank and a forte bank, declared on `app/instrument_definition.gd`. Levels at or below the responder's exported `piano_top_level`, which defaults to 2 of the detector's 5, draw from the piano bank; every level above it draws from the forte bank. **A bell whose forte bank is empty sounds its piano bank at every level.** That is not a fallback: the bell has one bank because only one was recorded, and it still answers how hard it was shaken through the volume ramp. The strap bells are the case, delivered as twenty-five takes with no dynamic split.
+`app/instrument_definition.gd` gives each bell two banks of recordings, a piano bank and a forte bank. Levels at or below the responder's exported `piano_top_level`, which defaults to 2 of the detector's 5, draw from the piano bank, and levels above `piano_top_level` draw from the forte bank. **A bell with an empty forte bank sounds its piano bank at every level.** The single bank follows the recordings and is no fallback: the strap bells arrived as twenty-five takes with no dynamic split, so the strap bells have one bank, and the strap bells still answer shake strength through the volume ramp.
 
-Within a bank the draw is random, excluding whatever sounded last, so no recording is heard twice in a row. The exclusion is by index in a single pass rather than a draw-and-retry loop: a retry loop never terminates on a bank holding the same recording in two entries, which is one mis-click to create in a list of twenty-five near-identical filenames and would hang the application on the first shake.
+Within a bank the responder draws at random and excludes the recording that sounded last, so no recording plays twice in a row. The responder excludes by index in a single pass instead of drawing and retrying, because a retry loop does not terminate on a bank that holds the same recording in two entries. One mis-click in a list of twenty-five near-identical filenames can create a duplicate entry, and a retry loop would then hang the application on the first shake.
 
-It reads the selection rather than having the play screen assign a stream because both the screen and the responder run `_ready()`, in an order that would make an assignment from the screen arrive too late. Reading it in the responder removes the ordering question and keeps the play screen ignorant of how sound is produced. The exported stream the capture harness uses resolves into a one-entry piano bank with an empty forte bank, so there is one code path rather than two shapes with a branch between them at every step.
+The responder reads the bell from `InstrumentSelection` instead of waiting for the play screen to assign a stream, because the play screen and the responder both run `_ready()` in an order that would deliver the screen's assignment too late. Reading the selection in the responder removes the ordering question and keeps the play screen ignorant of how the responder produces sound. The capture harness's exported stream resolves into a one-entry piano bank with an empty forte bank, so the responder runs one code path instead of handling two data shapes with a branch at each step.
 
-Voices are a pool, sized from the **longest** recording the bell carries against eight events per second, with a floor of four. The longest is the right measure because the pool exists to stop a recording being cut short by reuse of its voice, and the longest is the one most at risk of it. The paddle bells therefore build 18 voices, the strap bells 23, and the pair 24. Each voice is assigned its recording at the moment it is played rather than when the pool is built, since any voice can now play anything in either bank. Voices are taken in turn, so the one reused is always the oldest. The trade is explicit: a burst faster than the pool holds cuts a recording short.
+The responder builds a pool of voices sized from the **longest** recording the bell carries against eight events per second, with a floor of four voices. The pool exists to stop voice reuse from cutting a recording short, and the longest recording runs the most risk of being cut, so the longest recording sets the size. The paddle bells build 18 voices, the strap bells 23, and the pair 24. The responder assigns each voice its recording at play time instead of at pool build time, since any voice can play any recording in either bank. Voices go out in turn, so the reused voice is the oldest one. The project accepts one cost: a burst faster than the pool holds cuts a recording short.
 
 ## The capture harness
 
-`capture/shake_capture.tscn` records every motion sample the engine sees to one comma-separated file per run. It exists to calibrate the detector against real hand motion, and it is reached only by pointing `run/main_scene` at it.
+`capture/shake_capture.tscn` records each motion sample the engine sees to one comma-separated file per run. The harness calibrates the detector against real hand motion, and only a build with `run/main_scene` pointed at the harness reaches the harness.
 
-Two constraints shape it, both stemming from one fact: **the sample clock is the frame clock.** Nothing on that screen may animate, and nothing is written to disk while a run is active — samples are held in memory and the whole file written in one operation at the end, because a write inside the run would put file system latency into the interval being measured. Sampling happens in `_process` and never in `_physics_process`, which runs on its own clock and would read the same sensor value twice or skip one entirely.
+**The sample clock is the frame clock**, and that fact sets two constraints on the harness. Nothing on the harness screen may animate. The harness writes nothing to disk during a run: the harness holds samples in memory and writes the whole file in one operation at the end, because a write during the run would add file system latency to the interval under measurement. The harness samples in `_process` and not in `_physics_process`, because `_physics_process` runs on its own clock and would read one sensor value twice or skip a value.
 
-On iOS `user://` resolves to the application's Documents directory, and the export preset sets `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace` so recorded runs are retrievable through the phone's Files application without attaching it to a development machine.
+On iOS, `user://` resolves to the application's Documents directory. The export preset sets `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace`, so a developer can retrieve recorded runs through the phone's Files application without attaching the phone to a development machine.
 
-The harness currently also carries a detector and both responders, added during calibration so the algorithm could be heard as it was tuned. That makes its recordings no longer measurement-grade, since audio and a fading rectangle both consume frame time on the clock being measured — an accepted trade now that the calibration data is captured.
+The harness carries a detector and both responders today, because a developer added them during calibration to hear the algorithm while tuning the algorithm. The extra nodes make the harness recordings no longer measurement-grade: audio and a fading rectangle both consume frame time on the clock under measurement. The project accepts that cost now that the calibration recordings exist.
 
 ## Platform notes
 
-**This is a native mobile application.** It is built and exported natively for iOS; the Xcode
-project is in `exports/ios2/`. It is not a web export, not a single-page app, and not a
-progressive web app. This is stated explicitly because it was not, and the omission cost
-something: a direction taken at the 2026-08-03 sponsor meeting to deliver a Godot SPA was
-later reversed, nothing recorded the reversal, and `features/mvp1_roadmap.md` went on
-asserting the SPA for three weeks while native features were built against it. The documents
-from that direction — `features/C1_T05_spa_mockup.md` and
-`features/iphone_spa_exploration.md` — are kept and carry superseded banners. Anything else
-in `features/` that frames the web as the target is stale by the same cause.
+**Holiday Sleigh Bells is a native mobile application.** The project builds a native iOS export, and the Xcode project is in `exports/ios2/`. The application is not a web export, a single-page app or a progressive web app. This section states the native target because the documents once omitted the native target, at a cost. The 2026-08-03 sponsor meeting took a direction to deliver a Godot SPA, a later decision reversed that direction, and nobody recorded the reversal, so `features/mvp1_roadmap.md` went on asserting the SPA for three weeks while developers built native features against the roadmap. The project keeps the two documents from the SPA direction, `features/C1_T05_spa_mockup.md` and `features/iphone_spa_exploration.md`, under superseded banners. Any other file in `features/` that frames the web as the target is stale because of the unrecorded reversal.
 
-**Sensors only exist on a real device.** The three motion calls return a zero vector in the editor, in the desktop build, and in the iOS simulator. This is documented engine behaviour rather than a fault, and it means nothing about the shake instrument or the capture harness can be meaningfully exercised anywhere but a handset.
+**Motion sensors exist only on a real device.** The three motion calls return a zero vector in the editor, in the desktop build and in the iOS simulator. The engine documents the zero-vector behaviour, so the zero vector is no fault, and a developer can exercise the shake instrument and the capture harness only on a handset.
 
-**The sample rate is the frame rate**, because the engine refreshes the motion values once per rendered frame. On an iPhone 13 Pro that is 120 samples per second, not the 60 that reading the engine source suggests.
+**The sample rate equals the frame rate**, because the engine refreshes the motion values once per rendered frame. An iPhone 13 Pro delivers 120 samples per second, not the 60 that the engine source suggests.
 
-**`dt_ms` is not a measurement.** Godot on iOS reports the display link's nominal interval, so any per-frame delta reads as a constant while the real intervals vary by a factor of two. The monotonic timestamp is the only real clock.
+**`dt_ms` is no measurement.** Godot on iOS reports the display link's nominal interval, so a per-frame delta reads as a constant while the real intervals vary by a factor of two. The monotonic timestamp is the only real clock.
 
-**Android is built, and the gravity correction lives in one place.** The engine reports the gravity vector in opposite directions on the two platforms. Linear acceleration is unaffected, since the difference cancels when gravity is subtracted, which is why the detector works on that quantity and nothing else.
+**The project builds for Android, and one place holds the gravity correction.** The engine reports the gravity vector in opposite directions on iOS and Android. Linear acceleration stays unaffected, because the difference cancels when the detector subtracts gravity, so the detector works on linear acceleration alone.
 
-The Android Build and Play Store Release feature (C1_20) removed the duplication this section used to warn about. `app/phone_tilt.gd` now carries `PhoneTilt.gravity()`, which applies the platform correction once, and both callers read the sensor through it: `snow/snow.gd`, which steers the snowfall, and `PhoneTilt.read()`, which the artwork behaviours use. `snow/snow.gd` keeps its own un-normalised in-plane vector and its own angle smoothing, so only the read is shared, not the logic. **The one line that decides the correction is `PhoneTilt.ANDROID_GRAVITY_IS_INVERTED`.** `legacy/bells/native_gravity_controller.gd` remains the illustration of what goes wrong when the sign is assumed rather than routed: its mapping is iOS-shaped, and on Android its bells would fall upward.
+The Android Build and Play Store Release feature (C1_20) removed the duplicated gravity correction that this section used to warn about. `app/phone_tilt.gd` now carries `PhoneTilt.gravity()`, which applies the platform correction once, and both callers read the sensor through `PhoneTilt.gravity()`: `snow/snow.gd`, which steers the snowfall, and `PhoneTilt.read()`, which the artwork behaviours use. `snow/snow.gd` keeps its own un-normalised in-plane vector and its own angle smoothing, so the two callers share the read and not the logic. **`PhoneTilt.ANDROID_GRAVITY_IS_INVERTED` is the one line that decides the correction.** `legacy/bells/native_gravity_controller.gd` remains the example of a sign assumed instead of routed: the script's mapping is iOS-shaped, and on Android the script's bells would fall upward.
 
-`features/data/C1_09/README.md` records the handset measurements. Anything not yet measured on Android hardware is listed there rather than here.
+`features/data/C1_09/README.md` records the handset measurements and lists each value not yet measured on Android hardware.
 
 ## Conventions
 
-There is no application coding standards document. These are the conventions the repository demonstrates, and a review run here audits against them.
+The repository has no application coding standards document, so a review in this repository audits against the conventions the code demonstrates:
 
 - Tab indentation in GDScript.
-- A one-line comment at the top of each script naming the file and its role, followed by whatever a reader needs that the code cannot tell them.
+- A one-line comment at the top of each script naming the file and the script's role, followed by anything a reader needs that the code cannot show.
 - Static typing on declarations and return types, including `-> void`.
-- Signals connected in `_ready()` rather than in the scene file. Connecting in both places raises a duplicate-connection error at runtime.
+- Signals connected in `_ready()` instead of in the scene file. Connecting a signal in both places raises a duplicate-connection error at runtime.
 - Scene and script files named in lower snake case.
-- Exported values used as divisors, bounds, or loop counts are validated in `_ready()`, with a message naming the value, its permitted range, and the correct default.
-- A node dependency reached by scene path is validated in `_ready()` rather than at its first use, so a misconfiguration surfaces at load rather than inside a branch that runs rarely.
-- **No fallbacks.** A missing value fails with a message naming what is missing and what to do about it. Nothing substitutes a default and carries on.
+- Exported values used as divisors, bounds or loop counts validated in `_ready()`, with a message naming the value, its permitted range and the correct default.
+- A node dependency reached by scene path validated in `_ready()` instead of at first use, so a misconfiguration surfaces at load instead of inside a branch that seldom runs.
+- **No fallbacks.** A missing value fails with a message naming what is missing and what to do about it. No code substitutes a default and carries on.
 
 ## Testing
 
-**This repository has no test framework.** Three consecutive features have recorded the decision not to introduce one, and verification rests on manual steps performed on a handset, supported by a check that the project loads with no errors and every resource reference resolves.
+**This repository has no test framework.** Three consecutive features recorded the decision not to introduce one. Verification rests on manual steps a developer performs on a handset, supported by a check that the project loads with no errors and that each resource reference resolves.
 
-That is a deliberate position rather than an oversight, and it rests on the platform note above: the parts of this application most worth testing are the parts that only exist on a real device.
+The project chose to go without a test framework because of the sensor constraint in the platform notes: the parts of the application most worth testing exist only on a real device.
